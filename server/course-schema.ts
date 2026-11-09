@@ -2,7 +2,10 @@ const text = { type: "string" };
 const visual = {
   type: "object",
   properties: {
-    kind: { type: "string", enum: ["steps", "comparison", "cycle"] },
+    kind: {
+      type: "string",
+      enum: ["steps", "comparison", "cycle", "timeline"],
+    },
     title: text,
     items: {
       type: "array",
@@ -43,6 +46,15 @@ export const courseSchema = {
         properties: {
           title: text,
           subtitle: text,
+          illustrationPlan: {
+            type: "object",
+            properties: {
+              scene: { type: "string", maxLength: 1800 },
+              caption: { type: "string", maxLength: 400 },
+              alt: { type: "string", maxLength: 400 },
+            },
+            required: ["scene", "caption", "alt"],
+          },
           minutes: { type: "integer", enum: [3] },
           pages: { type: "array", minItems: 3, maxItems: 3, items: page },
           quiz: {
@@ -56,7 +68,14 @@ export const courseSchema = {
             required: ["question", "choices", "answer", "why"],
           },
         },
-        required: ["title", "subtitle", "minutes", "pages", "quiz"],
+        required: [
+          "title",
+          "subtitle",
+          "minutes",
+          "pages",
+          "quiz",
+          "illustrationPlan",
+        ],
       },
     },
   },

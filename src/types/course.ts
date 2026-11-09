@@ -1,5 +1,30 @@
+export interface IllustrationPlan {
+  scene: string;
+  caption: string;
+  alt: string;
+}
+export interface IllustrationStatus {
+  id: string;
+  status: "queued" | "generating" | "ready" | "failed";
+  url?: string;
+  error?: string;
+}
+export function isIllustrationPlan(v: unknown): v is IllustrationPlan {
+  return (
+    typeof v === "object" &&
+    v !== null &&
+    ["scene", "caption", "alt"].every((k) => {
+      const x = (v as Record<string, unknown>)[k];
+      return (
+        typeof x === "string" &&
+        x.trim().length > 0 &&
+        x.length <= (k === "scene" ? 1800 : 400)
+      );
+    })
+  );
+}
 export interface LessonVisual {
-  kind: "steps" | "comparison" | "cycle";
+  kind: "steps" | "comparison" | "cycle" | "timeline";
   title: string;
   items: { label: string; detail: string }[];
 }
@@ -18,6 +43,9 @@ export interface Quiz {
   why: string;
 }
 export interface Lesson {
+  illustrationPlan?: IllustrationPlan;
+  illustration?: { id: string };
+  sampleIllustration?: "space";
   title: string;
   subtitle: string;
   minutes: number;
@@ -56,6 +84,7 @@ export interface ReviewCard {
   repetitions: number;
 }
 export interface Progress {
+  illustrationIds: Record<string, string>;
   saved: string[];
   notes: Record<string, string>;
   selectedCourseId: string;
@@ -71,7 +100,7 @@ const record = (v: unknown): v is Record<string, unknown> =>
 export function isLessonVisual(v: unknown): v is LessonVisual {
   return (
     record(v) &&
-    ["steps", "comparison", "cycle"].includes(String(v.kind)) &&
+    ["steps", "comparison", "cycle", "timeline"].includes(String(v.kind)) &&
     typeof v.title === "string" &&
     v.title.trim().length > 0 &&
     Array.isArray(v.items) &&
@@ -101,6 +130,12 @@ export function isCourseContent(v: unknown): v is CourseContent {
     v.lessons.every(
       (l) =>
         record(l) &&
+        (l.illustrationPlan === undefined ||
+          isIllustrationPlan(l.illustrationPlan)) &&
+        (l.illustration === undefined ||
+          (record(l.illustration) &&
+            typeof l.illustration.id === "string" &&
+            /^[a-f0-9]{64}$/.test(l.illustration.id))) &&
         typeof l.minutes === "number" &&
         Number.isFinite(l.minutes) &&
         l.minutes > 0 &&
@@ -163,6 +198,14 @@ export function readProgress(value: unknown): Progress {
   const count = (v: unknown) =>
     typeof v === "number" && Number.isFinite(v) && v >= 0 ? Math.floor(v) : 0;
   return {
+    illustrationIds: record(p.illustrationIds)
+      ? Object.fromEntries(
+          Object.entries(p.illustrationIds).filter(
+            (e): e is [string, string] =>
+              typeof e[1] === "string" && /^[a-f0-9]{64}$/.test(e[1]),
+          ),
+        )
+      : {},
     saved: Array.isArray(p.saved)
       ? p.saved.filter((v): v is string => typeof v === "string")
       : [],

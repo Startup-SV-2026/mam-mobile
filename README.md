@@ -114,3 +114,39 @@ assets/icon.png            Icon ứng dụng tạm
 ```
 
 Chưa có video/podcast, FSRS, streak bạn bè, đăng nhập, đồng bộ cloud, thanh toán hoặc bản phát hành App Store. Giao diện hiện theo hướng học ngắn và khám phá của Wondering, chưa sao chép đầy đủ mọi tính năng của sản phẩm đó.
+
+## Tranh minh họa tự động — `mam-illustrations`
+
+Luồng mới: Gemini tạo nội dung + kế hoạch tranh (`scene`, `caption`, `alt`) cho mỗi bài → backend xếp hàng vẽ một tranh chính/bài → app cho học ngay với sơ đồ → ảnh xuất hiện khi hoàn tất. Không gọi lại model ảnh khi mở bài.
+
+- Xem ngay phong cách: mở **Khám phá vũ trụ → Vũ trụ rộng đến đâu? → Đọc bài học**. Tranh mẫu được tạo bằng công cụ ImageGen, được đóng gói tại `assets/illustrations/space.png`; không cần API ảnh để xem mẫu. Prompt và ghi chú nằm trong `assets/illustrations/README.md`.
+- Với khóa AI mới, model văn bản lập kế hoạch tranh; model ảnh Gemini thực hiện kế hoạch đó. Cả hai dùng bộ quy tắc màu pastel/nền kem/chất liệu đất sét và giấy, không chữ trong ảnh. Hình ảnh chỉ là minh họa nghệ thuật; không được xem là tư liệu lịch sử hay mô hình khoa học chính xác.
+- Sơ đồ `steps`, `comparison`, `cycle`, `timeline` được dựng bằng code, nhãn và số liệu là chữ thật. Khóa cũ không có dữ liệu sơ đồ sẽ chỉ hiện ý chính, không còn lặp ba tiêu đề thành ô màu.
+- Bài cũ có thể nhấn **Tạo tranh minh họa** ở phần đầu bài. Ảnh và mã tham chiếu được lưu để dùng lại.
+
+### Bật model ảnh
+
+API tạo văn bản hoạt động không đồng nghĩa tài khoản có quyền/quota tạo ảnh. Kiểm tra [tài liệu tạo ảnh Gemini](https://ai.google.dev/gemini-api/docs/generate-content/image-generation) và [giá/hạn mức](https://ai.google.dev/gemini-api/docs/pricing) của model trước khi bật. Cấu hình mặc định để **false**, không tự gọi API ảnh bằng key hiện tại.
+
+Trong `server/.env`:
+
+```dotenv
+IMAGE_GENERATION_ENABLED=true
+GEMINI_IMAGE_MODEL=gemini-3.1-flash-image
+# Có thể dùng key riêng; nếu không khai báo, dùng GEMINI_API_KEY.
+# GEMINI_IMAGE_API_KEY=
+```
+
+Dừng rồi chạy lại `npm run api`. Sau khi bật, mỗi khóa mới có 3 bài sẽ xếp hàng tối đa 3 lần tạo tranh. Server chỉ chạy một tác vụ ảnh tại một thời điểm. Mỗi tác vụ lỗi chỉ thử lại khi người dùng bấm nút, tối đa 2 lần gọi/tác vụ; không tự chuyển model/nhà cung cấp hay bật thanh toán.
+
+`GET /health` có `images.enabled`, `images.configured`, `images.model`. `configured` chỉ xác nhận cấu hình cục bộ có key, không xác nhận quyền hay quota Google. Ảnh được phục vụ từ backend tại `/media/illustrations/:id`; điện thoại dùng cùng địa chỉ backend như phần tạo khóa.
+
+### Bộ nhớ và trạng thái
+
+- Cache mặc định: `server/.cache/illustrations` (ngoài Git). Không lưu base64 vào AsyncStorage. Mã ảnh được băm theo nội dung kế hoạch, model và phiên bản phong cách; yêu cầu trùng dùng cùng kết quả.
+- Trạng thái `queued → generating → ready/failed` được lưu ra đĩa. App kiểm tra trạng thái khi đang đọc bài và dừng kiểm tra khi hoàn tất/rời bài.
+- Restart server giữ ảnh đã vẽ và hàng đợi chưa chạy. Tác vụ đang gọi nhà cung cấp khi server bị dừng chuyển thành lỗi để không tự gọi trùng và phát sinh phí; có thể thử lại thủ công.
+- Khi ảnh lỗi/quota/mất mạng, nội dung và sơ đồ vẫn học được. Cache nằm trên máy chủ: ảnh khóa AI cần backend để tải; tranh mẫu đóng gói trong app dùng được offline.
+- Chưa có bộ kiểm duyệt độ chính xác tự động cho tranh. Prompt và caption không bảo đảm trang phục lịch sử, chi tiết khoa học hoặc hình nhân vật luôn đúng.
+
+Kiểm tra bổ sung dùng phản hồi ảnh giả lập ở cấp API, không tốn quota thật: tạo khóa trả về trước khi ảnh xong, lấy trạng thái, tải ảnh, dùng lại cache sau restart, chống gọi trùng và xử lý quota/ảnh lỗi. Kiểm tra HTTP cần quyền mở localhost trong môi trường sandbox.

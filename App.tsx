@@ -35,6 +35,7 @@ import {
 } from "./src/components/ui";
 import { Roadmap } from "./src/components/Roadmap";
 import { Library } from "./src/components/Library";
+import { LessonIllustration } from "./src/components/LessonIllustration";
 import { LessonFigure } from "./src/components/LessonFigure";
 import { CourseArt } from "./src/components/CourseArt";
 import { Tutor } from "./src/components/Tutor";
@@ -71,6 +72,9 @@ export default function App() {
   const [reviews, setReviews] = useState<Record<string, ReviewCard>>({});
   const [tutorOpen, setTutorOpen] = useState(false);
   const [earnedXp, setEarnedXp] = useState(0);
+  const [illustrationIds, setIllustrationIds] = useState<
+    Record<string, string>
+  >({});
   const [saved, setSaved] = useState<string[]>([]);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [notesOpen, setNotesOpen] = useState(false);
@@ -85,7 +89,11 @@ export default function App() {
   );
   const course =
     courses.find((item) => item.id === courseId) || STARTER_COURSES[0];
-  const activeLesson = course.lessons[lessonIndex] || course.lessons[0];
+  const rawLesson = course.lessons[lessonIndex] || course.lessons[0];
+  const illustrationId = illustrationIds[`${course.id}:${lessonIndex}`];
+  const activeLesson = illustrationId
+    ? { ...rawLesson, illustration: { id: illustrationId } }
+    : rawLesson;
   const doneCount = Object.values(completed).filter(Boolean).length;
   const go = (next: Screen) => {
     setSelectedLesson(null);
@@ -119,6 +127,7 @@ export default function App() {
         if (raw && mounted) {
           const p = readProgress(JSON.parse(raw));
           setReviews(p.reviews);
+          setIllustrationIds(p.illustrationIds);
           setSaved(p.saved);
           setNotes(p.notes);
           setCourseId(p.selectedCourseId);
@@ -156,11 +165,13 @@ export default function App() {
         reviews,
         saved,
         notes,
+        illustrationIds,
         selectedCourseId: courseId,
       }),
     ).catch((e) => console.warn("Could not save local progress:", e.message));
   }, [
     hydrated,
+    illustrationIds,
     completed,
     xp,
     streak,
@@ -630,6 +641,19 @@ export default function App() {
                 >
                   {page.body}
                 </Text>
+                {pageIndex === 0 && (
+                  <LessonIllustration
+                    key={`${course.id}:${lessonIndex}`}
+                    lesson={activeLesson}
+                    courseTitle={course.title}
+                    onAsset={(id) =>
+                      setIllustrationIds((old) => ({
+                        ...old,
+                        [`${course.id}:${lessonIndex}`]: id,
+                      }))
+                    }
+                  />
+                )}
                 <LessonFigure
                   page={page}
                   lesson={activeLesson}

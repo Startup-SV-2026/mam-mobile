@@ -10,3 +10,4 @@ artifacts/
 !.env.example
 server/.env.*
 !server/.env.example
+server/.cache/

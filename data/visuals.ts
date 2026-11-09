@@ -3,6 +3,7 @@ import type { Course } from "../src/types/course";
 export function addSampleVisuals(courses: Course[]) {
   const space = courses.find((c) => c.id === "space");
   if (space) {
+    space.lessons[0].sampleIllustration = "space";
     space.lessons[0].pages[0].visual = {
       kind: "comparison",
       title: "Địa chỉ của chúng ta trong vũ trụ",
