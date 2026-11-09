@@ -168,7 +168,10 @@ test("failed jobs stay failed until an explicit retry and repeated retries are b
     await waitReady(store, job.id);
     assert.equal(calls, 2);
     await store.ensure(plan, true);
-    assert.equal(calls, 2);
+    await waitReady(store, job.id);
+    assert.equal(calls, 3);
+    await store.ensure(plan, true);
+    assert.equal(calls, 3);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

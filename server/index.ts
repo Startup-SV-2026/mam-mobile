@@ -87,7 +87,14 @@ export function createApp({
           configured: images.configured,
           enabled: images.config.enabled,
           model: images.config.model,
+          pipeline: images.pipeline(),
         },
+      });
+    if (req.method === "GET" && req.url === "/api/illustrations/status")
+      return send(res, 200, {
+        pipeline: images.pipeline(),
+        jobs: images.list(),
+        model: images.config.model,
       });
     const statusMatch = req.url?.match(
       /^\/api\/illustrations\/([a-f0-9]{64})$/,
@@ -119,12 +126,15 @@ export function createApp({
     }
     if (
       req.method !== "POST" ||
-      !["/api/course", "/api/tutor", "/api/illustrations"].includes(
-        req.url || "",
-      )
+      ![
+        "/api/course",
+        "/api/tutor",
+        "/api/illustrations",
+        "/api/illustrations/control",
+      ].includes(req.url || "")
     )
       return send(res, 404, { error: "Không tìm thấy trang." });
-    if (req.url !== "/api/illustrations" && !usableKey(config.apiKey))
+    if (!req.url?.startsWith("/api/illustrations") && !usableKey(config.apiKey))
       return send(res, 503, {
         error: `Bạn chưa cấu hình ${config.provider === "gemini" ? "GEMINI_API_KEY" : "OPENAI_API_KEY"} trong server/.env.`,
       });
@@ -143,6 +153,12 @@ export function createApp({
       }
       if (typeof data !== "object" || data === null || Array.isArray(data))
         return send(res, 400, { error: "Dữ liệu không hợp lệ." });
+      if (req.url === "/api/illustrations/control") {
+        if (data.action !== "resume")
+          return send(res, 400, { error: "Thao tác không hợp lệ." });
+        await images.resume();
+        return send(res, 200, { pipeline: images.pipeline() });
+      }
       if (req.url === "/api/illustrations") {
         if (!images.configured)
           return send(res, 503, {

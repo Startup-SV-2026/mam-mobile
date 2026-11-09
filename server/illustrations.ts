@@ -1,11 +1,14 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, readdir, writeFile, rename } from "node:fs/promises";
 import { resolve, join } from "node:path";
+import { imageResponseError, ImageProviderError } from "./image-errors";
 import { AIError, usableKey } from "./ai";
 import type {
   IllustrationPlan,
   IllustrationStatus,
   Lesson,
+  ImageIssue,
+  ImagePipeline,
 } from "../src/types/course";
 export const STYLE_VERSION = "mam-clay-v1";
 export interface ImageConfig {
@@ -74,18 +77,7 @@ export async function generateImage(
       }),
     },
   );
-  if (!response.ok) {
-    if (response.status === 429)
-      throw new AIError(
-        "Tạo tranh đã chạm hạn mức. Bạn vẫn có thể học với sơ đồ.",
-        429,
-      );
-    if ([400, 401, 403, 404].includes(response.status))
-      throw new AIError(
-        "Chưa thể dùng model tạo ảnh. Kiểm tra key, model và quyền tạo ảnh của tài khoản.",
-      );
-    throw new AIError("Dịch vụ tạo tranh đang bận. Bài học vẫn sẵn sàng.");
-  }
+  if (!response.ok) throw await imageResponseError(response);
   const raw = await response.json();
   const candidate = raw?.candidates?.[0];
   if (
@@ -139,16 +131,30 @@ const extensions = {
   "image/webp": "webp",
 };
 export const isAssetId = (id: string) => /^[a-f0-9]{64}$/.test(id);
+const MAX_ATTEMPTS = 3;
+const sceneKey = (model: string, plan: IllustrationPlan) =>
+  JSON.stringify([
+    STYLE_VERSION,
+    model,
+    plan.scene
+      .normalize("NFKC")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLocaleLowerCase("en"),
+  ]);
 export class IllustrationStore {
   private jobs = new Map<string, Job>();
   private queue: string[] = [];
   private running = false;
+  private issue: ImageIssue | undefined;
+  private timer: ReturnType<typeof setTimeout> | undefined;
   constructor(
     readonly config: ImageConfig,
     private generate: (
       config: ImageConfig,
       plan: IllustrationPlan,
     ) => Promise<ImageResult> = generateImage,
+    private now: () => number = Date.now,
   ) {}
   get configured() {
     return this.config.enabled && usableKey(this.config.apiKey);
@@ -159,8 +165,23 @@ export class IllustrationStore {
     await writeFile(`${file}.tmp`, JSON.stringify(job));
     await rename(`${file}.tmp`, file);
   }
+  private async savePipeline() {
+    const file = join(this.config.directory, "_pipeline.json");
+    await writeFile(
+      `${file}.tmp`,
+      JSON.stringify({ model: this.config.model, issue: this.issue }),
+    );
+    await rename(`${file}.tmp`, file);
+  }
   async initialize() {
     await mkdir(this.config.directory, { recursive: true });
+    try {
+      const state = JSON.parse(
+        await readFile(join(this.config.directory, "_pipeline.json"), "utf8"),
+      );
+      if (state.model === this.config.model && state.issue?.kind)
+        this.issue = state.issue;
+    } catch {}
     for (const file of await readdir(this.config.directory)) {
       if (!/^[a-f0-9]{64}\.json$/.test(file)) continue;
       try {
@@ -170,7 +191,9 @@ export class IllustrationStore {
         if (
           job.id !== file.slice(0, 64) ||
           !job.plan ||
-          !["queued", "generating", "ready", "failed"].includes(job.status)
+          !["queued", "generating", "ready", "failed", "paused"].includes(
+            job.status,
+          )
         )
           continue;
         if (
@@ -182,30 +205,80 @@ export class IllustrationStore {
             "Tạo tranh bị gián đoạn khi máy chủ dừng. Có thể thử lại.";
           await this.save(job);
         }
+        if (
+          job.status === "paused" &&
+          job.model === this.config.model &&
+          job.issue &&
+          !this.issue
+        )
+          this.issue = job.issue;
         this.jobs.set(job.id, job);
         if (job.status === "queued" && this.configured) this.queue.push(job.id);
-      } catch {
-        /* Ignore an incomplete cache entry; never affect lessons. */
-      }
+      } catch {}
     }
-    void this.drain();
+    this.tick();
+  }
+  pipeline(): ImagePipeline {
+    const counts: Record<string, number> = {
+      queued: 0,
+      generating: 0,
+      ready: 0,
+      failed: 0,
+      paused: 0,
+    };
+    for (const job of this.jobs.values())
+      counts[
+        this.issue && !this.issue.retryAt && job.status === "queued"
+          ? "paused"
+          : job.status
+      ]++;
+    return {
+      state: !this.config.enabled
+        ? "disabled"
+        : !this.configured
+          ? "unconfigured"
+          : this.issue
+            ? this.issue.retryAt
+              ? "cooldown"
+              : "paused"
+            : "active",
+      ...(this.issue ? { issue: this.issue } : {}),
+      counts,
+    };
+  }
+  list() {
+    return [...this.jobs.values()].map((job) => ({
+      ...this.status(job.id)!,
+      title: job.plan.alt,
+      caption: job.plan.caption,
+    }));
   }
   async ensure(
     plan: IllustrationPlan,
     retry = false,
   ): Promise<IllustrationStatus | null> {
     if (!this.configured) return null;
-    const id = createHash("sha256")
-      .update(JSON.stringify([STYLE_VERSION, this.config.model, plan]))
-      .digest("hex");
-    const existing = this.jobs.get(id);
+    // Only reuse an identical scene (ignoring whitespace/case); don't substitute vaguely related art.
+    const key = sceneKey(this.config.model, plan);
+    const existing = [...this.jobs.values()].find(
+      (job) => sceneKey(job.model, job.plan) === key,
+    );
     if (
       existing &&
-      !(retry && existing.status === "failed" && existing.attempts < 2)
+      !(
+        retry &&
+        existing.status === "failed" &&
+        existing.attempts < MAX_ATTEMPTS
+      )
     )
-      return this.status(id)!;
-    if ([...this.jobs.values()].filter(job=>job.status==='queued'||job.status==='generating').length >= 12)
+      return this.status(existing.id)!;
+    if (
+      [...this.jobs.values()].filter((j) =>
+        ["queued", "generating", "paused"].includes(j.status),
+      ).length >= 12
+    )
       throw new AIError("Hàng đợi tạo tranh đang đầy. Bạn thử lại sau.", 429);
+    const id = existing?.id ?? createHash("sha256").update(key).digest("hex");
     const job: Job = {
       id,
       status: "queued",
@@ -221,21 +294,27 @@ export class IllustrationStore {
       throw e;
     }
     this.queue.push(id);
-    void this.drain();
+    this.tick();
     return this.status(id)!;
   }
   status(id: string): IllustrationStatus | null {
-    const j = this.jobs.get(id);
-    return j
-      ? {
-          id: j.id,
-          status: j.status,
-          ...(j.error ? { error: j.error } : {}),
-          ...(j.status === "ready"
-            ? { url: `/media/illustrations/${id}` }
-            : {}),
-        }
-      : null;
+    const job = this.jobs.get(id);
+    if (!job) return null;
+    const paused =
+      !!this.issue && !this.issue.retryAt && job.status === "queued";
+    const issue =
+      job.issue ??
+      (["queued", "paused"].includes(job.status) ? this.issue : undefined);
+    return {
+      id,
+      status: paused ? "paused" : job.status,
+      ...(job.error ? { error: job.error } : {}),
+      ...(issue ? { issue } : {}),
+      ...(job.retryAt ? { retryAt: job.retryAt } : {}),
+      canRetry:
+        job.status === "failed" && job.attempts < MAX_ATTEMPTS && !this.issue,
+      ...(job.status === "ready" ? { url: `/media/illustrations/${id}` } : {}),
+    };
   }
   async asset(id: string): Promise<{ bytes: Buffer; mimeType: string } | null> {
     const job = this.jobs.get(id);
@@ -251,16 +330,54 @@ export class IllustrationStore {
       return null;
     }
   }
+  // Explicit user action after checking model/quota; never change provider or billing.
+  async resume() {
+    if (!this.configured)
+      throw new AIError("Chưa bật hoặc cấu hình model ảnh.", 503);
+    this.issue = undefined;
+    clearTimeout(this.timer);
+    await this.savePipeline();
+    for (const job of this.jobs.values())
+      if (job.status === "paused") {
+        job.status = "queued";
+        job.attempts = 0;
+        delete job.issue;
+        delete job.error;
+        await this.save(job);
+        if (!this.queue.includes(job.id)) this.queue.unshift(job.id);
+      }
+    this.tick();
+  }
+  tick() {
+    clearTimeout(this.timer);
+    if (!this.configured) return;
+    if (this.issue) {
+      if (!this.issue.retryAt) return;
+      const delay = this.issue.retryAt - this.now();
+      if (delay > 0) {
+        this.timer = setTimeout(() => this.tick(), Math.min(delay, 2147483647));
+        this.timer.unref?.();
+        return;
+      }
+      this.issue = undefined;
+    }
+    void this.drain();
+  }
+  close() {
+    clearTimeout(this.timer);
+  }
   private async drain() {
-    if (this.running) return;
+    if (this.running || !this.configured || this.issue) return;
     this.running = true;
     try {
-      while (this.queue.length) {
+      while (this.queue.length && !this.issue) {
         const id = this.queue.shift()!;
         const job = this.jobs.get(id)!;
         job.status = "generating";
         job.attempts++;
         delete job.error;
+        delete job.issue;
+        delete job.retryAt;
         try {
           await this.save(job);
           const result = await this.generate(this.config, job.plan);
@@ -276,21 +393,53 @@ export class IllustrationStore {
           job.status = "ready";
           job.mimeType = result.mimeType;
           await this.save(job);
+          await this.savePipeline();
         } catch (e) {
-          job.status = "failed";
+          const issue =
+            e instanceof ImageProviderError
+              ? e.issue
+              : e instanceof Error &&
+                  ["TimeoutError", "AbortError"].includes(e.name)
+                ? {
+                    kind: "temporary" as const,
+                    message:
+                      "Dịch vụ ảnh phản hồi chậm. Máy chủ sẽ thử lại có giới hạn.",
+                    retryAt: this.now() + 30000,
+                  }
+                : undefined;
           job.error =
-            e instanceof AIError
-              ? e.message
-              : "Tạo tranh chưa hoàn tất. Bạn vẫn có thể học với sơ đồ.";
+            e instanceof AIError ? e.message : "Tạo tranh chưa hoàn tất.";
+          job.issue = issue;
+          job.status = "failed";
+          if (issue) {
+            const temporary =
+              ["rate_limit", "temporary"].includes(issue.kind) &&
+              !!issue.retryAt;
+            if (temporary) {
+              const backoff = 30000 * 2 ** Math.max(0, job.attempts - 1);
+              const retryAt = Math.max(issue.retryAt!, this.now() + backoff);
+              this.issue = { ...issue, retryAt };
+              if (job.attempts < MAX_ATTEMPTS) {
+                job.status = "queued";
+                job.retryAt = retryAt;
+                this.queue.unshift(id);
+              }
+            } else if (
+              ["quota_exhausted", "access", "unknown"].includes(issue.kind)
+            ) {
+              this.issue = issue;
+              job.status = "paused";
+            }
+          }
           try {
             await this.save(job);
-          } catch {
-            /* Keep failure visible in memory if disk is unavailable. */
-          }
+            if (this.issue) await this.savePipeline();
+          } catch {}
         }
       }
     } finally {
       this.running = false;
+      if (this.issue?.retryAt) this.tick();
     }
   }
 }

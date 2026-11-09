@@ -73,7 +73,7 @@ Trên iPhone thật, đặt `EXPO_PUBLIC_API_URL` thành IP LAN của Mac, ví d
 
 Gemini được gọi qua REST `generateContent`; key nằm trong header phía server. Khóa học dùng JSON Schema và được kiểm tra cấu trúc trước khi gửi về app. Tham khảo [API Google](https://ai.google.dev/api/generate-content) và [model mặc định](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite).
 
-Hạn mức miễn phí tùy model, khu vực và tài khoản; cấu hình này không tự giới hạn chi phí nếu tài khoản đã bật thanh toán. Khi nhận HTTP 429, app báo chạm quota và không tự gọi lại hoặc chuyển nhà cung cấp. Xem [hạn mức/giá Gemini](https://ai.google.dev/gemini-api/docs/pricing). Có thể đổi `GEMINI_MODEL` sang model tài khoản bạn được phép dùng.
+Hạn mức miễn phí tùy model, khu vực và tài khoản; cấu hình này không tự giới hạn chi phí nếu tài khoản đã bật thanh toán. Với API văn bản, HTTP 429 được báo cho người dùng, không tự gọi lại hoặc chuyển nhà cung cấp. API ảnh có hàng đợi và phân loại hạn mức riêng, mô tả ở phần cuối tài liệu. Xem [hạn mức/giá Gemini](https://ai.google.dev/gemini-api/docs/pricing). Có thể đổi `GEMINI_MODEL` sang model tài khoản bạn được phép dùng.
 
 Nếu muốn dùng cấu hình OpenAI cũ, đặt `AI_PROVIDER=openai`, `OPENAI_API_KEY` và `OPENAI_MODEL`. Khi không có `AI_PROVIDER`, server ưu tiên key Gemini hợp lệ về mặt cấu hình, rồi đến key OpenAI; không tự chuyển sang OpenAI nếu Gemini lỗi.
 
@@ -137,16 +137,27 @@ GEMINI_IMAGE_MODEL=gemini-3.1-flash-image
 # GEMINI_IMAGE_API_KEY=
 ```
 
-Dừng rồi chạy lại `npm run api`. Lệnh này dùng Node watch để tự khởi động lại backend khi code đổi; thay đổi file `.env` vẫn cần restart thủ công. Sau khi bật, mỗi khóa mới có 3 bài sẽ xếp hàng tối đa 3 lần tạo tranh. Server chỉ chạy một tác vụ ảnh tại một thời điểm. Mỗi tác vụ lỗi chỉ thử lại khi người dùng bấm nút, tối đa 2 lần gọi/tác vụ; không tự chuyển model/nhà cung cấp hay bật thanh toán.
+Dừng rồi chạy lại `npm run api`. Lệnh này dùng Node watch để tự khởi động lại backend khi code đổi; thay đổi file `.env` vẫn cần restart thủ công. Sau khi bật, mỗi khóa mới có 3 bài sẽ xếp hàng 3 tranh, mỗi tranh có thể cần tối đa 3 lần gọi nếu gặp lỗi tạm thời. Server chỉ chạy một tác vụ ảnh tại một thời điểm. Lỗi tốc độ hoặc gián đoạn tạm thời được thử lại có giới hạn, tối đa 3 lần gọi mỗi lượt tác vụ; lỗi quota, quyền truy cập hoặc 429 không rõ nguyên nhân tạm dừng cả hàng đợi; không tự chuyển model/nhà cung cấp hay bật thanh toán.
 
 `GET /health` có `images.enabled`, `images.configured`, `images.model`. `configured` chỉ xác nhận cấu hình cục bộ có key, không xác nhận quyền hay quota Google. Ảnh được phục vụ từ backend tại `/media/illustrations/:id`; điện thoại dùng cùng địa chỉ backend như phần tạo khóa.
 
 ### Bộ nhớ và trạng thái
 
-- Cache mặc định: `server/.cache/illustrations` (ngoài Git). Không lưu base64 vào AsyncStorage. Mã ảnh được băm theo nội dung kế hoạch, model và phiên bản phong cách; yêu cầu trùng dùng cùng kết quả.
-- Trạng thái `queued → generating → ready/failed` được lưu ra đĩa. App kiểm tra trạng thái khi đang đọc bài và dừng kiểm tra khi hoàn tất/rời bài.
+- Cache mặc định: `server/.cache/illustrations` (ngoài Git). Không lưu base64 vào AsyncStorage. Mã ảnh dùng mô tả cảnh, model và phiên bản phong cách. Cảnh giống hệt nhau (bỏ qua khoảng trắng/hoa thường) dùng lại tranh dù chú thích khác; không tự thay bằng một tranh chỉ gần giống chủ đề.
+- Trạng thái `queued → generating → ready/failed/paused` được lưu ra đĩa. App kiểm tra trạng thái khi đang đọc bài và dừng kiểm tra khi hoàn tất/rời bài.
 - Restart server giữ ảnh đã vẽ và hàng đợi chưa chạy. Tác vụ đang gọi nhà cung cấp khi server bị dừng chuyển thành lỗi để không tự gọi trùng và phát sinh phí; có thể thử lại thủ công.
 - Khi ảnh lỗi/quota/mất mạng, nội dung và sơ đồ vẫn học được. Cache nằm trên máy chủ: ảnh khóa AI cần backend để tải; tranh mẫu đóng gói trong app dùng được offline.
 - Chưa có bộ kiểm duyệt độ chính xác tự động cho tranh. Prompt và caption không bảo đảm trang phục lịch sử, chi tiết khoa học hoặc hình nhân vật luôn đúng.
 
 Kiểm tra bổ sung dùng phản hồi ảnh giả lập ở cấp API, không tốn quota thật: tạo khóa trả về trước khi ảnh xong, lấy trạng thái, tải ảnh, dùng lại cache sau restart, chống gọi trùng và xử lý quota/ảnh lỗi. Kiểm tra HTTP cần quyền mở localhost trong môi trường sandbox.
+
+
+### Xử lý quota và trải nghiệm dự phòng
+
+- Bài học không còn khung lỗi quota hoặc nút thử lại lớn. Khi chưa có ảnh, chỉ hiện một dòng nhỏ dẫn đến **Trạng thái AI**, còn nội dung/sơ đồ hiển thị bình thường.
+- Mở **Cá nhân → Trạng thái AI**, hoặc nhấn liên kết ở bài học: xem model ảnh, quota đã phân loại, hàng đợi và thư viện tranh đã lưu. Tại đây có nút tiếp tục hàng đợi sau khi đã xử lý cấu hình/quota.
+- Backend phân tích `QuotaFailure`, `RetryInfo` và `Retry-After`: quota bằng 0 hoặc theo ngày ưu tiên hơn gợi ý thử lại ngắn; giới hạn theo phút/giây có thể chờ và tự thử lại, tôn trọng thời gian nhà cung cấp và backoff tối thiểu 30 giây, tối đa 3 lần gọi/lượt tác vụ.
+- HTTP 429 thiếu thông tin sẽ được ghi là chưa rõ loại hạn mức và tạm dừng, không tự suy ra rằng chỉ cần chờ. Lỗi quyền/model cũng dừng hàng đợi; không tự đổi model, provider hoặc billing.
+- Trạng thái tạm dừng lưu trong `_pipeline.json` cùng cache, tồn tại sau restart. Chỉ nút tiếp tục trong Trạng thái AI mới mở lại hàng đợi khi đang bị dừng cứng. Không bật thanh toán hay điều chỉnh quota bằng thao tác này.
+- Chỉ lưu thông tin chẩn đoán đã lọc (loại, quota metric, giới hạn, thời điểm thử lại). Không lưu phản hồi lỗi thô, URL chứa key hay credentials.
+- Các tests cho quota 0, quota ngày/phút, trì hoãn, giới hạn số lần gọi, dừng sau restart và dùng lại ảnh đều dùng phản hồi giả lập.

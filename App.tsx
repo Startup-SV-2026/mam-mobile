@@ -35,6 +35,7 @@ import {
 } from "./src/components/ui";
 import { Roadmap } from "./src/components/Roadmap";
 import { Library } from "./src/components/Library";
+import { AIStatus } from "./src/components/AIStatus";
 import { LessonIllustration } from "./src/components/LessonIllustration";
 import { LessonFigure } from "./src/components/LessonFigure";
 import { CourseArt } from "./src/components/CourseArt";
@@ -81,6 +82,7 @@ export default function App() {
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
   const [savedCourse, setSavedCourse] = useState<string | null>(null);
   const [reviewCourse, setReviewCourse] = useState<string | null>(null);
+  const [aiStatusFrom, setAIStatusFrom] = useState<Screen>("profile");
   const [confirmReset, setConfirmReset] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const courses = useMemo(
@@ -281,7 +283,11 @@ export default function App() {
       </View>
     );
   const reading = screen === "lesson" || screen === "quiz";
-  const nav = !reading && screen !== "done" && screen !== "saved";
+  const nav =
+    !reading &&
+    screen !== "done" &&
+    screen !== "saved" &&
+    screen !== "ai-status";
   const page = activeLesson.pages[pageIndex] ?? activeLesson.pages[0];
   const pageKey = `${course.id}:${lessonIndex}:${pageIndex}`;
   const noteKey = reading ? `${course.id}:${lessonIndex}` : course.id;
@@ -294,19 +300,21 @@ export default function App() {
     go("saved");
   };
   const title =
-    screen === "explore"
-      ? "Thư viện"
-      : screen === "create"
-        ? ""
-        : screen === "review"
-          ? "Ôn tập"
-          : screen === "profile"
-            ? "Góc của bạn"
-            : screen === "stats"
-              ? "Tiến độ"
-              : screen === "saved"
-                ? "Thẻ đã lưu"
-                : "";
+    screen === "ai-status"
+      ? "Trạng thái AI"
+      : screen === "explore"
+        ? "Thư viện"
+        : screen === "create"
+          ? ""
+          : screen === "review"
+            ? "Ôn tập"
+            : screen === "profile"
+              ? "Góc của bạn"
+              : screen === "stats"
+                ? "Tiến độ"
+                : screen === "saved"
+                  ? "Thẻ đã lưu"
+                  : "";
   const savedPages = courses
     .filter((c) => !savedCourse || c.id === savedCourse)
     .flatMap((c) =>
@@ -646,12 +654,10 @@ export default function App() {
                     key={`${course.id}:${lessonIndex}`}
                     lesson={activeLesson}
                     courseTitle={course.title}
-                    onAsset={(id) =>
-                      setIllustrationIds((old) => ({
-                        ...old,
-                        [`${course.id}:${lessonIndex}`]: id,
-                      }))
-                    }
+                    onStatus={() => {
+                      setAIStatusFrom("lesson");
+                      go("ai-status");
+                    }}
                   />
                 )}
                 <LessonFigure
@@ -882,6 +888,19 @@ export default function App() {
                 )}
               </>
             )}
+            {screen === "ai-status" && (
+              <AIStatus
+                lesson={activeLesson}
+                courseTitle={course.title}
+                onAsset={(id) =>
+                  setIllustrationIds((old) => ({
+                    ...old,
+                    [`${course.id}:${lessonIndex}`]: id,
+                  }))
+                }
+                onBack={() => go(aiStatusFrom)}
+              />
+            )}
             {(screen === "profile" || screen === "stats") && (
               <>
                 <View
@@ -948,6 +967,16 @@ export default function App() {
                     onPress={() => go("explore")}
                   >
                     THƯ VIỆN CỦA BẠN
+                  </Action>
+                  <Action
+                    secondary
+                    icon="sparkle"
+                    onPress={() => {
+                      setAIStatusFrom("profile");
+                      go("ai-status");
+                    }}
+                  >
+                    TRẠNG THÁI AI
                   </Action>
                   <Action
                     secondary

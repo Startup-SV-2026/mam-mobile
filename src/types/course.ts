@@ -3,9 +3,30 @@ export interface IllustrationPlan {
   caption: string;
   alt: string;
 }
+export interface ImageIssue {
+  kind:
+    | "rate_limit"
+    | "quota_exhausted"
+    | "access"
+    | "temporary"
+    | "content"
+    | "unknown";
+  message: string;
+  retryAt?: number;
+  metric?: string;
+  limit?: number;
+}
+export interface ImagePipeline {
+  state: "active" | "cooldown" | "paused" | "disabled" | "unconfigured";
+  issue?: ImageIssue;
+  counts: Record<string, number>;
+}
 export interface IllustrationStatus {
   id: string;
-  status: "queued" | "generating" | "ready" | "failed";
+  status: "queued" | "generating" | "ready" | "failed" | "paused";
+  issue?: ImageIssue;
+  retryAt?: number;
+  canRetry?: boolean;
   url?: string;
   error?: string;
 }
@@ -74,6 +95,7 @@ export type Screen =
   | "quiz"
   | "done"
   | "stats"
+  | "ai-status"
   | "profile"
   | "create"
   | "review"

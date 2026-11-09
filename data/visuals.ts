@@ -70,4 +70,25 @@ export function addSampleVisuals(courses: Course[]) {
         },
       ],
     };
+  const ai = courses.find((c) => c.id === "ai");
+  if (ai)
+    ai.lessons[0].pages[0].visual = {
+      kind: "steps",
+      title: "Máy học từ ví dụ",
+      items: [
+        {
+          label: "Dữ liệu",
+          detail: "Các ví dụ đầu vào, chẳng hạn hình ảnh hoặc văn bản.",
+        },
+        {
+          label: "Học mẫu hình",
+          detail: "Mô hình điều chỉnh dựa trên các ví dụ khi huấn luyện.",
+        },
+        {
+          label: "Áp dụng",
+          detail:
+            "Dùng điều đã học để nhận diện hoặc dự đoán trên dữ liệu mới.",
+        },
+      ],
+    };
 }
