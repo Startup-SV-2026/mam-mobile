@@ -1,6 +1,6 @@
 # Mầm illustration sample
 
-`space.png` is an original raster illustration generated with the built-in ImageGen tool for this project, not copied from Wondering. It is bundled with the first Space lesson to preview the visual direction without an image API key.
+`space.png` is an original raster illustration generated with the built-in ImageGen tool for Mầm. It is bundled with the first Space lesson to preview the visual direction without an image API key.
 
 Final prompt:
 

@@ -1,6 +1,6 @@
 import React from "react";
 import Svg, { Circle, Ellipse, Path, Rect, G, Line } from "react-native-svg";
-// Code-native placeholder covers; no downloaded Wondering artwork.
+// Code-native placeholder covers for Mầm.
 export function CourseArt({ id, size = 150 }: { id: string; size?: number }) {
   const kind =
     id === "space"

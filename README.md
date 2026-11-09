@@ -1,6 +1,6 @@
 # 🌱 Mầm — Học một điều mới mỗi ngày
 
-App học bằng tiếng Việt viết bằng **TypeScript strict**, React Native và Expo SDK 54. Chạy cùng code trên iOS, Android và web. Lấy cảm hứng từ cách học ngắn của [Wondering](https://wondering.app/), sử dụng thương hiệu và giao diện riêng của Mầm.
+App học bằng tiếng Việt viết bằng **TypeScript strict**, React Native và Expo SDK 54. Chạy cùng code trên iOS, Android và web. Mầm giúp khám phá kiến thức bằng bài học ngắn, lộ trình cá nhân hóa và minh họa trực quan.
 
 ## Chạy app
 
@@ -13,14 +13,14 @@ npm run web
 
 Mở địa chỉ Expo in ra, thường là http://localhost:8081. Trên màn hình lớn, app hiển thị trong khung điện thoại. Dùng `npm run ios` với Xcode/iOS Simulator, hoặc `npm start` để chạy bằng Expo Go tương thích SDK 54 trên thiết bị.
 
-## Giao diện 0.3 — branch `feat/wondering-ui`
+## Giao diện 0.3 — branch `mam-ui`
 
 - Nền kem, icon nét nâu, thanh điều hướng dạng viên nổi và nút xanh có độ nổi, theo bộ ảnh tham khảo người dùng cung cấp.
 - Trang chủ là lộ trình uốn nhẹ: bài đã học có dấu tích, bài hiện tại có biểu tượng Mầm, bài tiếp theo mở khi hoàn thành các bài trước.
 - Chạm vào nút bài để chọn đọc, luyện tập hoặc hỏi gia sư.
 - Thư viện có Khám phá/Của tôi, tìm kiếm, lọc chủ đề, lọc trạng thái, sắp xếp theo bài đã học/tổng bài. Không hiển thị số liệu trending giả.
 - Màn đọc có thanh tiến độ, ghi chú tự lưu, đánh dấu thẻ và nút hành động cố định. Thẻ đã lưu có thể đọc lại từ Cá nhân hoặc Của tôi.
-- Hình bìa là SVG tự dựng, thay tại `CourseArt.tsx`. Icon nét tại `Icon.tsx`; không sử dụng hình/mascot lấy từ Wondering.
+- Hình bìa là SVG tự dựng, thay tại `CourseArt.tsx`. Icon nét tại `Icon.tsx`; sử dụng hình minh họa và biểu tượng riêng của Mầm.
 - Sơ đồ dùng dữ liệu có cấu trúc (`steps`, `comparison`, `cycle`), render bằng React Native/SVG. Gemini tạo dữ liệu sơ đồ cho khóa mới; khóa cũ vẫn đọc được, dùng bố cục tóm tắt nếu chưa có sơ đồ. Có sơ đồ soạn sẵn trong `data/visuals.ts`. Không render SVG/HTML tùy ý do AI gửi về.
 - Tiến độ v1 được giữ; thêm thẻ, ghi chú và khóa đang chọn vào cùng dữ liệu cục bộ.
 
@@ -113,7 +113,7 @@ tests/*.test.ts            Kiểm tra logic học tập và adapter AI
 assets/icon.png            Icon ứng dụng tạm
 ```
 
-Chưa có video/podcast, FSRS, streak bạn bè, đăng nhập, đồng bộ cloud, thanh toán hoặc bản phát hành App Store. Giao diện hiện theo hướng học ngắn và khám phá của Wondering, chưa sao chép đầy đủ mọi tính năng của sản phẩm đó.
+Chưa có video/podcast, FSRS, streak bạn bè, đăng nhập, đồng bộ cloud, thanh toán hoặc bản phát hành App Store.
 
 ## Tranh minh họa tự động — `mam-illustrations`
 
