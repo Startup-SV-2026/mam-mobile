@@ -3,10 +3,10 @@
     "name": "Mầm — Học mỗi ngày",
     "slug": "mam-hoc-moi-ngay",
     "scheme": "mamlearning",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#F8F7F2",
+    "backgroundColor": "#FFFDF1",
     "ios": {
       "supportsTablet": true
     },

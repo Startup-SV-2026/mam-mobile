@@ -4,3 +4,9 @@ dist/
 server/.env
 .env
 .DS_Store
+
+artifacts/
+.env.*
+!.env.example
+server/.env.*
+!server/.env.example

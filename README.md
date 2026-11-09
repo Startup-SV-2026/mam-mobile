@@ -13,7 +13,18 @@ npm run web
 
 Mở địa chỉ Expo in ra, thường là http://localhost:8081. Trên màn hình lớn, app hiển thị trong khung điện thoại. Dùng `npm run ios` với Xcode/iOS Simulator, hoặc `npm start` để chạy bằng Expo Go tương thích SDK 54 trên thiết bị.
 
-## Có trong bản 0.2
+## Giao diện 0.3 — branch `feat/wondering-ui`
+
+- Nền kem, icon nét nâu, thanh điều hướng dạng viên nổi và nút xanh có độ nổi, theo bộ ảnh tham khảo người dùng cung cấp.
+- Trang chủ là lộ trình uốn nhẹ: bài đã học có dấu tích, bài hiện tại có biểu tượng Mầm, bài tiếp theo mở khi hoàn thành các bài trước.
+- Chạm vào nút bài để chọn đọc, luyện tập hoặc hỏi gia sư.
+- Thư viện có Khám phá/Của tôi, tìm kiếm, lọc chủ đề, lọc trạng thái, sắp xếp theo bài đã học/tổng bài. Không hiển thị số liệu trending giả.
+- Màn đọc có thanh tiến độ, ghi chú tự lưu, đánh dấu thẻ và nút hành động cố định. Thẻ đã lưu có thể đọc lại từ Cá nhân hoặc Của tôi.
+- Hình bìa là SVG tự dựng, thay tại `CourseArt.tsx`. Icon nét tại `Icon.tsx`; không sử dụng hình/mascot lấy từ Wondering.
+- Sơ đồ dùng dữ liệu có cấu trúc (`steps`, `comparison`, `cycle`), render bằng React Native/SVG. Gemini tạo dữ liệu sơ đồ cho khóa mới; khóa cũ vẫn đọc được, dùng bố cục tóm tắt nếu chưa có sơ đồ. Có sơ đồ soạn sẵn trong `data/visuals.ts`. Không render SVG/HTML tùy ý do AI gửi về.
+- Tiến độ v1 được giữ; thêm thẻ, ghi chú và khóa đang chọn vào cùng dữ liệu cục bộ.
+
+## Tính năng học tập
 
 - Trang chủ mới: tạo khóa học, nhịp học hôm nay, tiếp tục hành trình, gợi ý chủ đề.
 - Khám phá: tìm kiếm và lọc 5 khóa mẫu, gồm 15 bài học bằng tiếng Việt.
@@ -71,7 +82,7 @@ Backend có `POST /api/course` và `POST /api/tutor`. Request có giới hạn k
 ## Thay icon
 
 - `assets/icon.png`: icon mầm cây tạm 1024 × 1024, dùng cho launcher và favicon. Thay bằng PNG của bạn; cấu hình nằm trong `app.json`. Icon launcher được áp dụng khi build app riêng, không thay icon của Expo Go.
-- `src/components/Icon.tsx`: các ký hiệu điều hướng tạm. Có thể thay phần render bằng SVG hoặc bộ icon riêng.
+- `src/components/Icon.tsx`: các icon SVG điều hướng tạm. Có thể thay phần render bằng SVG hoặc bộ icon riêng.
 - Emoji trong khóa học: nằm trong `data/courses.ts`.
 
 ## Kiểm tra

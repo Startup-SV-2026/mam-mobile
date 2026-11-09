@@ -1,6 +1,6 @@
 {
   "name": "mam-viet-learning",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "main": "index.ts",
   "scripts": {
@@ -21,6 +21,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
+    "react-native-svg": "^15.12.1",
     "react-native-web": "^0.21.0"
   },
   "devDependencies": {
