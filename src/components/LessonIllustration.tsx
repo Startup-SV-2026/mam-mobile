@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
 import type { IllustrationStatus, Lesson } from "../types/course";
 import { theme as t, ui } from "./ui";
+import { requireIllustrationBackend } from "../lib/illustration-api";
 import { Icon } from "./Icon";
 const url = (process.env.EXPO_PUBLIC_API_URL || "").replace(/\/$/, "");
 export function LessonIllustration({
@@ -39,6 +40,8 @@ export function LessonIllustration({
         const r = await fetch(`${url}/api/illustrations/${id}`, {
           signal: controller.signal,
         });
+        if (r.status === 404)
+          await requireIllustrationBackend(url, controller.signal);
         const body = await r.json();
         if (!active) return;
         if (!r.ok)
@@ -79,12 +82,17 @@ export function LessonIllustration({
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
     try {
+      await requireIllustrationBackend(url, controller.signal);
       const r = await fetch(`${url}/api/illustrations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ courseTitle, lesson, retry: true }),
         signal: controller.signal,
       });
+      if (r.status === 404)
+        throw new Error(
+          "Backend chưa hỗ trợ API tạo tranh. Hãy khởi động lại backend Mầm.",
+        );
       const body = await r.json();
       if (!r.ok) throw new Error(body.error || "Chưa tạo được tranh.");
       if (typeof body.id !== "string" || !/^[a-f0-9]{64}$/.test(body.id))

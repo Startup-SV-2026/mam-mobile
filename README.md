@@ -137,7 +137,7 @@ GEMINI_IMAGE_MODEL=gemini-3.1-flash-image
 # GEMINI_IMAGE_API_KEY=
 ```
 
-Dừng rồi chạy lại `npm run api`. Sau khi bật, mỗi khóa mới có 3 bài sẽ xếp hàng tối đa 3 lần tạo tranh. Server chỉ chạy một tác vụ ảnh tại một thời điểm. Mỗi tác vụ lỗi chỉ thử lại khi người dùng bấm nút, tối đa 2 lần gọi/tác vụ; không tự chuyển model/nhà cung cấp hay bật thanh toán.
+Dừng rồi chạy lại `npm run api`. Lệnh này dùng Node watch để tự khởi động lại backend khi code đổi; thay đổi file `.env` vẫn cần restart thủ công. Sau khi bật, mỗi khóa mới có 3 bài sẽ xếp hàng tối đa 3 lần tạo tranh. Server chỉ chạy một tác vụ ảnh tại một thời điểm. Mỗi tác vụ lỗi chỉ thử lại khi người dùng bấm nút, tối đa 2 lần gọi/tác vụ; không tự chuyển model/nhà cung cấp hay bật thanh toán.
 
 `GET /health` có `images.enabled`, `images.configured`, `images.model`. `configured` chỉ xác nhận cấu hình cục bộ có key, không xác nhận quyền hay quota Google. Ảnh được phục vụ từ backend tại `/media/illustrations/:id`; điện thoại dùng cùng địa chỉ backend như phần tạo khóa.
 

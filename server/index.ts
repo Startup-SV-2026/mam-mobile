@@ -79,6 +79,7 @@ export function createApp({
     if (req.method === "GET" && req.url === "/health")
       return send(res, 200, {
         ok: true,
+        capabilities: { illustrations: true },
         aiConfigured: usableKey(config.apiKey),
         provider: config.provider,
         model: config.model,
