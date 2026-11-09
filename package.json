@@ -1,0 +1,33 @@
+{
+  "name": "mam-viet-learning",
+  "version": "0.2.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "web": "expo start --web",
+    "ios": "expo start --ios",
+    "android": "expo start --android",
+    "api": "node --env-file=server/.env --import tsx server/index.ts",
+    "check": "npx expo-doctor",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~6.1.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "~54.0.0",
+    "expo-status-bar": "~3.0.9",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-web": "^0.21.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/node": "^26.6.6",
+    "@types/react": "~19.1.10",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}

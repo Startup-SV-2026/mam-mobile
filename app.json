@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Mầm — Học mỗi ngày",
+    "slug": "mam-hoc-moi-ngay",
+    "scheme": "mamlearning",
+    "version": "0.2.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F8F7F2",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "edgeToEdgeEnabled": true,
+      "adaptiveIcon": {
+        "backgroundColor": "#EAF0DC",
+        "foregroundImage": "./assets/icon.png"
+      }
+    },
+    "web": {
+      "name": "Mầm — Học mỗi ngày",
+      "bundler": "metro",
+      "favicon": "./assets/icon.png"
+    },
+    "experiments": {
+      "tsconfigPaths": false
+    },
+    "icon": "./assets/icon.png"
+  }
+}
