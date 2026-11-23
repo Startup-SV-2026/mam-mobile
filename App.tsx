@@ -1,90 +1,101 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
-  Modal,
   Platform,
-  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
-  TextInput,
   View,
   useWindowDimensions,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { Course, Screen, Progress, ReviewCard } from "./src/types/course";
-import { isCourseContent, readProgress } from "./src/types/course";
-import {
-  dayKey,
-  previousDay,
-  scheduleReview,
-  currentStreak,
-} from "./src/lib/learning";
+import type { Course, Screen } from "./src/types/course";
 import { STARTER_COURSES } from "./data/courses";
-import { Icon, type IconName } from "./src/components/Icon";
-import {
-  Action,
-  IconButton,
-  Sprout,
-  theme as t,
-  ui,
-} from "./src/components/ui";
+import { Action, theme as t, ui } from "./src/components/ui";
 import { Roadmap } from "./src/components/Roadmap";
 import { Library } from "./src/components/Library";
 import { AIStatus } from "./src/components/AIStatus";
-import { LessonIllustration } from "./src/components/LessonIllustration";
-import { LessonFigure } from "./src/components/LessonFigure";
-import { CourseArt } from "./src/components/CourseArt";
 import { Tutor } from "./src/components/Tutor";
+import { StudyGoals } from "./src/components/StudyGoals";
 import { Review } from "./src/components/Review";
-const STORE_KEY = "mam-viet-learning-v1";
-const dateKey = dayKey;
-const tabs: { screen: Screen; icon: IconName; label: string }[] = [
-  { screen: "home", icon: "home", label: "Lộ trình" },
-  { screen: "create", icon: "sparkle", label: "Tạo khóa" },
-  { screen: "review", icon: "review", label: "Ôn tập" },
-  { screen: "explore", icon: "library", label: "Thư viện" },
-  { screen: "profile", icon: "profile", label: "Cá nhân" },
-];
+import { CourseBuilder } from "./src/components/CourseBuilder";
+import { Podcast, MiniPodcast } from "./src/components/Podcast";
+import { MascotLoading } from "./src/components/MascotLoading";
+import { MamMascot } from "./src/components/MamMascot";
+import { usePodcast } from "./src/audio/usePodcast";
+import { buildEpisode } from "./src/audio/transcript";
+import { useProgressiveLessons } from "./src/lib/useProgressiveLessons";
+import { useCourseBuilder } from "./src/lib/useCourseBuilder";
+import { useAppStore } from "./src/lib/useAppStore";
+import { scheduleReview } from "./src/lib/learning";
+
+// Refactored components
+import { ReaderHeader } from "./src/components/AppHeader";
+import { MamHeader } from "./src/components/MamHeader";
+import { MamNavBar } from "./src/components/MamNavBar";
+import { MamRoadmap } from "./src/components/MamRoadmap";
+import { MamHomeDashboard } from "./src/components/MamHomeDashboard";
+import { MamLibrary } from "./src/components/MamLibrary";
+import { CourseSidebarModal } from "./src/components/CourseSidebarModal";
+import { LessonContent, QuizContent } from "./src/components/LessonReader";
+import { LessonDone } from "./src/screens/LessonDone";
+import { ProfileScreen } from "./src/screens/ProfileScreen";
+import { AuthScreen } from "./src/screens/AuthScreen";
+import { SavedCards } from "./src/components/SavedCards";
+import {
+  LessonActionModal,
+  NotesModal,
+  ResetConfirmModal,
+} from "./src/components/AppModals";
+
 export default function App() {
+  const podcast = usePodcast();
   const { width, height } = useWindowDimensions();
-  const desktop = Platform.OS === "web" && width >= 900;
+  const phonePreview = Platform.OS === "web" && width >= 600 && height >= 480;
+
+  const {
+    hydrated,
+    currentUser,
+    setAuthSession,
+    courseId,
+    setCourseId,
+    lessonIndex,
+    setLessonIndex,
+    pageIndex,
+    setPageIndex,
+    completed,
+    xp,
+    streak,
+    lastStudy,
+    customCourses,
+    setCustomCourses,
+    reviews,
+    setReviews,
+    illustrationIds,
+    setIllustrationIds,
+    saved,
+    toggleSaved,
+    notes,
+    setNotes,
+    markLessonCompleted,
+    resetAllData,
+  } = useAppStore();
+
   const [screen, setScreen] = useState<Screen>("home");
-  const [courseId, setCourseId] = useState("space");
-  const [lessonIndex, setLessonIndex] = useState(0);
-  const [pageIndex, setPageIndex] = useState(0);
   const [answer, setAnswer] = useState<number | null>(null);
   const [checked, setChecked] = useState(false);
-  const [completed, setCompleted] = useState<Progress["completed"]>({});
-  const [xp, setXp] = useState(0);
-  const [streak, setStreak] = useState(0);
-  const [lastStudy, setLastStudy] = useState("");
-  const [customCourses, setCustomCourses] = useState<Course[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-  const [topic, setTopic] = useState("");
-  const [goal, setGoal] = useState("");
-  const [level, setLevel] = useState("Người mới");
-  const [creating, setCreating] = useState(false);
-  const [createError, setCreateError] = useState("");
-  const [reviews, setReviews] = useState<Record<string, ReviewCard>>({});
   const [tutorOpen, setTutorOpen] = useState(false);
   const [earnedXp, setEarnedXp] = useState(0);
-  const [illustrationIds, setIllustrationIds] = useState<
-    Record<string, string>
-  >({});
-  const [saved, setSaved] = useState<string[]>([]);
-  const [notes, setNotes] = useState<Record<string, string>>({});
   const [notesOpen, setNotesOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
   const [savedCourse, setSavedCourse] = useState<string | null>(null);
   const [reviewCourse, setReviewCourse] = useState<string | null>(null);
   const [aiStatusFrom, setAIStatusFrom] = useState<Screen>("profile");
   const [confirmReset, setConfirmReset] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
+
   const courses = useMemo(
     () => [...customCourses, ...STARTER_COURSES],
     [customCourses],
@@ -97,6 +108,7 @@ export default function App() {
     ? { ...rawLesson, illustration: { id: illustrationId } }
     : rawLesson;
   const doneCount = Object.values(completed).filter(Boolean).length;
+
   const go = (next: Screen) => {
     setSelectedLesson(null);
     setNotesOpen(false);
@@ -105,13 +117,19 @@ export default function App() {
     setScreen(next);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
+
   const openCourse = (c: Course) => {
     setCourseId(c.id);
     setLessonIndex(0);
     setPageIndex(0);
-    go("home");
+    go("course");
   };
+
   const startLesson = (index: number) => {
+    if (!course.lessons[index]) {
+      go("course");
+      return;
+    }
     setSelectedLesson(null);
     setLessonIndex(index);
     setPageIndex(0);
@@ -119,775 +137,335 @@ export default function App() {
     setChecked(false);
     go("lesson");
   };
+
+  const courseBuilder = useCourseBuilder((newCourse) => {
+    setCustomCourses((old) => [newCourse, ...old]);
+    openCourse(newCourse);
+  });
+
+  const generation = useProgressiveLessons(
+    course,
+    completed,
+    hydrated,
+    (id, index, lesson) => {
+      setCustomCourses((old) =>
+        old.map((c) =>
+          c.id === id && c.lessons.length === index
+            ? { ...c, lessons: [...c.lessons, lesson] }
+            : c,
+        ),
+      );
+    },
+  );
+
   const isCorrect = answer === activeLesson.quiz.answer;
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(STORE_KEY);
-        if (raw && mounted) {
-          const p = readProgress(JSON.parse(raw));
-          setReviews(p.reviews);
-          setIllustrationIds(p.illustrationIds);
-          setSaved(p.saved);
-          setNotes(p.notes);
-          setCourseId(p.selectedCourseId);
-          setCompleted(p.completed || {});
-          setXp(p.xp || 0);
-          setStreak(p.streak || 0);
-          setLastStudy(p.lastStudy || "");
-          setCustomCourses(
-            Array.isArray(p.customCourses) ? p.customCourses : [],
-          );
-        }
-      } catch (e) {
-        console.warn(
-          "Could not load local progress:",
-          e instanceof Error ? e.message : String(e),
-        );
-      } finally {
-        if (mounted) setHydrated(true);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-  useEffect(() => {
-    if (!hydrated) return;
-    AsyncStorage.setItem(
-      STORE_KEY,
-      JSON.stringify({
-        completed,
-        xp,
-        streak,
-        lastStudy,
-        customCourses,
-        reviews,
-        saved,
-        notes,
-        illustrationIds,
-        selectedCourseId: courseId,
-      }),
-    ).catch((e) => console.warn("Could not save local progress:", e.message));
-  }, [
-    hydrated,
-    illustrationIds,
-    completed,
-    xp,
-    streak,
-    lastStudy,
-    customCourses,
-    reviews,
-    saved,
-    notes,
-    courseId,
-  ]);
-
   const finish = () => {
-    const key = `${course.id}:${lessonIndex}`;
-    setEarnedXp(completed[key] ? 0 : 25);
-    setReviews((old) => ({
-      ...old,
-      [key]: old[key] ?? scheduleReview(undefined, true),
-    }));
-    if (!completed[key]) {
-      setCompleted((old) => ({ ...old, [key]: true }));
-      setXp((old) => old + 25);
-    }
-    if (lastStudy !== dateKey()) {
-      setStreak((old) => (lastStudy === previousDay() ? old + 1 : 1));
-      setLastStudy(dateKey());
-    }
+    const gained = markLessonCompleted(course.id, lessonIndex);
+    setEarnedXp(gained);
     go("done");
   };
 
-  const createCourse = async () => {
-    setCreateError("");
-    const clean = topic.trim();
-    if (clean.length < 3) {
-      setCreateError("Hãy nhập một chủ đề dài ít nhất 3 ký tự nhé.");
-      return;
-    }
-    // Curated matches are available without any API key.
-    const found = STARTER_COURSES.find(
-      (c) =>
-        c.title
-          .toLocaleLowerCase("vi")
-          .includes(clean.toLocaleLowerCase("vi")) ||
-        clean.toLocaleLowerCase("vi").includes(c.title.toLocaleLowerCase("vi")),
-    );
-    if (found) {
-      openCourse(found);
-      return;
-    }
-    const url = (process.env.EXPO_PUBLIC_API_URL || "").replace(/\/$/, "");
-    if (!url) {
-      setCreateError(
-        "Chưa kết nối máy chủ AI. Bạn có thể học 5 khóa mẫu ngay, hoặc xem README để bật tính năng tạo khóa học bất kỳ.",
-      );
-      return;
-    }
-    setCreating(true);
-    try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 55000);
-      let response;
-      try {
-        response = await fetch(`${url}/api/course`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ topic: clean, goal: goal.trim(), level }),
-          signal: controller.signal,
-        });
-      } finally {
-        clearTimeout(timer);
-      }
-      const body = await response.json();
-      if (!response.ok) throw new Error(body.error || "Máy chủ chưa sẵn sàng.");
-      if (!isCourseContent(body.course))
-        throw new Error("Dữ liệu từ AI chưa hợp lệ.");
-      const newCourse: Course = {
-        ...body.course,
-        id: `ai-${Date.now()}`,
-        source: "ai",
-        category: "Cá nhân hoá",
-        color: "#E8E1FF",
-        accent: "#6851A9",
-        emoji: "✨",
-        level,
-      };
-      setCustomCourses((old) => [newCourse, ...old]);
-      setTopic("");
-      setGoal("");
-      openCourse(newCourse);
-    } catch (e) {
-      setCreateError(
-        e instanceof Error
-          ? e.name === "AbortError"
-            ? "Hết thời gian chờ AI. Hãy thử lại."
-            : e.message
-          : "Không thể tạo khóa học.",
-      );
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  if (!hydrated)
+  if (!hydrated) {
     return (
       <View style={s.loading}>
-        <ActivityIndicator color={t.ink} />
-        <Text style={ui.body}>Mầm đang thức giấc...</Text>
+        <MascotLoading label="Đang tải Mầm…" size={96} />
       </View>
     );
+  }
+
   const reading = screen === "lesson" || screen === "quiz";
   const nav =
     !reading &&
     screen !== "done" &&
     screen !== "saved" &&
-    screen !== "ai-status";
+    screen !== "ai-status" &&
+    screen !== "auth";
   const page = activeLesson.pages[pageIndex] ?? activeLesson.pages[0];
   const pageKey = `${course.id}:${lessonIndex}:${pageIndex}`;
   const noteKey = reading ? `${course.id}:${lessonIndex}` : course.id;
-  const toggleSaved = (key: string) =>
-    setSaved((old) =>
-      old.includes(key) ? old.filter((v) => v !== key) : [...old, key],
+
+  if (!currentUser) {
+    return (
+      <View style={[s.previewStage, !phonePreview && { backgroundColor: t.bg }]}>
+        <SafeAreaView
+          style={[
+            s.app,
+            phonePreview && [
+              s.phoneFrame,
+              { height: Math.min(900, height - 32) },
+            ],
+          ]}
+        >
+          <StatusBar barStyle="light-content" backgroundColor={t.bg} />
+          <KeyboardAvoidingView
+            style={s.layout}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+          >
+            <ScrollView
+              contentContainerStyle={[s.content, { paddingVertical: 24, flexGrow: 1, justifyContent: "center" }]}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              <AuthScreen
+                onSuccess={(authData) => {
+                  setAuthSession(authData);
+                  go("home");
+                }}
+              />
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </View>
     );
-  const showSaved = (c: Course) => {
-    setSavedCourse(c.id);
-    go("saved");
-  };
+  }
+
   const title =
     screen === "ai-status"
       ? "Trạng thái AI"
-      : screen === "explore"
-        ? "Thư viện"
-        : screen === "create"
-          ? ""
-          : screen === "review"
-            ? "Ôn tập"
-            : screen === "profile"
-              ? "Góc của bạn"
-              : screen === "stats"
-                ? "Tiến độ"
-                : screen === "saved"
-                  ? "Thẻ đã lưu"
-                  : "";
-  const savedPages = courses
-    .filter((c) => !savedCourse || c.id === savedCourse)
-    .flatMap((c) =>
-      c.lessons.flatMap((l, i) =>
-        l.pages.map((p, j) => ({
-          course: c,
-          lesson: i,
-          page: j,
-          content: p,
-          key: `${c.id}:${i}:${j}`,
-        })),
-      ),
-    )
-    .filter((p) => saved.includes(p.key));
-  const activeTab =
-    screen === "course" ? "home" : screen === "stats" ? "profile" : screen;
+      : screen === "podcast"
+        ? "Podcast"
+        : screen === "explore"
+          ? "Thư viện"
+          : screen === "create"
+            ? ""
+            : screen === "goals"
+              ? "Mục tiêu học"
+              : screen === "review"
+                ? "Ôn tập"
+                : screen === "profile"
+                  ? "Cá nhân"
+                  : screen === "stats"
+                    ? "Tiến độ"
+                    : screen === "saved"
+                      ? "Thẻ đã lưu"
+                      : "";
+
   return (
-    <View style={s.outer}>
-      <StatusBar barStyle="dark-content" backgroundColor={t.bg} />
-      {desktop && (
-        <View style={s.desktopCopy}>
-          <Sprout size={60} />
-          <Text style={s.desktopBrand}>mầm.</Text>
-          <Text style={s.desktopTitle}>Cứ tò mò.{"\n"}Rồi sẽ hiểu.</Text>
-          <Text style={[ui.body, { marginTop: 20, maxWidth: 280 }]}>
-            Một lộ trình nhỏ cho những điều bạn muốn biết. Mỗi ngày, gieo thêm
-            một chút.
-          </Text>
-          <View style={[ui.row, { marginTop: 30 }]}>
-            <View style={s.dot} />
-            <Text style={ui.label}>HỌC THEO NHỊP CỦA BẠN</Text>
-          </View>
-        </View>
-      )}
+    <View style={[s.previewStage, !phonePreview && { backgroundColor: t.bg }]}>
       <SafeAreaView
         style={[
-          s.phone,
-          desktop && {
-            width: 420,
-            minWidth: 420,
-            height: Math.min(900, height - 32),
-            flexGrow: 0,
-            flexShrink: 0,
-            flexBasis: "auto",
-            borderWidth: 7,
-            borderColor: t.ink,
-            borderRadius: 42,
-          },
+          s.app,
+          phonePreview && [
+            s.phoneFrame,
+            { height: Math.min(900, height - 32) },
+          ],
         ]}
       >
-        {desktop && (
-          <View style={s.status}>
-            <Text style={{ fontSize: 12, fontWeight: "700", color: t.ink }}>
-              9:41
-            </Text>
-            <View style={s.island} />
-            <Text style={{ fontSize: 11, color: t.ink }}>▴ ◉ ▰</Text>
-          </View>
-        )}
+        <StatusBar barStyle="light-content" backgroundColor={t.bg} />
         <KeyboardAvoidingView
-          style={{ flex: 1 }}
+          style={s.layout}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           {reading ? (
-            <View style={s.readerHeader}>
-              <IconButton
-                name="close"
-                label="Đóng bài học"
-                onPress={() => go("home")}
-              />
-              <View style={s.track}>
-                <View
-                  style={[
-                    s.fill,
-                    {
-                      width: `${screen === "quiz" ? 100 : ((pageIndex + 1) / activeLesson.pages.length) * 100}%`,
-                    },
-                  ]}
-                />
-              </View>
-              <Text style={{ color: t.ink, fontSize: 13 }}>
-                {screen === "quiz"
-                  ? "?"
-                  : `${pageIndex + 1}/${activeLesson.pages.length}`}
-              </Text>
-              <IconButton
-                name="notes"
-                label="Ghi chú bài học"
-                onPress={() => setNotesOpen(true)}
-              />
-              <IconButton
-                name="bookmark"
-                label={saved.includes(pageKey) ? "Bỏ lưu thẻ" : "Lưu thẻ"}
-                selected={saved.includes(pageKey)}
-                onPress={() => toggleSaved(pageKey)}
-              />
-            </View>
+            <ReaderHeader
+              screen={screen}
+              pageIndex={pageIndex}
+              totalPages={activeLesson.pages.length}
+              isSaved={saved.includes(pageKey)}
+              onClose={() => go("home")}
+              onOpenNotes={() => setNotesOpen(true)}
+              onToggleSave={() => toggleSaved(pageKey)}
+            />
           ) : (
-            screen !== "done" && (
-              <View style={s.header}>
-                <View style={{ flex: 1 }}>
-                  {title ? (
-                    <Text
-                      style={{ fontSize: 26, fontWeight: "700", color: t.ink }}
-                    >
-                      {title}
-                    </Text>
-                  ) : screen === "create" ? (
-                    <Text style={s.wordmark}>mầm.</Text>
-                  ) : (
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel="Mở thư viện"
-                      onPress={() => go("explore")}
-                    >
-                      <Icon name="library" color="#716B5E" />
-                    </Pressable>
-                  )}
-                </View>
-                <View style={[ui.row, { gap: 13 }]}>
-                  <View style={[ui.row, { gap: 4 }]}>
-                    <Icon name="flame" color={t.muted} size={20} />
-                    <Text style={ui.body}>
-                      {currentStreak(streak, lastStudy)}
-                    </Text>
-                  </View>
-                  <View style={[ui.row, { gap: 4 }]}>
-                    <Icon name="star" color={t.muted} size={20} />
-                    <Text style={ui.body}>{xp}</Text>
-                  </View>
-                </View>
-              </View>
-            )
+            <MamHeader
+              screen={screen}
+              title={title}
+              streak={streak}
+              lastStudy={lastStudy}
+              xp={xp}
+              onToggleSidebar={() => setSidebarOpen(true)}
+            />
           )}
+
           <ScrollView
             key={screen}
             ref={scrollRef}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
+            onContentSizeChange={() => {
+              if (screen === "create" && courseBuilder.creating) {
+                scrollRef.current?.scrollTo({ y: 0, animated: false });
+              } else if (
+                screen === "create" &&
+                courseBuilder.turns.length &&
+                !courseBuilder.brief
+              ) {
+                scrollRef.current?.scrollToEnd({ animated: true });
+              }
+            }}
             style={{ flex: 1 }}
             contentContainerStyle={[
               s.content,
-              { paddingBottom: nav ? 115 : reading ? 150 : 32 },
+              {
+                paddingBottom: nav
+                  ? podcast.episode && screen !== "podcast"
+                    ? 205
+                    : 135
+                  : reading
+                    ? 150
+                    : 32,
+              },
               screen === "done" && { flexGrow: 1 },
             ]}
           >
-            {(screen === "home" || screen === "course") && (
-              <Roadmap
-                course={course}
+            {screen === "home" && (
+              <MamHomeDashboard
+                user={currentUser}
+                courses={courses}
+                activeCourse={course}
                 completed={completed}
-                onLibrary={() => go("explore")}
+                streak={streak}
+                lastStudy={lastStudy}
+                xp={xp}
+                onContinueCourse={(c) => {
+                  setCourseId(c.id);
+                  go("course");
+                }}
+                onSelectCourse={openCourse}
+                onExplore={() => go("explore")}
+                onCreateCourse={() => go("create")}
+                onOpenGoals={() => go("goals")}
+              />
+            )}
+
+            {screen === "course" && (
+              <MamRoadmap
+                course={course}
+                generation={generation}
+                completed={completed}
+                onPodcast={() => go("podcast")}
+                onTutor={() => setTutorOpen(true)}
                 onSelect={setSelectedLesson}
                 onNotes={() => setNotesOpen(true)}
-                onExplore={() => go("create")}
-                onReview={() => {
-                  setReviewCourse(course.id);
-                  go("review");
+                onSidebarToggle={() => setSidebarOpen(true)}
+                onBack={() => go("home")}
+              />
+            )}
+
+            {screen === "podcast" && (
+              <Podcast
+                courses={courses}
+                courseId={courseId}
+                completed={completed}
+                player={podcast}
+                onCourse={setCourseId}
+                onRead={(id, index) => {
+                  setCourseId(id);
+                  startLesson(index);
                 }}
               />
             )}
+
             {screen === "explore" && (
-              <Library
+              <MamLibrary
                 courses={courses}
                 completed={completed}
-                reviews={reviews}
                 onOpen={openCourse}
-                onSaved={showSaved}
-                onReview={(c) => {
-                  setReviewCourse(c.id);
-                  go("review");
-                }}
                 onCreate={() => go("create")}
               />
             )}
+
             {screen === "create" && (
-              <>
-                <View
-                  style={{
-                    paddingTop: 28,
-                    paddingBottom: 30,
-                    alignItems: "center",
-                    gap: 14,
-                  }}
-                >
-                  <Text
-                    style={[ui.title, { textAlign: "center", fontSize: 27 }]}
-                  >
-                    Bạn muốn học điều gì?
-                  </Text>
-                  <Text
-                    style={[ui.body, { textAlign: "center", maxWidth: 300 }]}
-                  >
-                    Kể Mầm nghe điều bạn tò mò. Mình sẽ tạo một lộ trình dành
-                    riêng cho bạn.
-                  </Text>
-                </View>
-                <View style={{ gap: 23, marginBottom: 27 }}>
-                  {STARTER_COURSES.slice(0, 4).map((c) => (
-                    <Pressable
-                      accessibilityRole="button"
-                      key={c.id}
-                      onPress={() => openCourse(c)}
-                      style={ui.row}
-                    >
-                      <View
-                        style={[
-                          s.recommendationCover,
-                          { backgroundColor: c.color },
-                        ]}
-                      >
-                        <CourseArt id={c.id} size={110} />
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <Text
-                          style={{
-                            fontSize: 17,
-                            fontWeight: "600",
-                            lineHeight: 24,
-                            color: t.ink,
-                          }}
-                        >
-                          {c.title}
-                        </Text>
-                        <Text style={[ui.body, { fontSize: 12, marginTop: 4 }]}>
-                          {c.subtitle}
-                        </Text>
-                        <Text
-                          style={[ui.label, { fontSize: 10, marginTop: 6 }]}
-                        >
-                          {c.category.toUpperCase()}
-                        </Text>
-                      </View>
-                    </Pressable>
-                  ))}
-                </View>
-                <View
-                  style={[
-                    ui.card,
-                    { padding: 17, gap: 15, borderBottomWidth: 3 },
-                  ]}
-                >
-                  <TextInput
-                    accessibilityLabel="Chủ đề muốn học"
-                    placeholder="Mình muốn tìm hiểu về..."
-                    placeholderTextColor={t.muted}
-                    multiline
-                    value={topic}
-                    onChangeText={setTopic}
-                    maxLength={80}
-                    style={{
-                      fontSize: 18,
-                      minHeight: 68,
-                      color: t.ink,
-                      lineHeight: 27,
-                    }}
-                  />
-                  <TextInput
-                    accessibilityLabel="Mục tiêu học tập"
-                    placeholder="Mục tiêu của mình (tùy chọn)"
-                    placeholderTextColor={t.muted}
-                    value={goal}
-                    onChangeText={setGoal}
-                    maxLength={160}
-                    style={[ui.input, { fontSize: 13, padding: 12 }]}
-                  />
-                  <View
-                    style={{ flexDirection: "row", gap: 7, flexWrap: "wrap" }}
-                  >
-                    {["Người mới", "Đã biết một chút", "Nâng cao"].map((v) => (
-                      <Pressable
-                        key={v}
-                        accessibilityRole="button"
-                        accessibilityState={{ selected: level === v }}
-                        onPress={() => setLevel(v)}
-                        style={{
-                          backgroundColor: level === v ? t.ink : t.soft,
-                          padding: 10,
-                          borderRadius: 9,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: level === v ? t.bg : t.muted,
-                          }}
-                        >
-                          {v}
-                        </Text>
-                      </Pressable>
-                    ))}
-                  </View>
-                  <Action
-                    disabled={creating || topic.trim().length < 3}
-                    onPress={createCourse}
-                    icon="sparkle"
-                  >
-                    {creating ? "ĐANG TẠO LỘ TRÌNH..." : "TẠO KHÓA HỌC"}
-                  </Action>
-                  {creating && <ActivityIndicator color={t.ink} />}{" "}
-                  {createError ? (
-                    <Text
-                      accessibilityRole="alert"
-                      style={{ color: "#A34232", fontSize: 13, lineHeight: 21 }}
-                    >
-                      {createError}
-                    </Text>
-                  ) : null}
-                </View>
-              </>
+              <CourseBuilder
+                builder={courseBuilder}
+                onChange={() =>
+                  requestAnimationFrame(() =>
+                    scrollRef.current?.scrollToEnd({ animated: true }),
+                  )
+                }
+              />
             )}
+
             {screen === "lesson" && (
-              <>
-                <Text style={[ui.label, { marginTop: 12 }]}>
-                  {activeLesson.title.toLocaleUpperCase("vi")}
-                </Text>
-                <Text
-                  style={[
-                    ui.title,
-                    { fontSize: 30, lineHeight: 38, marginTop: 18 },
-                  ]}
-                >
-                  {page.title}
-                </Text>
-                <Text
-                  selectable
-                  style={{
-                    fontSize: 18,
-                    lineHeight: 30,
-                    color: t.ink,
-                    marginTop: 20,
-                  }}
-                >
-                  {page.body}
-                </Text>
-                {pageIndex === 0 && (
-                  <LessonIllustration
-                    key={`${course.id}:${lessonIndex}`}
-                    lesson={activeLesson}
-                    courseTitle={course.title}
-                    onStatus={() => {
-                      setAIStatusFrom("lesson");
-                      go("ai-status");
-                    }}
-                  />
-                )}
-                <LessonFigure
-                  page={page}
-                  lesson={activeLesson}
-                  index={pageIndex}
-                />
-                <View style={ui.row}>
-                  <Icon name="sprout" color="#6D8B57" size={22} />
-                  <Text style={[ui.body, { fontSize: 14, flex: 1 }]}>
-                    Thử diễn đạt ý chính bằng lời của bạn trước khi tiếp tục.
-                  </Text>
-                </View>
-              </>
-            )}
-            {screen === "quiz" && (
-              <>
-                <Text
-                  style={[ui.label, { marginTop: 20, textAlign: "center" }]}
-                >
-                  THỬ SỨC MỘT CHÚT
-                </Text>
-                <View style={{ alignItems: "center", padding: 24 }}>
-                  <Icon name="review" size={64} color="#7CA9B6" />
-                </View>
-                <Text
-                  style={[
-                    ui.title,
-                    { fontSize: 25, lineHeight: 34, textAlign: "center" },
-                  ]}
-                >
-                  {activeLesson.quiz.question}
-                </Text>
-                <View style={{ gap: 12, marginTop: 25 }}>
-                  {activeLesson.quiz.choices.map((choice, i) => (
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityState={{ selected: answer === i }}
-                      disabled={checked && isCorrect}
-                      key={i}
-                      onPress={() => {
-                        setAnswer(i);
-                        setChecked(false);
-                      }}
-                      style={[
-                        s.option,
-                        answer === i && {
-                          borderColor: "#70BCE0",
-                          backgroundColor: "#E1F3FC",
-                          borderBottomColor: "#70BCE0",
-                        },
-                      ]}
-                    >
-                      <Text
-                        style={{ fontSize: 13, color: t.muted, padding: 5 }}
-                      >
-                        {String.fromCharCode(65 + i)}
-                      </Text>
-                      <Text
-                        style={{
-                          flex: 1,
-                          fontSize: 16,
-                          lineHeight: 24,
-                          color: t.ink,
-                        }}
-                      >
-                        {choice}
-                      </Text>
-                      {answer === i && <Icon name="check" size={19} />}
-                    </Pressable>
-                  ))}
-                </View>
-                {checked && (
-                  <View
-                    style={[
-                      ui.card,
-                      {
-                        backgroundColor: isCorrect ? "#E8EDD5" : t.peach,
-                        marginTop: 20,
-                        gap: 8,
-                      },
-                    ]}
-                  >
-                    <Text style={{ fontWeight: "700", color: t.ink }}>
-                      {isCorrect ? "Chính xác!" : "Cùng thử lại nhé."}
-                    </Text>
-                    <Text style={[ui.body, { color: t.ink }]}>
-                      {activeLesson.quiz.why}
-                    </Text>
-                  </View>
-                )}
-              </>
-            )}
-            {screen === "done" && (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 22,
+              <LessonContent
+                pageIndex={pageIndex}
+                activeLesson={activeLesson}
+                page={page}
+                courseId={course.id}
+                courseTitle={course.title}
+                lessonIndex={lessonIndex}
+                onOpenAIStatus={() => {
+                  setAIStatusFrom("lesson");
+                  go("ai-status");
                 }}
-              >
-                <Sprout size={110} />
-                <Text style={[ui.title, { textAlign: "center" }]}>
-                  Thêm một mầm{"\n"}kiến thức mới.
-                </Text>
-                <Text style={[ui.body, { textAlign: "center" }]}>
-                  Bạn đã hoàn thành “{activeLesson.title}”.
-                  {earnedXp
-                    ? " Mỗi bước nhỏ đều đáng ghi nhận."
-                    : " Càng ôn lại, càng nhớ lâu."}
-                </Text>
-                <Text style={{ fontSize: 27, fontWeight: "700", color: t.ink }}>
-                  {earnedXp ? `+${earnedXp} XP` : "Đã ôn lại"}
-                </Text>
-                <Action
-                  style={{ width: "100%" }}
-                  onPress={() =>
-                    lessonIndex + 1 < course.lessons.length
-                      ? startLesson(lessonIndex + 1)
-                      : go("home")
-                  }
-                >
-                  {lessonIndex + 1 < course.lessons.length
-                    ? "HỌC BÀI TIẾP THEO"
-                    : "VỀ LỘ TRÌNH"}
-                </Action>
-                <Action
-                  secondary
-                  style={{ width: "100%" }}
-                  onPress={() => go("home")}
-                >
-                  VỀ LỘ TRÌNH
-                </Action>
-              </View>
+              />
             )}
+
+            {screen === "quiz" && (
+              <QuizContent
+                activeLesson={activeLesson}
+                answer={answer}
+                checked={checked}
+                isCorrect={isCorrect}
+                onSelectAnswer={(i) => {
+                  setAnswer(i);
+                  setChecked(false);
+                }}
+              />
+            )}
+
+            {screen === "done" && (
+              <LessonDone
+                course={course}
+                lessonIndex={lessonIndex}
+                activeLesson={activeLesson}
+                earnedXp={earnedXp}
+                generation={generation}
+                onNextLesson={startLesson}
+                onHome={() => go("home")}
+              />
+            )}
+
+            {screen === "goals" && (
+              <StudyGoals
+                onNavigate={() =>
+                  scrollRef.current?.scrollTo({ y: 0, animated: false })
+                }
+                onReview={() => {
+                  setReviewCourse(null);
+                  go("review");
+                }}
+              />
+            )}
+
             {screen === "review" && (
-              <>
-                {reviewCourse && (
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => setReviewCourse(null)}
-                    style={{ paddingBottom: 15 }}
-                  >
-                    <Text style={ui.body}>Đang ôn một khóa · Xem tất cả ↗</Text>
-                  </Pressable>
-                )}
-                <Review
-                  courses={
-                    reviewCourse
-                      ? courses.filter((c) => c.id === reviewCourse)
-                      : courses
-                  }
-                  completed={completed}
-                  reviews={reviews}
-                  onGrade={(key, remembered) => {
-                    setReviews((old) => ({
-                      ...old,
-                      [key]: scheduleReview(old[key], remembered),
-                    }));
-                    if (lastStudy !== dateKey()) {
-                      setStreak((old) =>
-                        lastStudy === previousDay() ? old + 1 : 1,
-                      );
-                      setLastStudy(dateKey());
-                    }
-                  }}
-                  onExplore={() => go("explore")}
-                />
-              </>
+              <Review
+                courses={
+                  reviewCourse
+                    ? courses.filter((c) => c.id === reviewCourse)
+                    : courses
+                }
+                completed={completed}
+                reviews={reviews}
+                onGrade={(key, remembered) => {
+                  setReviews((old) => ({
+                    ...old,
+                    [key]: scheduleReview(old[key], remembered),
+                  }));
+                }}
+                onExplore={() => go("explore")}
+              />
             )}
+
             {screen === "saved" && (
-              <>
-                <Action secondary icon="back" onPress={() => go("explore")}>
-                  VỀ THƯ VIỆN
-                </Action>
-                <View style={{ height: 24 }} />
-                {savedPages.length ? (
-                  savedPages.map((p) => (
-                    <View
-                      key={p.key}
-                      style={[ui.card, { marginBottom: 16, gap: 12 }]}
-                    >
-                      <Text style={ui.label}>{p.course.title}</Text>
-                      <Text
-                        style={{
-                          fontSize: 19,
-                          fontWeight: "700",
-                          color: t.ink,
-                        }}
-                      >
-                        {p.content.title}
-                      </Text>
-                      <Text style={ui.body}>{p.content.takeaway}</Text>
-                      <View style={ui.row}>
-                        <Action
-                          secondary
-                          style={{ flex: 1 }}
-                          onPress={() => {
-                            setCourseId(p.course.id);
-                            setLessonIndex(p.lesson);
-                            setPageIndex(p.page);
-                            setAnswer(null);
-                            setChecked(false);
-                            go("lesson");
-                          }}
-                        >
-                          ĐỌC LẠI
-                        </Action>
-                        <IconButton
-                          name="bookmark"
-                          label="Bỏ lưu thẻ"
-                          selected
-                          onPress={() => toggleSaved(p.key)}
-                        />
-                      </View>
-                    </View>
-                  ))
-                ) : (
-                  <View style={[ui.card, { gap: 12 }]}>
-                    <Icon name="bookmark" size={34} />
-                    <Text style={ui.title}>Gom điều đáng nhớ.</Text>
-                    <Text style={ui.body}>
-                      Nhấn biểu tượng đánh dấu trong bài học để giữ lại thẻ tại
-                      đây.
-                    </Text>
-                  </View>
-                )}
-              </>
+              <SavedCards
+                courses={courses}
+                savedKeys={saved}
+                filterCourseId={savedCourse}
+                onBack={() => go("explore")}
+                onReadCard={(cId, lIdx, pIdx) => {
+                  setCourseId(cId);
+                  setLessonIndex(lIdx);
+                  setPageIndex(pIdx);
+                  setAnswer(null);
+                  setChecked(false);
+                  go("lesson");
+                }}
+                onToggleSave={toggleSaved}
+              />
             )}
+
             {screen === "ai-status" && (
               <AIStatus
                 lesson={activeLesson}
@@ -901,132 +479,49 @@ export default function App() {
                 onBack={() => go(aiStatusFrom)}
               />
             )}
+
             {(screen === "profile" || screen === "stats") && (
-              <>
-                <View
-                  style={{ alignItems: "center", gap: 12, paddingVertical: 25 }}
-                >
-                  <Sprout size={80} />
-                  <Text style={ui.title}>Người học tò mò</Text>
-                  <Text style={ui.body}>Mỗi ngày, hiểu thêm một chút.</Text>
-                </View>
-                <View style={[ui.row, { marginBottom: 25 }]}>
-                  {[
-                    [String(xp), "ĐIỂM XP"],
-                    [String(doneCount), "BÀI ĐÃ HỌC"],
-                    [
-                      String(currentStreak(streak, lastStudy)),
-                      "NGÀY LIÊN TIẾP",
-                    ],
-                  ].map(([v, l]) => (
-                    <View
-                      key={l}
-                      style={[
-                        ui.card,
-                        { flex: 1, padding: 12, alignItems: "center", gap: 8 },
-                      ]}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 24,
-                          fontWeight: "600",
-                          color: t.ink,
-                        }}
-                      >
-                        {v}
-                      </Text>
-                      <Text
-                        style={[
-                          ui.label,
-                          {
-                            fontSize: 8,
-                            letterSpacing: 0.4,
-                            textAlign: "center",
-                          },
-                        ]}
-                      >
-                        {l}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-                <View style={{ gap: 15 }}>
-                  <Action
-                    secondary
-                    icon="bookmark"
-                    onPress={() => {
-                      setSavedCourse(null);
-                      go("saved");
-                    }}
-                  >
-                    THẺ ĐÃ LƯU ({saved.length})
-                  </Action>
-                  <Action
-                    secondary
-                    icon="library"
-                    onPress={() => go("explore")}
-                  >
-                    THƯ VIỆN CỦA BẠN
-                  </Action>
-                  <Action
-                    secondary
-                    icon="sparkle"
-                    onPress={() => {
-                      setAIStatusFrom("profile");
-                      go("ai-status");
-                    }}
-                  >
-                    TRẠNG THÁI AI
-                  </Action>
-                  <Action
-                    secondary
-                    icon="review"
-                    onPress={() => {
-                      setReviewCourse(null);
-                      go("review");
-                    }}
-                  >
-                    ÔN TẬP KIẾN THỨC
-                  </Action>
-                </View>
-                <View style={[ui.card, { marginTop: 28, gap: 12 }]}>
-                  <Text
-                    style={{ fontWeight: "700", fontSize: 17, color: t.ink }}
-                  >
-                    Một khu vườn của riêng bạn
-                  </Text>
-                  <Text style={ui.body}>
-                    Tiến độ, ghi chú và thẻ đã lưu được giữ trên thiết bị này.
-                  </Text>
-                </View>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => setConfirmReset(true)}
-                  style={{ padding: 20, alignItems: "center" }}
-                >
-                  <Text style={{ color: "#A25F4B", fontSize: 13 }}>
-                    Xóa dữ liệu dùng thử
-                  </Text>
-                </Pressable>
-                <Text style={[ui.label, { textAlign: "center" }]}>
-                  MẦM · 0.3
-                </Text>
-              </>
+              <ProfileScreen
+                user={currentUser}
+                xp={xp}
+                doneCount={doneCount}
+                streak={streak}
+                lastStudy={lastStudy}
+                savedCount={saved.length}
+                onOpenAuth={() => go("auth")}
+                onLogout={() => {
+                  setAuthSession(null);
+                  go("profile");
+                }}
+                onOpenSaved={() => {
+                  setSavedCourse(null);
+                  go("saved");
+                }}
+                onOpenPodcast={() => go("podcast")}
+                onOpenLibrary={() => go("explore")}
+                onOpenReview={() => {
+                  setReviewCourse(null);
+                  go("review");
+                }}
+                onRequestReset={() => setConfirmReset(true)}
+              />
             )}
           </ScrollView>
+
           {reading && (
             <View style={s.readerFooter}>
               {screen === "lesson" ? (
                 <>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Hỏi gia sư Mầm"
-                    onPress={() => setTutorOpen(true)}
+                  <Action
+                    secondary
                     style={s.readerTutor}
+                    onPress={() => setTutorOpen(true)}
                   >
-                    <Sprout size={39} />
-                    <Text style={{ color: t.ink, fontSize: 12 }}>Hỏi Mầm</Text>
-                  </Pressable>
+                    <View style={[ui.row, { gap: 6, alignItems: "center" }]}>
+                      <MamMascot size={28} />
+                      <ActionText label="Hỏi Mầm" />
+                    </View>
+                  </Action>
                   <View style={[ui.row, { gap: 9 }]}>
                     {pageIndex > 0 && (
                       <Action
@@ -1081,158 +576,70 @@ export default function App() {
               )}
             </View>
           )}
-          {nav && (
-            <View style={s.navDock}>
-              <View style={s.navPill}>
-                {tabs.map((item) => (
-                  <Pressable
-                    key={item.screen}
-                    accessibilityRole="tab"
-                    accessibilityLabel={item.label}
-                    accessibilityState={{ selected: activeTab === item.screen }}
-                    onPress={() => {
-                      if (item.screen === "review") setReviewCourse(null);
-                      go(item.screen);
-                    }}
-                    style={[
-                      s.navItem,
-                      activeTab === item.screen && { backgroundColor: t.soft },
-                    ]}
-                  >
-                    <Icon
-                      name={item.icon}
-                      size={23}
-                      filled={
-                        activeTab === item.screen &&
-                        ["home", "sparkle"].includes(item.icon)
-                      }
-                    />
-                  </Pressable>
-                ))}
-              </View>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Hỏi gia sư Mầm"
-                onPress={() => setTutorOpen(true)}
-                style={s.mascotButton}
-              >
-                <Sprout size={39} />
-              </Pressable>
+
+          {nav && podcast.episode && screen !== "podcast" && (
+            <View
+              style={{ position: "absolute", bottom: 88, left: 14, right: 14 }}
+            >
+              <MiniPodcast player={podcast} onOpen={() => go("podcast")} />
             </View>
           )}
-          {desktop && (
-            <View style={s.homeIndicator}>
-              <View
-                style={{
-                  height: 4,
-                  width: 110,
-                  borderRadius: 4,
-                  backgroundColor: t.ink,
-                }}
-              />
-            </View>
+
+          {nav && (
+            <MamNavBar
+              activeScreen={screen}
+              onTabPress={(tabScreen) => {
+                if (tabScreen === "review") setReviewCourse(null);
+                go(tabScreen);
+              }}
+              onTutorPress={() => setTutorOpen(true)}
+            />
           )}
         </KeyboardAvoidingView>
-        <Modal
+
+        <CourseSidebarModal
+          visible={sidebarOpen}
+          courses={courses}
+          activeCourseId={course.id}
+          onSelectCourse={openCourse}
+          onCreateCourse={() => go("create")}
+          onClose={() => setSidebarOpen(false)}
+        />
+
+        <LessonActionModal
           visible={selectedLesson !== null}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setSelectedLesson(null)}
-        >
-          <View style={s.overlay}>
-            <View style={s.sheet}>
-              <View style={[ui.row, { justifyContent: "space-between" }]}>
-                <Text style={[ui.title, { flex: 1, fontSize: 23 }]}>
-                  {course.lessons[selectedLesson ?? 0]?.title}
-                </Text>
-                <IconButton
-                  name="close"
-                  label="Đóng lựa chọn bài"
-                  onPress={() => setSelectedLesson(null)}
-                />
-              </View>
-              <Text style={ui.body}>
-                {completed[`${course.id}:${selectedLesson}`]
-                  ? "Đã hoàn thành · Sẵn sàng ôn lại"
-                  : `${course.lessons[selectedLesson ?? 0]?.minutes} phút để khám phá`}
-              </Text>
-              <Action
-                icon="review"
-                onPress={() => {
-                  const i = selectedLesson ?? 0;
-                  startLesson(i);
-                  go("quiz");
-                }}
-              >
-                LUYỆN TẬP
-              </Action>
-              <Action
-                secondary
-                icon="notes"
-                onPress={() => startLesson(selectedLesson ?? 0)}
-              >
-                ĐỌC BÀI HỌC
-              </Action>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => {
-                  setLessonIndex(selectedLesson ?? 0);
-                  setSelectedLesson(null);
-                  setTutorOpen(true);
-                }}
-                style={[ui.row, { paddingVertical: 12 }]}
-              >
-                <Icon name="chat" />
-                <Text style={[ui.body, { flex: 1, color: t.ink }]}>
-                  Tìm hiểu sâu hơn cùng Mầm
-                </Text>
-                <Icon name="arrow" size={19} />
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-        <Modal
+          course={course}
+          selectedLesson={selectedLesson}
+          isCompleted={!!completed[`${course.id}:${selectedLesson}`]}
+          onClose={() => setSelectedLesson(null)}
+          onQuiz={() => {
+            const i = selectedLesson ?? 0;
+            startLesson(i);
+            go("quiz");
+          }}
+          onPodcast={() => {
+            const index = selectedLesson ?? 0;
+            go("podcast");
+            void podcast.load(buildEpisode(course, index));
+          }}
+          onRead={() => startLesson(selectedLesson ?? 0)}
+          onTutor={() => {
+            setLessonIndex(selectedLesson ?? 0);
+            setSelectedLesson(null);
+            setTutorOpen(true);
+          }}
+        />
+
+        <NotesModal
           visible={notesOpen}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setNotesOpen(false)}
-        >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-            style={s.overlay}
-          >
-            <View style={s.sheet}>
-              <View style={[ui.row, { justifyContent: "space-between" }]}>
-                <Text style={ui.title}>Ghi chú của mình</Text>
-                <IconButton
-                  name="close"
-                  label="Đóng ghi chú"
-                  onPress={() => setNotesOpen(false)}
-                />
-              </View>
-              <Text style={ui.body}>
-                {reading ? activeLesson.title : course.title}
-              </Text>
-              <TextInput
-                accessibilityLabel="Nội dung ghi chú"
-                placeholder="Điều mình muốn ghi nhớ..."
-                placeholderTextColor={t.muted}
-                multiline
-                value={notes[noteKey] ?? ""}
-                onChangeText={(text) =>
-                  setNotes((old) => ({ ...old, [noteKey]: text }))
-                }
-                maxLength={5000}
-                textAlignVertical="top"
-                style={[ui.input, { minHeight: 180, lineHeight: 25 }]}
-              />
-              <Text style={[ui.label, { fontSize: 10 }]}>
-                TỰ ĐỘNG LƯU TRÊN THIẾT BỊ
-              </Text>
-              <Action onPress={() => setNotesOpen(false)}>XONG</Action>
-            </View>
-          </KeyboardAvoidingView>
-        </Modal>
+          subtitle={reading ? activeLesson.title : course.title}
+          notesText={notes[noteKey] ?? ""}
+          onChangeNotes={(text) =>
+            setNotes((old) => ({ ...old, [noteKey]: text }))
+          }
+          onClose={() => setNotesOpen(false)}
+        />
+
         {tutorOpen && (
           <Tutor
             lesson={activeLesson}
@@ -1240,53 +647,52 @@ export default function App() {
             onClose={() => setTutorOpen(false)}
           />
         )}
-        <Modal
+
+        <ResetConfirmModal
           visible={confirmReset}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setConfirmReset(false)}
-        >
-          <View style={s.overlay}>
-            <View style={s.sheet}>
-              <Text style={ui.title}>Xóa dữ liệu học?</Text>
-              <Text style={ui.body}>
-                Tiến độ, XP, khóa AI, thẻ đã lưu và ghi chú trên thiết bị này sẽ
-                bị xóa.
-              </Text>
-              <Action
-                onPress={() => {
-                  setCompleted({});
-                  setXp(0);
-                  setStreak(0);
-                  setLastStudy("");
-                  setCustomCourses([]);
-                  setReviews({});
-                  setSaved([]);
-                  setNotes({});
-                  setCourseId("space");
-                  setConfirmReset(false);
-                  go("home");
-                }}
-              >
-                XÓA DỮ LIỆU
-              </Action>
-              <Action secondary onPress={() => setConfirmReset(false)}>
-                GIỮ LẠI
-              </Action>
-            </View>
-          </View>
-        </Modal>
+          onConfirm={() => {
+            resetAllData();
+            setConfirmReset(false);
+            go("home");
+          }}
+          onCancel={() => setConfirmReset(false)}
+        />
       </SafeAreaView>
     </View>
   );
 }
+
+function ActionText({ label }: { label: string }) {
+  return <>{label}</>;
+}
+
 const s = StyleSheet.create({
-  outer: {
+  previewStage: {
     flex: 1,
-    backgroundColor: "#ECECE2",
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row",
+    backgroundColor: "transparent",
+  },
+  phoneFrame: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: "auto",
+    width: 420,
+    borderWidth: 7,
+    borderColor: t.frame,
+    borderRadius: 42,
+    overflow: "hidden",
+  },
+  app: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: t.bg,
+  },
+  layout: {
+    flex: 1,
+    width: "100%",
+    maxWidth: 760,
+    alignSelf: "center",
   },
   loading: {
     flex: 1,
@@ -1295,121 +701,7 @@ const s = StyleSheet.create({
     justifyContent: "center",
     gap: 18,
   },
-  phone: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-    maxWidth: 520,
-    backgroundColor: t.bg,
-    overflow: "hidden",
-  },
-  desktopCopy: { width: 360, padding: 25, marginRight: 40 },
-  desktopBrand: {
-    fontSize: 23,
-    fontWeight: "700",
-    color: t.ink,
-    marginTop: 17,
-  },
-  desktopTitle: {
-    fontSize: 44,
-    lineHeight: 51,
-    letterSpacing: -1.4,
-    fontWeight: "700",
-    color: t.ink,
-    marginTop: 35,
-  },
-  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: "#8AAB72" },
-  status: {
-    height: 38,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-  },
-  island: { width: 96, height: 23, backgroundColor: t.ink, borderRadius: 20 },
-  header: {
-    height: 69,
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
-  },
-  wordmark: { fontSize: 25, fontWeight: "700", color: t.ink },
   content: { paddingHorizontal: 20, paddingTop: 8 },
-  navDock: {
-    position: "absolute",
-    bottom: 16,
-    left: 16,
-    right: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  navPill: {
-    flex: 1,
-    height: 65,
-    borderRadius: 35,
-    borderWidth: 1,
-    borderColor: t.line,
-    backgroundColor: t.bg,
-    padding: 6,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    shadowColor: t.ink,
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: -3 },
-    elevation: 3,
-  },
-  navItem: {
-    flex: 1,
-    height: 50,
-    borderRadius: 28,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  mascotButton: {
-    width: 58,
-    height: 63,
-    borderRadius: 33,
-    borderWidth: 1,
-    borderColor: t.line,
-    backgroundColor: t.bg,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  homeIndicator: {
-    height: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: t.bg,
-  },
-  recommendationCover: {
-    width: 110,
-    height: 79,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: t.line,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  readerHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 9,
-    gap: 3,
-    paddingVertical: 7,
-  },
-  track: {
-    height: 9,
-    borderRadius: 7,
-    backgroundColor: "#E4E1D6",
-    flex: 1,
-    overflow: "hidden",
-    marginRight: 6,
-  },
-  fill: { height: "100%", backgroundColor: t.blue, borderRadius: 7 },
   readerFooter: {
     position: "absolute",
     bottom: 0,
@@ -1419,39 +711,12 @@ const s = StyleSheet.create({
     padding: 20,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderColor: "#EEEADF",
+    borderColor: t.line,
   },
   readerTutor: {
     alignSelf: "flex-end",
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
     marginBottom: 12,
-  },
-  option: {
-    flexDirection: "row",
-    gap: 13,
-    alignItems: "center",
-    padding: 15,
-    borderWidth: 1,
-    borderBottomWidth: 4,
-    borderColor: t.line,
-    borderRadius: 15,
-    minHeight: 65,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(35,30,22,.48)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 22,
-  },
-  sheet: {
-    width: "100%",
-    maxWidth: 410,
-    backgroundColor: t.bg,
-    borderRadius: 28,
-    padding: 25,
-    gap: 18,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
   },
 });

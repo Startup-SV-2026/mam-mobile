@@ -4,16 +4,34 @@ const visual = {
   properties: {
     kind: {
       type: "string",
-      enum: ["steps", "comparison", "cycle", "timeline"],
+      enum: [
+        "steps",
+        "comparison",
+        "cycle",
+        "timeline",
+        "concept-map",
+        "layers",
+        "formula",
+        "metrics",
+      ],
     },
     title: text,
+    tone: {
+      type: "string",
+      enum: ["sage", "sky", "peach", "lavender", "sand"],
+    },
+    expression: { type: "string", maxLength: 140 },
     items: {
       type: "array",
       minItems: 2,
       maxItems: 3,
       items: {
         type: "object",
-        properties: { label: text, detail: text },
+        properties: {
+          label: text,
+          detail: text,
+          value: { type: "string", maxLength: 32 },
+        },
         required: ["label", "detail"],
       },
     },
@@ -29,8 +47,29 @@ const page = {
     emoji: text,
     takeaway: text,
     visual,
+    example: {
+      type: "object",
+      properties: { scenario: text, explanation: text },
+      required: ["scenario", "explanation"],
+    },
+    selfCheck: {
+      type: "object",
+      properties: { question: text, hint: text, answer: text },
+      required: ["question", "hint", "answer"],
+    },
+    commonMistake: text,
   },
-  required: ["kicker", "title", "body", "emoji", "takeaway", "visual"],
+  required: [
+    "kicker",
+    "title",
+    "body",
+    "emoji",
+    "takeaway",
+    "visual",
+    "example",
+    "selfCheck",
+    "commonMistake",
+  ],
 };
 export const courseSchema = {
   type: "object",
@@ -46,6 +85,7 @@ export const courseSchema = {
         properties: {
           title: text,
           subtitle: text,
+          objective: text,
           illustrationPlan: {
             type: "object",
             properties: {
@@ -55,7 +95,7 @@ export const courseSchema = {
             },
             required: ["scene", "caption", "alt"],
           },
-          minutes: { type: "integer", enum: [3] },
+          minutes: { type: "integer", minimum: 5, maximum: 15 },
           pages: { type: "array", minItems: 3, maxItems: 3, items: page },
           quiz: {
             type: "object",
@@ -71,6 +111,7 @@ export const courseSchema = {
         required: [
           "title",
           "subtitle",
+          "objective",
           "minutes",
           "pages",
           "quiz",
@@ -81,3 +122,5 @@ export const courseSchema = {
   },
   required: ["title", "subtitle", "lessons"],
 };
+
+export const lessonSchema = courseSchema.properties.lessons.items;

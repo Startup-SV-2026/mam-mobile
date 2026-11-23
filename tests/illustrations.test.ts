@@ -44,7 +44,7 @@ test("image adapter uses a separate model and key header, excludes thoughts, and
       "IMAGE",
     ]);
     assert.equal(body.generationConfig.imageConfig.aspectRatio, "3:2");
-    assert.match(body.contents[0].parts[0].text, /mam-clay-v1/);
+    assert.match(body.contents[0].parts[0].text, /mam-editorial-v2/);
     return new Response(
       JSON.stringify({
         candidates: [
@@ -195,6 +195,20 @@ test("HTTP course creation returns before pictures finish, then status and media
     ...STARTER_COURSES[0],
     lessons: STARTER_COURSES[0].lessons.map((l, i) => ({
       ...l,
+      objective: "Giải thích một khái niệm và áp dụng vào tình huống mới.",
+      pages: l.pages.map((p) => ({
+        ...p,
+        example: {
+          scenario: "Tình huống cụ thể.",
+          explanation: "Giải thích cách áp dụng.",
+        },
+        selfCheck: {
+          question: "Áp dụng thế nào?",
+          hint: "Xét kiến thức đã học.",
+          answer: "Lời giải tham khảo.",
+        },
+        commonMistake: "Phân biệt khái niệm với ví dụ.",
+      })),
       illustrationPlan: { ...plan, scene: `${plan.scene}: ${i}` },
     })),
   };
@@ -250,7 +264,13 @@ test("HTTP course creation returns before pictures finish, then status and media
     release();
     await Promise.all(ids.map((id) => waitReady(images, id)));
     await new Promise<void>((r) => server.close(() => r()));
-    await rm(dir, { recursive: true, force: true });
+    // ready is observable just before the final metadata rename completes.
+    await rm(dir, {
+      recursive: true,
+      force: true,
+      maxRetries: 5,
+      retryDelay: 20,
+    });
   }
 });
 test("old courses remain readable and image refs survive local progress parsing", () => {

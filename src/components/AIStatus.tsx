@@ -1,5 +1,7 @@
+import { MascotLoading } from "./MascotLoading";
+import { fetchBackend } from "../lib/backend-fetch";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Image, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import type {
   ImagePipeline,
   IllustrationStatus,
@@ -36,7 +38,7 @@ export function AIStatus({
       const timeout = setTimeout(() => controller.abort(), 12000);
       try {
         if (!base) throw new Error("Chưa cấu hình địa chỉ backend.");
-        const r = await fetch(`${base}/api/illustrations/status`, {
+        const r = await fetchBackend(`${base}/api/illustrations/status`, {
           signal: controller.signal,
         });
         if (!r.ok)
@@ -76,7 +78,7 @@ export function AIStatus({
     const timeout = setTimeout(() => controller.abort(), 15000);
     try {
       await requireIllustrationBackend(base, controller.signal);
-      const r = await fetch(
+      const r = await fetchBackend(
         `${base}/api/illustrations${action === "resume" ? "/control" : ""}`,
         {
           method: "POST",
@@ -125,7 +127,7 @@ export function AIStatus({
       </Action>
       <View style={[ui.card, { gap: 14, backgroundColor: t.soft }]}>
         <View style={ui.row}>
-          <Icon name="sparkle" color="#5C91A4" />
+          <Icon name="sparkle" color={t.accent} />
           <Text
             style={{ fontSize: 21, fontWeight: "700", color: t.ink, flex: 1 }}
           >
@@ -135,12 +137,18 @@ export function AIStatus({
         <Text style={ui.body}>
           Bài học và sơ đồ vẫn dùng bình thường khi ảnh chưa sẵn sàng.
         </Text>
-        {busy && <ActivityIndicator color={t.ink} />}
+        {(busy || (!pipeline && !error)) && (
+          <MascotLoading compact label="Đang kết nối AI…" />
+        )}
+        {!busy &&
+          jobs.some(
+            (j) => j.status === "generating" || j.status === "queued",
+          ) && <MascotLoading compact label="Đang chuẩn bị tranh minh họa…" />}
       </View>
       {error ? (
         <Text
           accessibilityRole="alert"
-          style={{ fontSize: 14, lineHeight: 22, color: "#9C4E37" }}
+          style={{ fontSize: 14, lineHeight: 22, color: t.danger }}
         >
           {error}
         </Text>

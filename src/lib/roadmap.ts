@@ -1,13 +1,15 @@
+import { totalLessons } from "./curriculum";
 import type { Course, Progress } from "../types/course";
 export function lessonState(
   course: Course,
   index: number,
   completed: Progress["completed"],
 ): "done" | "current" | "locked" {
+  if (index < 0 || index >= totalLessons(course)) return "locked";
   if (completed[`${course.id}:${index}`]) return "done";
-  return course.lessons
-    .slice(0, index)
-    .every((_, i) => completed[`${course.id}:${i}`])
+  return Array.from({ length: index }, (_, i) => i).every(
+    (i) => completed[`${course.id}:${i}`],
+  )
     ? "current"
     : "locked";
 }
@@ -29,8 +31,8 @@ export function filterLibrary(
           .includes(query)) &&
       (status === "Tất cả" ||
         (status === "Chưa học" && done === 0) ||
-        (status === "Đang học" && done > 0 && done < c.lessons.length) ||
-        (status === "Hoàn thành" && done === c.lessons.length))
+        (status === "Đang học" && done > 0 && done < totalLessons(c)) ||
+        (status === "Hoàn thành" && done === totalLessons(c)))
     );
   });
 }

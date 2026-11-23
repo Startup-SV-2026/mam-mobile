@@ -1,3 +1,4 @@
+import { isCurriculum, flattenPlan, type Curriculum } from "../lib/curriculum";
 export interface IllustrationPlan {
   scene: string;
   caption: string;
@@ -45,12 +46,35 @@ export function isIllustrationPlan(v: unknown): v is IllustrationPlan {
   );
 }
 export interface LessonVisual {
-  kind: "steps" | "comparison" | "cycle" | "timeline";
+  kind:
+    | "steps"
+    | "comparison"
+    | "cycle"
+    | "timeline"
+    | "concept-map"
+    | "layers"
+    | "formula"
+    | "metrics";
+  tone?: "sage" | "sky" | "peach" | "lavender" | "sand";
+  expression?: string;
   title: string;
-  items: { label: string; detail: string }[];
+  items: { label: string; detail: string; value?: string }[];
+}
+export interface VocabData {
+  word: string;
+  type: string;
+  ipa: string;
+  meaning: string;
+  root: string;
+  example: string;
+  synonyms: string[];
 }
 export interface LessonPage {
+  example?: { scenario: string; explanation: string };
+  selfCheck?: { question: string; hint: string; answer: string };
+  commonMistake?: string;
   visual?: LessonVisual;
+  vocab?: VocabData;
   kicker: string;
   title: string;
   body: string;
@@ -64,9 +88,11 @@ export interface Quiz {
   why: string;
 }
 export interface Lesson {
+  objective?: string;
+  section?: string;
   illustrationPlan?: IllustrationPlan;
   illustration?: { id: string };
-  sampleIllustration?: "space";
+  sampleIllustration?: "space" | "tran-1" | "tran-2" | "tran-3";
   title: string;
   subtitle: string;
   minutes: number;
@@ -74,6 +100,7 @@ export interface Lesson {
   quiz: Quiz;
 }
 export interface CourseContent {
+  curriculum?: Curriculum;
   title: string;
   subtitle: string;
   lessons: Lesson[];
@@ -88,6 +115,7 @@ export interface Course extends CourseContent {
   source: "sample" | "ai";
 }
 export type Screen =
+  | "podcast"
   | "home"
   | "explore"
   | "course"
@@ -97,7 +125,9 @@ export type Screen =
   | "stats"
   | "ai-status"
   | "profile"
+  | "auth"
   | "create"
+  | "goals"
   | "review"
   | "saved";
 export interface ReviewCard {
@@ -122,9 +152,27 @@ const record = (v: unknown): v is Record<string, unknown> =>
 export function isLessonVisual(v: unknown): v is LessonVisual {
   return (
     record(v) &&
-    ["steps", "comparison", "cycle", "timeline"].includes(String(v.kind)) &&
+    [
+      "steps",
+      "comparison",
+      "cycle",
+      "timeline",
+      "concept-map",
+      "layers",
+      "formula",
+      "metrics",
+    ].includes(String(v.kind)) &&
     typeof v.title === "string" &&
     v.title.trim().length > 0 &&
+    v.title.length <= 160 &&
+    (v.tone === undefined ||
+      ["sage", "sky", "peach", "lavender", "sand"].includes(String(v.tone))) &&
+    (v.expression === undefined ||
+      (typeof v.expression === "string" &&
+        v.expression.trim().length > 0 &&
+        v.expression.length <= 140)) &&
+    (v.kind !== "formula" ||
+      (typeof v.expression === "string" && v.expression.trim().length > 0)) &&
     Array.isArray(v.items) &&
     v.items.length >= 2 &&
     v.items.length <= 3 &&
@@ -134,14 +182,34 @@ export function isLessonVisual(v: unknown): v is LessonVisual {
         record(i) &&
         typeof i.label === "string" &&
         i.label.trim().length > 0 &&
+        i.label.length <= 100 &&
         typeof i.detail === "string" &&
-        i.detail.trim().length > 0,
+        i.detail.trim().length > 0 &&
+        i.detail.length <= 400 &&
+        (i.value === undefined ||
+          (typeof i.value === "string" &&
+            i.value.trim().length > 0 &&
+            i.value.length <= 32)) &&
+        (v.kind !== "metrics" ||
+          (typeof i.value === "string" && i.value.trim().length > 0)),
     )
   );
 }
 const text = (v: unknown): v is string =>
   typeof v === "string" && v.trim().length > 0;
+const textBlock = (v: unknown, keys: string[], maxLength: number): boolean =>
+  record(v) && keys.every((k) => text(v[k]) && v[k].length <= maxLength);
 export function isCourseContent(v: unknown): v is CourseContent {
+  if (!record(v)) return false;
+  if (v.curriculum !== undefined) {
+    if (!isCurriculum(v.curriculum) || !Array.isArray(v.lessons)) return false;
+    const entries = flattenPlan(v.curriculum.plan);
+    if (
+      v.lessons.length > entries.length ||
+      !v.lessons.every((l, i) => record(l) && l.title === entries[i].title)
+    )
+      return false;
+  }
   return (
     record(v) &&
     text(v.title) &&
@@ -161,6 +229,8 @@ export function isCourseContent(v: unknown): v is CourseContent {
         typeof l.minutes === "number" &&
         Number.isFinite(l.minutes) &&
         l.minutes > 0 &&
+        (l.objective === undefined ||
+          (text(l.objective) && l.objective.length <= 400)) &&
         text(l.title) &&
         text(l.subtitle) &&
         Array.isArray(l.pages) &&
@@ -171,7 +241,13 @@ export function isCourseContent(v: unknown): v is CourseContent {
             ["kicker", "title", "body", "emoji", "takeaway"].every((k) =>
               text(p[k]),
             ) &&
-            (p.visual === undefined || isLessonVisual(p.visual)),
+            (p.visual === undefined || isLessonVisual(p.visual)) &&
+            (p.example === undefined ||
+              textBlock(p.example, ["scenario", "explanation"], 3000)) &&
+            (p.selfCheck === undefined ||
+              textBlock(p.selfCheck, ["question", "hint", "answer"], 3000)) &&
+            (p.commonMistake === undefined ||
+              (text(p.commonMistake) && p.commonMistake.length <= 1500)),
         ) &&
         record(l.quiz) &&
         text(l.quiz.question) &&
@@ -190,9 +266,8 @@ export function isCourse(v: unknown): v is Course {
   return (
     isCourseContent(v) &&
     record(v) &&
-    ["id", "category", "emoji", "color", "accent", "level"].every((k) =>
-      text(v[k]),
-    ) &&
+    ["id", "category", "color", "accent", "level"].every((k) => text(v[k])) &&
+    typeof v.emoji === "string" &&
     (v.source === "sample" || v.source === "ai")
   );
 }

@@ -1,0 +1,32 @@
+// Clover green on warm paper. Keep color for actions and status.
+export const theme = {
+  bg: "#F6F7EF",
+  surface: "#FCFDF8",
+  soft: "#EEF1E5",
+  ink: "#1E2A20",
+  muted: "#687062",
+  line: "#E1E5D5",
+  primary: "#27843D",
+  primaryEdge: "#216E33",
+  onPrimary: "#FFFFFF",
+  accent: "#237537",
+  selected: "#E6F1E3",
+  success: "#E6F1E3",
+  dangerSurface: "#FBEFEC",
+  danger: "#B43D2C",
+  figure: ["#E6F1E3", "#EEF1E5", "#EDF1F0"],
+  backdrop: "#F6F7EF",
+  frame: "#252925",
+  shadow: "#1E2A20",
+  overlay: "rgba(20,28,20,0.4)",
+  // Tactile lesson nodes (soft 3D discs)
+  nodeDone: "#CFE8D2",
+  nodeDoneRim: "#A7D2AF",
+  nodeDoneIcon: "#3C8E50",
+  nodeCurrent: "#5FB874",
+  nodeCurrentRim: "#3E9655",
+  nodeLocked: "#ECEEE3",
+  nodeLockedRim: "#D6DACA",
+  // Deep green used for selected pills / dark chips
+  deep: "#1F3A26",
+} as const;

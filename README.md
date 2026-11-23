@@ -77,7 +77,7 @@ Hạn mức miễn phí tùy model, khu vực và tài khoản; cấu hình này
 
 Nếu muốn dùng cấu hình OpenAI cũ, đặt `AI_PROVIDER=openai`, `OPENAI_API_KEY` và `OPENAI_MODEL`. Khi không có `AI_PROVIDER`, server ưu tiên key Gemini hợp lệ về mặt cấu hình, rồi đến key OpenAI; không tự chuyển sang OpenAI nếu Gemini lỗi.
 
-Backend có `POST /api/course` và `POST /api/tutor`. Request có giới hạn kích thước, kiểm tra dữ liệu và timeout. Mỗi lần tạo khóa/hỏi gia sư có thể phát sinh phí API. Backend hiện phục vụ phát triển local/LAN; chưa có tài khoản, giới hạn chi phí hay rate limiting để triển khai công khai.
+Backend có `POST /api/course-chat`, `/api/course-plan`, `/api/lesson` và `/api/tutor`; `/api/course` giữ cho client cũ. Request có giới hạn kích thước, kiểm tra dữ liệu và timeout. Mỗi lần tạo khóa/hỏi gia sư có thể phát sinh phí API. Backend hiện phục vụ phát triển local/LAN; chưa có tài khoản, giới hạn chi phí hay rate limiting để triển khai công khai.
 
 ## Thay icon
 
@@ -113,7 +113,7 @@ tests/*.test.ts            Kiểm tra logic học tập và adapter AI
 assets/icon.png            Icon ứng dụng tạm
 ```
 
-Chưa có video/podcast, FSRS, streak bạn bè, đăng nhập, đồng bộ cloud, thanh toán hoặc bản phát hành App Store.
+Chưa có video, FSRS, streak bạn bè, đăng nhập, đồng bộ cloud, thanh toán hoặc bản phát hành App Store.
 
 ## Tranh minh họa tự động — `mam-illustrations`
 
@@ -137,7 +137,7 @@ GEMINI_IMAGE_MODEL=gemini-3.1-flash-image
 # GEMINI_IMAGE_API_KEY=
 ```
 
-Dừng rồi chạy lại `npm run api`. Lệnh này dùng Node watch để tự khởi động lại backend khi code đổi; thay đổi file `.env` vẫn cần restart thủ công. Sau khi bật, mỗi khóa mới có 3 bài sẽ xếp hàng 3 tranh, mỗi tranh có thể cần tối đa 3 lần gọi nếu gặp lỗi tạm thời. Server chỉ chạy một tác vụ ảnh tại một thời điểm. Lỗi tốc độ hoặc gián đoạn tạm thời được thử lại có giới hạn, tối đa 3 lần gọi mỗi lượt tác vụ; lỗi quota, quyền truy cập hoặc 429 không rõ nguyên nhân tạm dừng cả hàng đợi; không tự chuyển model/nhà cung cấp hay bật thanh toán.
+Dừng rồi chạy lại `npm run api`. Lệnh này dùng Node watch để tự khởi động lại backend khi code đổi; thay đổi file `.env` vẫn cần restart thủ công. Sau khi bật, mỗi bài mới được soạn sẽ xếp hàng một tranh; khóa mới chỉ yêu cầu tranh cho bài 1.1 trước. Mỗi tranh có thể cần tối đa 3 lần gọi nếu gặp lỗi tạm thời. Server chỉ chạy một tác vụ ảnh tại một thời điểm. Lỗi tốc độ hoặc gián đoạn tạm thời được thử lại có giới hạn, tối đa 3 lần gọi mỗi lượt tác vụ; lỗi quota, quyền truy cập hoặc 429 không rõ nguyên nhân tạm dừng cả hàng đợi; không tự chuyển model/nhà cung cấp hay bật thanh toán.
 
 `GET /health` có `images.enabled`, `images.configured`, `images.model`. `configured` chỉ xác nhận cấu hình cục bộ có key, không xác nhận quyền hay quota Google. Ảnh được phục vụ từ backend tại `/media/illustrations/:id`; điện thoại dùng cùng địa chỉ backend như phần tạo khóa.
 
@@ -161,3 +161,66 @@ Kiểm tra bổ sung dùng phản hồi ảnh giả lập ở cấp API, không 
 - Trạng thái tạm dừng lưu trong `_pipeline.json` cùng cache, tồn tại sau restart. Chỉ nút tiếp tục trong Trạng thái AI mới mở lại hàng đợi khi đang bị dừng cứng. Không bật thanh toán hay điều chỉnh quota bằng thao tác này.
 - Chỉ lưu thông tin chẩn đoán đã lọc (loại, quota metric, giới hạn, thời điểm thử lại). Không lưu phản hồi lỗi thô, URL chứa key hay credentials.
 - Các tests cho quota 0, quota ngày/phút, trì hoãn, giới hạn số lần gọi, dừng sau restart và dùng lại ảnh đều dùng phản hồi giả lập.
+
+### Chạy app và API cùng lúc
+
+Sau khi cấu hình `.env` và `server/.env`, chạy `npm run dev` để mở cả Expo Web và backend AI. Nếu đã chạy hai tiến trình riêng, tiếp tục dùng chúng; không cần mở thêm bản thứ hai. Nhấn Ctrl+C để dừng các tiến trình do lệnh này tạo.
+
+Nếu giao diện vẫn mở nhưng tính năng AI báo không kết nối, kiểm tra `http://localhost:8787/health` và chạy lại `npm run api` trong terminal riêng. Expo ở cổng 8081 không tự thay thế backend ở cổng 8787.
+
+
+## Podcast / nghe bài giảng
+
+Branch `mam-podcast`: chọn **Nghe bài giảng** từ lộ trình hoặc menu bài học. Podcast dùng một giọng tiếng Việt FPT.AI (`banmai`, nữ miền Bắc), không có lựa chọn giọng thiết bị. Có phát/tạm dừng, tiến/lùi 15 giây, tốc độ, bản đọc và trình phát nhỏ khi đổi màn hình. Nghe không tự đánh dấu hoàn thành bài; âm thanh tạm dừng khi app ra nền.
+
+### Cấu hình
+
+1. Lấy API key của dịch vụ Text to Speech tại https://console.fpt.ai.
+2. Thêm `FPT_API_KEY=...` vào `server/.env`, rồi khởi động lại API bằng `npm run api`. Key giọng đọc độc lập với key Gemini tạo bài học; không đặt vào biến `EXPO_PUBLIC_*`.
+3. Expo chỉ cần `EXPO_PUBLIC_API_URL` trỏ tới backend. Trên điện thoại thật, dùng IP LAN của máy chạy backend.
+
+Backend `server/podcast.ts` gọi FPT v5, chia văn bản thành phần tối đa 5.000 ký tự và chờ file sẵn sàng. Tệp được lưu trong `server/.cache/podcasts` theo nội dung + giọng + tốc độ; nghe lại không gọi tạo giọng. URL của yêu cầu đang xử lý cũng được lưu để thử lại không tạo lại cùng nội dung. Lần đầu có thể mất vài phút, nhất là gói miễn phí. Bài dài phát lần lượt các phần, hiển thị thời gian của **phần hiện tại**. Tất cả nội dung, kể cả từ tiếng Anh trong bài, dùng cùng giọng Việt; phát âm ngoại ngữ tùy khả năng của FPT.
+
+API `POST /api/podcast` nhận `{episodeId,title,segments:[{title,text,language}]}` và trả `{audioUrls:["/media/podcasts/<hash>", ...]}`. Route media hỗ trợ byte ranges để tua âm thanh. Khi chưa có key, app báo chưa kết nối giọng đọc; không tự chuyển sang giọng thiết bị. Adapter phía app: `src/audio/provider.ts`.
+
+Tài liệu FPT: https://docs.fpt.ai/docs/vi/speech/api/text-to-speech.html. Chưa hỗ trợ tải xuống hoặc phát khi khóa màn hình. Native development build cũ cần build lại sau khi thêm `expo-audio`.
+
+
+## Tạo khóa học qua hội thoại
+
+Branch `mam-course-chat`: tab **Tạo khóa** bắt đầu bằng chủ đề tự do. AI hỏi thêm từng câu theo thông tin còn thiếu, có lựa chọn nhanh, trả lời tự do và **Để Mầm đề xuất**. Thông thường 2–3 câu, tối đa 4; yêu cầu đã đủ chi tiết có thể chuyển thẳng sang bản tóm tắt.
+
+Người học xem/sửa chủ đề, mục tiêu, kiến thức đã có, phạm vi, kiểu bài tập, nhịp học và trình độ rồi mới nhấn **Tạo khóa học**. Sửa một câu trả lời cũ sẽ xóa các lượt sau để hỏi lại theo thông tin mới. Hội thoại đang làm được giữ khi đổi tab trong cùng phiên; chưa lưu bản nháp sau khi đóng app. Có dừng và thử lại khi lỗi; tạo khóa bị lỗi vẫn giữ bản tóm tắt.
+
+`POST /api/course-chat` dùng cùng cấu hình Gemini/OpenAI trong `server/.env`, trả câu hỏi hoặc brief có kiểm tra cấu trúc. `/api/course-plan` nhận `brief` và `conversation`; prompt tạo đề cương và từng bài dùng bản tóm tắt đã chỉnh cùng các câu trả lời thay vì chỉ topic/level. Không tự mở một khóa mẫu trùng tên khi người học đang tạo khóa cá nhân. Khóa mẫu vẫn ở Thư viện. Khởi động lại API nếu server cũ báo không tìm thấy endpoint.
+
+
+## Tạo từng bài theo tiến độ
+
+Khóa AI mới dùng `POST /api/course-plan` để tạo đề cương 2–4 chương, mỗi chương 2–4 bài. Sau đó chỉ gọi `POST /api/lesson` cho bài **1.1**. Đề cương, brief và các bài đã có được lưu cùng khóa trong tiến độ local.
+
+Sau khi người học hoàn thành quiz của bài hiện tại, app mới tự yêu cầu bài kế tiếp (1.2, rồi sang chương 2…). Khi yêu cầu thất bại, lộ trình và màn hình hoàn thành có nút thử lại; bài trước vẫn đọc được. Mở lại app sẽ tiếp tục tạo đúng bài còn thiếu nếu các bài trước đã hoàn thành. Không tự tạo trước cả chương và không tính một khóa đã xong chỉ vì bài đầu tiên đã hoàn thành.
+
+Server lưu đề cương và từng bài trong `server/.cache/courses` (có thể đổi bằng `COURSE_CACHE_DIR`), theo model, brief, đề cương và ngữ cảnh. Yêu cầu trùng đang chạy được dùng chung, bài đã có được dùng lại. Prompt bài sau nhận đề cương và mục tiêu/tóm tắt của những bài đã học; không coi tiêu đề bài tương lai là kiến thức đã dạy. Hình minh họa chỉ được yêu cầu cho bài vừa tạo. Podcast và ôn tập chỉ dùng các bài đã có nội dung.
+
+Khóa mẫu và khóa AI cũ đã tạo đủ nội dung tiếp tục hoạt động như trước, không tự xóa hoặc tạo lại. Endpoint `/api/course` được giữ để tương thích client cũ; luồng tạo khóa mới không dùng endpoint tạo toàn bộ này.
+
+
+## Mascot chuyển động
+
+`src/components/MamMascot.tsx` là nhân vật hạt mầm SVG riêng của Mầm, gồm thân xanh, hai lá, tay chân và biểu cảm. Có ba trạng thái `idle`, `thinking`, `happy`; chạm mascot ở màn tạo khóa/gia sư để chào và nhảy nhẹ. Nút Hỏi Mầm trên lộ trình và màn đọc mở gia sư; mascot xuất hiện khi AI đang trả lời và khi hoàn thành bài.
+
+Animation dùng React Native Animated, không cần API hoặc dịch vụ ảnh. Tự dừng khi app ra nền, dọn các vòng lặp khi unmount và tôn trọng Reduce Motion. Chỉnh hình dáng, màu và chuyển động trong một component; logo Sprout vẫn giữ ở phần nhận diện app.
+
+
+### Mascot khi chờ nội dung
+
+`MascotLoading.tsx` dùng chung cho các trạng thái chờ: tải dữ liệu, chat, tạo khóa, soạn bài tiếp theo, bài tuần, tranh minh họa và podcast. Khi tạo khóa, phần tóm tắt được thay bằng mascot lớn và bước hiện tại: **Đang tạo đề cương** → **Đang soạn bài 1.1**. Đây là các giai đoạn thật của request; không hiển thị phần trăm hoặc thời gian chờ giả. Có nút dừng; khi lỗi/dừng, bản tóm tắt vẫn được giữ để thử lại. Animation vẫn tôn trọng Reduce Motion và dừng khi app ra nền.
+
+## Visuals
+
+Branch `mam-visuals`: 7 bìa chủ đề mới được tạo bằng imagegen tích hợp, dùng phong cách vật thể gốm/giấy và bảng màu xanh, kem, pastel. `CourseArt` chọn bìa theo tên và chủ đề khóa học, kể cả khóa có ID AI; đây là bộ bìa có sẵn, chưa tạo bìa riêng cho từng khóa. Ảnh gốc, ảnh tối ưu và prompts nằm trong `assets/artwork/PROMPTS.md`.
+
+Minh họa kiến thức có 8 dạng: các bước, so sánh, chu trình có thể chạm, dòng thời gian, bản đồ ý tưởng, các lớp, công thức và số liệu. Chữ và số được app dựng trực tiếp để giữ độ rõ. Schema và prompt AI chọn dạng theo nội dung; công thức cần biểu thức, thẻ số liệu cần giá trị có căn cứ. Khóa cũ vẫn đọc được.
+
+Prompt tạo tranh bài học dùng phiên bản `mam-editorial-v2`, chọn cảnh/vật thể theo chủ đề và tránh chữ hoặc biểu đồ do model vẽ. Thay đổi này không bật lại pipeline tạo ảnh đang tạm dừng vì hạn mức, cũng không tự tạo lại ảnh cũ.

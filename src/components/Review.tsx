@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { theme as t } from "../theme";
 import type { Course, Progress } from "../types/course";
 type Props = Pick<Progress, "completed" | "reviews"> & {
   courses: Course[];
@@ -41,19 +42,14 @@ export function Review({
   };
   return (
     <View style={{ gap: 18, paddingTop: 12 }}>
-      <Text style={s.eyebrow}>GIEO LẠI ĐỂ NHỚ LÂU</Text>
-      <Text style={s.title}>Một chút ôn tập.</Text>
-      <Text style={s.body}>
-        Những điều đã học sẽ quay lại đúng lúc. Mỗi lần nhớ là một lần hiểu sâu
-        hơn.
-      </Text>
+      <Text style={s.eyebrow}>ÔN TẬP</Text>
+      <Text style={s.title}>Câu hỏi ôn tập</Text>
+      <Text style={s.body}>Ôn lại các bài đã học theo lịch.</Text>
       <View style={s.summary}>
-        <Text style={{ fontSize: 40 }}>↻</Text>
+        <Text style={{ fontSize: 40, color: t.accent }}>↻</Text>
         <View>
           <Text style={s.number}>{due.length} câu đến hạn</Text>
-          <Text style={s.body}>
-            {cards.length} kiến thức trong vườn của bạn
-          </Text>
+          <Text style={s.body}>{cards.length} bài đã học</Text>
         </View>
       </View>
       {card ? (
@@ -72,8 +68,8 @@ export function Review({
               style={[
                 s.option,
                 choice === i && {
-                  borderColor: "#549BBC",
-                  backgroundColor: "#DDEEF3",
+                  borderColor: t.accent,
+                  backgroundColor: t.selected,
                 },
               ]}
             >
@@ -111,11 +107,11 @@ export function Review({
         </View>
       ) : (
         <View style={s.card}>
-          <Text style={{ fontSize: 52, textAlign: "center" }}>✳</Text>
+          <Text style={{ fontSize: 52, textAlign: "center", color: t.accent }}>
+            ✳
+          </Text>
           <Text style={[s.question, { textAlign: "center" }]}>
-            {cards.length
-              ? "Bạn đã ôn xong hôm nay!"
-              : "Vườn kiến thức đang chờ bạn"}
+            {cards.length ? "Bạn đã ôn xong hôm nay!" : "Chưa có bài để ôn"}
           </Text>
           <Text style={s.body}>
             {cards.length
@@ -139,28 +135,28 @@ const s = StyleSheet.create({
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 1.3,
-    color: "#549BBC",
+    color: t.accent,
   },
   title: {
     fontSize: 31,
     fontWeight: "800",
-    color: "#2C1C18",
+    color: t.ink,
     letterSpacing: -1,
   },
-  body: { fontSize: 14, lineHeight: 22, color: "#867F73" },
+  body: { fontSize: 14, lineHeight: 22, color: t.muted },
   summary: {
-    backgroundColor: "#E3E5C8",
+    backgroundColor: t.selected,
     padding: 20,
     borderRadius: 22,
     flexDirection: "row",
     gap: 18,
     alignItems: "center",
   },
-  number: { fontSize: 21, fontWeight: "800", color: "#2C1C18" },
+  number: { fontSize: 21, fontWeight: "800", color: t.ink },
   card: {
-    backgroundColor: "#FFFDF1",
+    backgroundColor: t.surface,
     borderWidth: 1,
-    borderColor: "#D4D0C3",
+    borderColor: t.line,
     borderRadius: 22,
     padding: 20,
     gap: 12,
@@ -168,29 +164,29 @@ const s = StyleSheet.create({
   question: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#2C1C18",
+    color: t.ink,
     lineHeight: 30,
     marginVertical: 10,
   },
   option: {
     borderWidth: 1,
-    borderColor: "#D4D0C3",
+    borderColor: t.line,
     padding: 14,
     borderRadius: 14,
   },
   button: {
-    backgroundColor: "#2C1C18",
+    backgroundColor: t.primary,
     borderRadius: 16,
     padding: 17,
     alignItems: "center",
     marginTop: 8,
   },
-  buttonText: { color: "#FFFDF1", fontWeight: "700", fontSize: 14 },
+  buttonText: { color: t.onPrimary, fontWeight: "700", fontSize: 14 },
   answer: {
     fontSize: 15,
     lineHeight: 24,
-    color: "#2C1C18",
-    backgroundColor: "#E3E5C8",
+    color: t.ink,
+    backgroundColor: t.selected,
     padding: 16,
     borderRadius: 12,
   },

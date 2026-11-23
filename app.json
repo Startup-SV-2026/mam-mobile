@@ -6,14 +6,14 @@
     "version": "0.3.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#FFFDF1",
+    "backgroundColor": "#F8FAF8",
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
-        "backgroundColor": "#EAF0DC",
+        "backgroundColor": "#F8FAF8",
         "foregroundImage": "./assets/icon.png"
       }
     },
@@ -25,6 +25,16 @@
     "experiments": {
       "tsconfigPaths": false
     },
-    "icon": "./assets/icon.png"
+    "icon": "./assets/icon.png",
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      "expo-asset"
+    ]
   }
 }

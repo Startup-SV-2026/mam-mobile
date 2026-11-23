@@ -1,8 +1,9 @@
+import { fetchBackend } from "./backend-fetch";
 // Tell local-development setup errors apart from a missing cached picture.
 export async function requireIllustrationBackend(
   baseUrl: string,
   signal?: AbortSignal,
-  request: typeof fetch = fetch,
+  request: typeof fetch = (input, init) => fetchBackend(String(input), init),
 ): Promise<void> {
   const response = await request(`${baseUrl}/health`, { signal });
   if (!response.ok)

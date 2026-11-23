@@ -2,17 +2,8 @@ import React from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Icon, type IconName } from "./Icon";
-export const theme = {
-  bg: "#FFFDF1",
-  ink: "#2C1C18",
-  muted: "#867F73",
-  line: "#D4D0C3",
-  soft: "#F3F0E4",
-  blue: "#7DCEF5",
-  blueEdge: "#549BBC",
-  green: "#B6C883",
-  peach: "#F9D8C9",
-};
+import { theme } from "../theme";
+export { theme } from "../theme";
 export const ui = StyleSheet.create({
   title: {
     fontSize: 28,
@@ -34,7 +25,7 @@ export const ui = StyleSheet.create({
     borderColor: theme.line,
     borderRadius: 22,
     padding: 20,
-    backgroundColor: theme.bg,
+    backgroundColor: theme.surface,
   },
   input: {
     borderWidth: 1,
@@ -43,7 +34,7 @@ export const ui = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: theme.ink,
-    backgroundColor: "#FFFEF9",
+    backgroundColor: theme.surface,
   },
   divider: { height: 1, backgroundColor: theme.line, marginVertical: 20 },
 });
@@ -69,11 +60,11 @@ export function Action({
       onPress={onPress}
       style={({ pressed }) => [
         {
-          backgroundColor: secondary ? theme.bg : theme.blue,
+          backgroundColor: secondary ? theme.surface : theme.primary,
           borderWidth: 1,
-          borderColor: secondary ? theme.line : theme.blueEdge,
-          borderBottomWidth: pressed ? 1 : 5,
-          borderRadius: 14,
+          borderColor: secondary ? theme.line : theme.primaryEdge,
+          borderBottomWidth: 1,
+          borderRadius: 12,
           minHeight: 51,
           paddingHorizontal: 14,
           paddingVertical: 12,
@@ -81,18 +72,23 @@ export function Action({
           justifyContent: "center",
           flexDirection: "row",
           gap: 9,
-          opacity: disabled ? 0.45 : 1,
+          opacity: disabled ? 0.45 : pressed ? 0.8 : 1,
         },
         style,
       ]}
     >
-      {icon && <Icon name={icon} size={19} />}
+      {icon && (
+        <Icon
+          name={icon}
+          size={19}
+          color={secondary ? theme.ink : theme.onPrimary}
+        />
+      )}
       <Text
         style={{
           fontSize: 13,
-          letterSpacing: 1.2,
-          fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
-          color: theme.ink,
+          fontWeight: "600",
+          color: secondary ? theme.ink : theme.onPrimary,
           textAlign: "center",
         }}
       >
@@ -134,14 +130,14 @@ export function Sprout({ size = 48 }: { size?: number }) {
       style={{
         width: size,
         height: size,
-        backgroundColor: theme.ink,
+        backgroundColor: theme.primary,
         borderRadius: size * 0.4,
         alignItems: "center",
         justifyContent: "center",
         transform: [{ rotate: "-8deg" }],
       }}
     >
-      <Icon name="sprout" size={size * 0.65} color={theme.bg} />
+      <Icon name="sprout" size={size * 0.65} color={theme.onPrimary} />
     </View>
   );
 }

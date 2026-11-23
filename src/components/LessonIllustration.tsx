@@ -1,5 +1,7 @@
+import { MamMascot } from "./MamMascot";
+import { fetchBackend } from "../lib/backend-fetch";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import type { IllustrationStatus, Lesson } from "../types/course";
 import { theme as t, ui } from "./ui";
 import { requireIllustrationBackend } from "../lib/illustration-api";
@@ -12,7 +14,7 @@ export function LessonIllustration({
 }: {
   lesson: Lesson;
   courseTitle: string;
-  onStatus: () => void;
+  onStatus?: () => void;
 }) {
   const [status, setStatus] = useState<IllustrationStatus | null>(null);
   const [error, setError] = useState("");
@@ -37,7 +39,7 @@ export function LessonIllustration({
       controller = new AbortController();
       const timeout = setTimeout(() => controller?.abort(), 12000);
       try {
-        const r = await fetch(`${url}/api/illustrations/${id}`, {
+        const r = await fetchBackend(`${url}/api/illustrations/${id}`, {
           signal: controller.signal,
         });
         if (r.status === 404)
@@ -75,12 +77,23 @@ export function LessonIllustration({
     };
   }, [id, lesson.title]);
   const sample = lesson.sampleIllustration === "space";
+  const tranSamples: Record<string, ReturnType<typeof require>> = {
+    "tran-1": require("../../assets/illustrations/tran-lesson1.jpg"),
+    "tran-2": require("../../assets/illustrations/tran-lesson2.jpg"),
+    "tran-3": require("../../assets/illustrations/tran-lesson3.jpg"),
+  };
+  const tranSample =
+    lesson.sampleIllustration && lesson.sampleIllustration in tranSamples
+      ? tranSamples[lesson.sampleIllustration]
+      : undefined;
   const ready = status?.status === "ready" && id && url;
   const source = sample
     ? require("../../assets/illustrations/space.png")
-    : ready
-      ? { uri: `${url}/media/illustrations/${id}` }
-      : undefined;
+    : tranSample
+      ? tranSample
+      : ready
+        ? { uri: `${url}/media/illustrations/${id}` }
+        : undefined;
   const caption =
     lesson.illustrationPlan?.caption ||
     (sample
@@ -100,7 +113,7 @@ export function LessonIllustration({
             style={{
               borderRadius: 21,
               overflow: "hidden",
-              backgroundColor: "#F6F1E8",
+              backgroundColor: t.surface,
               borderWidth: 1,
               borderColor: t.line,
             }}
@@ -138,7 +151,7 @@ export function LessonIllustration({
         >
           <View style={[ui.row, { gap: 7, flex: 1 }]}>
             {pending ? (
-              <ActivityIndicator size="small" color={t.muted} />
+              <MamMascot size={36} mood="thinking" />
             ) : (
               <Icon name="sprout" size={15} color={t.muted} />
             )}
@@ -150,15 +163,6 @@ export function LessonIllustration({
                   : "Nội dung bài học vẫn sẵn sàng"}
             </Text>
           </View>
-          <Pressable
-            accessibilityRole="button"
-            onPress={onStatus}
-            style={{ paddingVertical: 9, paddingLeft: 4 }}
-          >
-            <Text style={{ fontSize: 11, color: "#467F9B" }}>
-              Trạng thái AI ↗
-            </Text>
-          </Pressable>
         </View>
       )}
     </View>
