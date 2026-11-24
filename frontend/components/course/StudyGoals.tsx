@@ -94,7 +94,7 @@ export function StudyGoals({
     controller.current = c;
     const timer = setTimeout(() => c.abort(), 90000);
     try {
-      const base = (process.env.EXPO_PUBLIC_API_URL || "").replace(/\/$/, "");
+      const base = (process.env.EXPO_PUBLIC_API_URL || "http://localhost:8787").replace(/\/$/, "");
       if (!base) throw Error("Chưa kết nối máy chủ AI.");
       const r = await fetchBackend(`${base}/api/study-week`, {
         method: "POST",

@@ -36,7 +36,7 @@ export async function requestPlan(
   conversation: CourseChatMessage[],
   signal: AbortSignal,
   request: typeof fetch = fetch,
-  base = process.env.EXPO_PUBLIC_API_URL || "",
+  base = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8787",
 ) {
   const data = await post(
     "/api/course-plan",
@@ -55,7 +55,7 @@ export async function requestLesson(
   previousLessons: PreviousLesson[],
   signal: AbortSignal,
   request: typeof fetch = fetch,
-  base = process.env.EXPO_PUBLIC_API_URL || "",
+  base = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8787",
 ) {
   const data = await post(
     "/api/lesson",

@@ -5,7 +5,7 @@ export async function askCourseChat(
   messages: CourseChatMessage[],
   signal: AbortSignal,
   request: typeof fetch = fetch,
-  baseUrl = process.env.EXPO_PUBLIC_API_URL || "",
+  baseUrl = (process.env.EXPO_PUBLIC_API_URL || "http://localhost:8787").replace(/\/$/, ""),
 ) {
   if (!baseUrl) throw Error("Chưa kết nối máy chủ AI.");
   const response = await fetchBackend(
