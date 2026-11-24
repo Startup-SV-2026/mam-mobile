@@ -1,32 +1,42 @@
-// Clover green on warm paper. Keep color for actions and status.
 export const theme = {
-  bg: "#F6F7EF",
-  surface: "#FCFDF8",
-  soft: "#EEF1E5",
-  ink: "#1E2A20",
-  muted: "#687062",
-  line: "#E1E5D5",
+  // Warm cream background canvas matching Wondering
+  bg: "#FAF8F3",
+  // Tactile warm clay paper surface for cards, boxes & modals (matching Wondering Image 2)
+  surface: "#F4EFE6",
+  // Recessed inner containers (like "1 streak freeze" box in Wondering)
+  soft: "#EAE3D5",
+  ink: "#231B15",
+  muted: "#787268",
+  line: "#E2D9CC",
+
+  // Mầm green brand accents
   primary: "#27843D",
   primaryEdge: "#216E33",
   onPrimary: "#FFFFFF",
-  accent: "#237537",
-  selected: "#E6F1E3",
-  success: "#E6F1E3",
+  accent: "#267E3E",
+  selected: "#E5F0E7",
+  success: "#E5F0E7",
+
+  // Wondering terracotta streak & stars
+  terracotta: "#A33924",
+
+  // Wondering signature deep dark for active tabs / star blob
+  deep: "#231B15",
+
   dangerSurface: "#FBEFEC",
   danger: "#B43D2C",
-  figure: ["#E6F1E3", "#EEF1E5", "#EDF1F0"],
-  backdrop: "#F6F7EF",
-  frame: "#252925",
-  shadow: "#1E2A20",
-  overlay: "rgba(20,28,20,0.4)",
-  // Tactile lesson nodes (soft 3D discs)
-  nodeDone: "#CFE8D2",
-  nodeDoneRim: "#A7D2AF",
-  nodeDoneIcon: "#3C8E50",
-  nodeCurrent: "#5FB874",
-  nodeCurrentRim: "#3E9655",
-  nodeLocked: "#ECEEE3",
-  nodeLockedRim: "#D6DACA",
-  // Deep green used for selected pills / dark chips
-  deep: "#1F3A26",
+  figure: ["#EAF4EC", "#F4F0E6", "#EDE8DE"],
+  backdrop: "#FAF8F3",
+  frame: "#231B15",
+  shadow: "#231B15",
+  overlay: "rgba(35, 27, 21, 0.4)",
+
+  // 3D tactile lesson nodes (Mầm clover green palette)
+  nodeDone: "#27843D",
+  nodeDoneRim: "#216E33",
+  nodeDoneCheck: "#FFFFFF",
+  nodeCurrent: "#48B363",
+  nodeCurrentRim: "#2F8745",
+  nodeLocked: "#EDE7DC",
+  nodeLockedRim: "#D8D0C2",
 } as const;

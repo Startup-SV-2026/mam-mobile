@@ -4,16 +4,20 @@ import type { StyleProp, ViewStyle } from "react-native";
 import { Icon, type IconName } from "./Icon";
 import { theme } from "../theme";
 export { theme } from "../theme";
+import { TactileButton, monoFont } from "./TactileButton";
+export { TactileButton, monoFont } from "./TactileButton";
+
 export const ui = StyleSheet.create({
   title: {
-    fontSize: 28,
-    lineHeight: 35,
+    fontSize: 26,
+    lineHeight: 33,
     fontWeight: "700",
     color: theme.ink,
-    letterSpacing: -0.6,
+    letterSpacing: -0.5,
   },
   body: { fontSize: 15, lineHeight: 23, color: theme.muted },
   label: {
+    fontFamily: monoFont,
     fontSize: 11,
     letterSpacing: 1.4,
     color: theme.muted,
@@ -21,23 +25,29 @@ export const ui = StyleSheet.create({
   },
   row: { flexDirection: "row", alignItems: "center", gap: 12 },
   card: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: theme.line,
-    borderRadius: 22,
+    borderRadius: 26,
     padding: 20,
     backgroundColor: theme.surface,
+    shadowColor: theme.shadow,
+    shadowOpacity: 0.05,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   input: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: theme.line,
-    borderRadius: 15,
+    borderRadius: 16,
     padding: 16,
-    fontSize: 16,
+    fontSize: 15,
     color: theme.ink,
-    backgroundColor: theme.surface,
+    backgroundColor: "#FFFFFF",
   },
   divider: { height: 1, backgroundColor: theme.line, marginVertical: 20 },
 });
+
 export function Action({
   children,
   onPress,
@@ -45,6 +55,8 @@ export function Action({
   disabled = false,
   style,
   icon,
+  arrow = false,
+  size = "lg",
 }: {
   children: React.ReactNode;
   onPress: () => void;
@@ -52,51 +64,24 @@ export function Action({
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   icon?: IconName;
+  arrow?: boolean;
+  size?: "md" | "lg";
 }) {
   return (
-    <Pressable
-      accessibilityRole="button"
+    <TactileButton
+      variant={secondary ? "secondary" : "primary"}
+      size={size}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        {
-          backgroundColor: secondary ? theme.surface : theme.primary,
-          borderWidth: 1,
-          borderColor: secondary ? theme.line : theme.primaryEdge,
-          borderBottomWidth: 1,
-          borderRadius: 12,
-          minHeight: 51,
-          paddingHorizontal: 14,
-          paddingVertical: 12,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          gap: 9,
-          opacity: disabled ? 0.45 : pressed ? 0.8 : 1,
-        },
-        style,
-      ]}
+      icon={icon}
+      arrow={arrow}
+      style={style}
     >
-      {icon && (
-        <Icon
-          name={icon}
-          size={19}
-          color={secondary ? theme.ink : theme.onPrimary}
-        />
-      )}
-      <Text
-        style={{
-          fontSize: 13,
-          fontWeight: "600",
-          color: secondary ? theme.ink : theme.onPrimary,
-          textAlign: "center",
-        }}
-      >
-        {children}
-      </Text>
-    </Pressable>
+      {children}
+    </TactileButton>
   );
 }
+
 export function IconButton({
   name,
   label,
@@ -114,13 +99,29 @@ export function IconButton({
       accessibilityLabel={label}
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={{
-        padding: 10,
-        borderRadius: 14,
-        backgroundColor: selected ? theme.soft : "transparent",
-      }}
+      style={({ pressed }) => ({
+        width: 38,
+        height: 38,
+        borderRadius: 19,
+        backgroundColor: selected ? theme.soft : pressed ? theme.soft : theme.surface,
+        borderWidth: 1.5,
+        borderColor: selected ? theme.primary : theme.line,
+        alignItems: "center",
+        justifyContent: "center",
+        shadowColor: theme.shadow,
+        shadowOpacity: 0.04,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 1,
+        transform: pressed ? [{ scale: 0.95 }] : [],
+      })}
     >
-      <Icon name={name} filled={selected} />
+      <Icon
+        name={name}
+        filled={selected}
+        size={17}
+        color={selected ? theme.primary : theme.ink}
+      />
     </Pressable>
   );
 }

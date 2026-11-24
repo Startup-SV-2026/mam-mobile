@@ -43,6 +43,7 @@ import { LessonDone } from "./src/screens/LessonDone";
 import { ProfileScreen } from "./src/screens/ProfileScreen";
 import { AuthScreen } from "./src/screens/AuthScreen";
 import { SavedCards } from "./src/components/SavedCards";
+import { TactileButton } from "./src/components/TactileButton";
 import {
   LessonActionModal,
   NotesModal,
@@ -512,52 +513,51 @@ export default function App() {
             <View style={s.readerFooter}>
               {screen === "lesson" ? (
                 <>
-                  <Action
-                    secondary
-                    style={s.readerTutor}
-                    onPress={() => setTutorOpen(true)}
-                  >
-                    <View style={[ui.row, { gap: 6, alignItems: "center" }]}>
-                      <MamMascot size={28} />
-                      <ActionText label="Hỏi Mầm" />
-                    </View>
-                  </Action>
-                  <View style={[ui.row, { gap: 9 }]}>
+                  <View style={[ui.row, { gap: 10 }]}>
                     {pageIndex > 0 && (
-                      <Action
-                        secondary
-                        style={{ width: 52 }}
+                      <View style={{ width: 56 }}>
+                        <TactileButton
+                          variant="secondary"
+                          size="lg"
+                          onPress={() => {
+                            setPageIndex((v) => v - 1);
+                            scrollRef.current?.scrollTo({
+                              y: 0,
+                              animated: false,
+                            });
+                          }}
+                        >
+                          ←
+                        </TactileButton>
+                      </View>
+                    )}
+                    <View style={{ flex: 1 }}>
+                      <TactileButton
+                        variant="primary"
+                        size="lg"
+                        arrow
                         onPress={() => {
-                          setPageIndex((v) => v - 1);
-                          scrollRef.current?.scrollTo({
-                            y: 0,
-                            animated: false,
-                          });
+                          if (pageIndex < activeLesson.pages.length - 1) {
+                            setPageIndex((v) => v + 1);
+                            scrollRef.current?.scrollTo({
+                              y: 0,
+                              animated: false,
+                            });
+                          } else go("quiz");
                         }}
                       >
-                        ←
-                      </Action>
-                    )}
-                    <Action
-                      style={{ flex: 1 }}
-                      onPress={() => {
-                        if (pageIndex < activeLesson.pages.length - 1) {
-                          setPageIndex((v) => v + 1);
-                          scrollRef.current?.scrollTo({
-                            y: 0,
-                            animated: false,
-                          });
-                        } else go("quiz");
-                      }}
-                    >
-                      {pageIndex === activeLesson.pages.length - 1
-                        ? "TỰ KIỂM TRA"
-                        : "TIẾP TỤC"}
-                    </Action>
+                        {pageIndex === activeLesson.pages.length - 1
+                          ? "TỰ KIỂM TRA"
+                          : "TIẾP TỤC"}
+                      </TactileButton>
+                    </View>
                   </View>
                 </>
               ) : (
-                <Action
+                <TactileButton
+                  variant="primary"
+                  size="lg"
+                  arrow
                   disabled={answer === null}
                   onPress={() => {
                     if (checked && isCorrect) finish();
@@ -572,7 +572,7 @@ export default function App() {
                       ? "HOÀN THÀNH BÀI HỌC"
                       : "THỬ LẠI"
                     : "KIỂM TRA ĐÁP ÁN"}
-                </Action>
+                </TactileButton>
               )}
             </View>
           )}

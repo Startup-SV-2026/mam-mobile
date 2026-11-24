@@ -48,14 +48,14 @@ export function MamHeader({
         )}
       </View>
 
-      {/* Right: Streak & XP indicators */}
-      <View style={[ui.row, { gap: 14 }]}>
-        <View style={[ui.row, { gap: 4, alignItems: "center" }]}>
-          <Icon name="flame" color={t.ink} size={18} />
+      {/* Right: Streak & XP indicators (Wondering exact 🛡 1  ⭐️ 0) */}
+      <View style={[ui.row, { gap: 12 }]}>
+        <View style={[ui.row, { gap: 3, alignItems: "center" }]}>
+          <Icon name="shield" color={t.terracotta} size={16} />
           <Text style={styles.badgeText}>{currentStreak(streak, lastStudy)}</Text>
         </View>
-        <View style={[ui.row, { gap: 4, alignItems: "center" }]}>
-          <Icon name="star" color={t.ink} size={18} />
+        <View style={[ui.row, { gap: 3, alignItems: "center" }]}>
+          <Icon name="star" color={t.terracotta} size={16} />
           <Text style={styles.badgeText}>{xp}</Text>
         </View>
       </View>
@@ -65,7 +65,7 @@ export function MamHeader({
 
 const styles = StyleSheet.create({
   header: {
-    height: 60,
+    height: 58,
     paddingHorizontal: 20,
     flexDirection: "row",
     alignItems: "center",
@@ -76,21 +76,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   sidebarButton: {
-    width: 40,
-    height: 40,
+    width: 38,
+    height: 38,
     borderRadius: 12,
     alignItems: "flex-start",
     justifyContent: "center",
   },
   screenTitle: {
-    fontSize: 26,
-    fontWeight: "800",
-    color: t.ink,
-    letterSpacing: -0.5,
-  },
-  badgeText: {
-    fontSize: 16,
+    fontSize: 28,
     fontWeight: "700",
     color: t.ink,
+    letterSpacing: -0.6,
+  },
+  badgeText: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: t.terracotta,
   },
 });

@@ -9,7 +9,7 @@ import {
   StyleSheet,
 } from "react-native";
 import type { Course } from "../types/course";
-import { ui, theme as t, Action, IconButton } from "./ui";
+import { ui, theme as t, Action, IconButton, TactileButton, monoFont } from "./ui";
 import { Icon } from "./Icon";
 
 interface LessonActionModalProps {
@@ -43,40 +43,49 @@ export function LessonActionModal({
     <View style={styles.overlay}>
       <Pressable style={styles.backdrop} onPress={onClose} />
       <View style={styles.sheet}>
-        <View style={[ui.row, { justifyContent: "space-between" }]}>
-          <Text style={[ui.title, { flex: 1, fontSize: 22 }]}>
-            {lesson.title}
-          </Text>
+        <View style={styles.dragHandle} />
+        <View style={[ui.row, { justifyContent: "space-between", alignItems: "flex-start" }]}>
+          <View style={{ flex: 1, paddingRight: 12 }}>
+            <Text numberOfLines={2} style={[ui.title, { fontSize: 20, lineHeight: 26 }]}>
+              {lesson.title}
+            </Text>
+            <Text style={[ui.body, { fontSize: 13, marginTop: 4 }]}>
+              {isCompleted
+                ? "Đã hoàn thành · Sẵn sàng ôn tập"
+                : `${lesson.minutes} phút khám phá`}
+            </Text>
+          </View>
           <IconButton
             name="close"
             label="Đóng lựa chọn bài"
             onPress={onClose}
           />
         </View>
-        <Text style={ui.body}>
-          {isCompleted
-            ? "Đã hoàn thành · Sẵn sàng ôn lại"
-            : `${lesson.minutes} phút để khám phá`}
-        </Text>
-        <Action icon="review" onPress={onQuiz}>
-          LUYỆN TẬP
-        </Action>
-        <Action secondary icon="headphones" onPress={onPodcast}>
-          Nghe bài giảng
-        </Action>
-        <Action secondary icon="notes" onPress={onRead}>
-          ĐỌC BÀI HỌC
-        </Action>
+
+        <View style={{ gap: 10, marginTop: 6 }}>
+          <TactileButton arrow icon="notes" onPress={onRead}>
+            Đọc bài học
+          </TactileButton>
+          <TactileButton variant="secondary" icon="headphones" onPress={onPodcast}>
+            Nghe Podcast
+          </TactileButton>
+          <TactileButton variant="secondary" icon="review" onPress={onQuiz}>
+            Luyện tập nhanh
+          </TactileButton>
+        </View>
+
         <Pressable
           accessibilityRole="button"
           onPress={onTutor}
-          style={[ui.row, { paddingVertical: 10 }]}
+          style={styles.tutorRow}
         >
-          <Icon name="chat" />
-          <Text style={[ui.body, { flex: 1, color: t.ink, marginLeft: 8 }]}>
-            Hỏi về bài học
+          <View style={styles.tutorIconCircle}>
+            <Icon name="chat" size={17} color={t.primary} />
+          </View>
+          <Text style={[ui.body, { flex: 1, color: t.ink, fontWeight: "600", marginLeft: 10 }]}>
+            Hỏi gia sư Mầm về bài này
           </Text>
-          <Icon name="arrow" size={19} />
+          <Text style={{ fontFamily: monoFont, color: t.muted, fontSize: 16 }}>↗</Text>
         </Pressable>
       </View>
     </View>
@@ -133,7 +142,9 @@ export function NotesModal({
           <Text style={[ui.label, { fontSize: 10 }]}>
             TỰ ĐỘNG LƯU TRÊN THIẾT BỊ
           </Text>
-          <Action onPress={onClose}>XONG</Action>
+          <TactileButton arrow onPress={onClose}>
+            XONG
+          </TactileButton>
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -162,10 +173,14 @@ export function ResetConfirmModal({
           Tiến độ, XP, khóa AI, thẻ đã lưu và ghi chú trên thiết bị này sẽ bị
           xóa.
         </Text>
-        <Action onPress={onConfirm}>XÓA DỮ LIỆU</Action>
-        <Action secondary onPress={onCancel}>
-          GIỮ LẠI
-        </Action>
+        <View style={{ gap: 10, marginTop: 4 }}>
+          <TactileButton onPress={onConfirm}>
+            XÓA DỮ LIỆU
+          </TactileButton>
+          <TactileButton variant="secondary" onPress={onCancel}>
+            GIỮ LẠI
+          </TactileButton>
+        </View>
       </View>
     </View>
   );
@@ -176,28 +191,61 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 998,
     alignItems: "center",
-    justifyContent: "center",
-    padding: 16,
+    justifyContent: "flex-end",
+    padding: 14,
+    paddingBottom: 22,
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: t.overlay,
+    backgroundColor: "rgba(35, 27, 21, 0.45)",
   },
   sheetContainer: {
     width: "100%",
-    maxWidth: 400,
+    maxWidth: 420,
   },
   sheet: {
     width: "100%",
-    maxWidth: 400,
+    maxWidth: 420,
     backgroundColor: t.surface,
-    borderRadius: 26,
-    padding: 22,
+    borderRadius: 28,
+    padding: 24,
     gap: 16,
     zIndex: 1,
-    shadowColor: t.ink,
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
+    borderWidth: 1.5,
+    borderColor: t.line,
+    shadowColor: t.shadow,
+    shadowOpacity: 0.14,
+    shadowRadius: 28,
+    shadowOffset: { width: 0, height: 8 },
     elevation: 8,
+  },
+  dragHandle: {
+    width: 42,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: "#DED8CB",
+    alignSelf: "center",
+    marginBottom: 4,
+  },
+  tutorRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: t.soft,
+    borderWidth: 1,
+    borderColor: t.line,
+    marginTop: 4,
+  },
+  tutorIconCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: t.surface,
+    borderWidth: 1,
+    borderColor: t.line,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

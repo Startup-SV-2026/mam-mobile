@@ -61,7 +61,14 @@ test("new AI IDs use topic-aware artwork rather than all inheriting the technolo
   assert.equal(courseArtKey("ai-123", "Lịch sử nhà Trần"), "history");
   assert.equal(courseArtKey("ai-123", "Tiết kiệm tiền mỗi tháng"), "money");
   assert.equal(courseArtKey("ai-123", "Thiên văn học"), "space");
-  assert.equal(courseArtKey("ai-123", "Một môn học khác"), "lexicon");
+  assert.equal(courseArtKey("ai-123", "Thiết kế đồ họa cơ bản"), "design");
+  assert.equal(courseArtKey("ai-123", "Dinh dưỡng và sức khỏe sinh học"), "health");
+  assert.equal(courseArtKey("ai-123", "Chiến thuật cờ vua và tư duy logic"), "logic");
+  assert.equal(courseArtKey("ai-123", "Địa lý thế giới và biến đổi khí hậu"), "earth");
+  assert.equal(courseArtKey("ai-123", "Bản sắc văn hóa và di sản Đông Sơn"), "culture");
+  assert.equal(courseArtKey("ai-123", "Vật lý lượng tử và khoa học khám phá"), "science");
+  assert.equal(courseArtKey("ai-123", "Luyện thi SAT nâng cao"), "exam");
+  assert.equal(courseArtKey("ai-123", "Văn học cổ điển và triết học"), "literature");
   assert.equal(courseArtKey("mind"), "mind");
   assert.equal(courseArtKey("ai"), "ai");
 });

@@ -15,6 +15,7 @@ import { theme as t, ui } from "./ui";
 import { totalLessons } from "../lib/curriculum";
 import { currentStreak } from "../lib/learning";
 import { ArtChip, Scrim, SectionHeader } from "./MamKit";
+import { TactileButton } from "./TactileButton";
 
 interface MamHomeDashboardProps {
   user: UserProfile | null;
@@ -98,7 +99,9 @@ export function MamHomeDashboard({
           onPress={onOpenGoals}
           style={styles.statItem}
         >
-          <Icon name="flame" size={20} color="#D97706" />
+          <View style={styles.statIconBadge}>
+            <Icon name="flame" size={20} color="#D97706" />
+          </View>
           <View>
             <Text style={styles.statVal}>
               {currentStreak(streak, lastStudy)} ngày
@@ -108,7 +111,9 @@ export function MamHomeDashboard({
         </Pressable>
 
         <View style={styles.statItem}>
-          <Icon name="star" size={20} color="#CA8A04" />
+          <View style={[styles.statIconBadge, { backgroundColor: "#FFF8E7" }]}>
+            <Icon name="star" size={20} color="#CA8A04" />
+          </View>
           <View>
             <Text style={styles.statVal}>{xp} XP</Text>
             <Text style={styles.statLabel}>Điểm tích lũy</Text>
@@ -151,9 +156,15 @@ export function MamHomeDashboard({
           <Text style={styles.lessonsCountText}>
             {completedLessons}/{total} bài học đã hoàn thành
           </Text>
-          <View style={styles.continueButton}>
-            <Text style={styles.continueButtonText}>{completedLessons === total ? "Xem lại" : "Học tiếp"}</Text>
-            <Icon name="play" size={14} color="#FFFFFF" filled />
+          <View style={{ width: 145 }}>
+            <TactileButton
+              variant="primary"
+              size="md"
+              arrow
+              onPress={() => onContinueCourse(activeCourse)}
+            >
+              {completedLessons === total ? "Xem lại" : "Học tiếp"}
+            </TactileButton>
           </View>
         </View>
         </View>
@@ -237,10 +248,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: t.surface,
-    borderRadius: 28,
-    padding: 20,
+    borderRadius: 24,
+    padding: 22,
     marginBottom: 14,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: t.line,
   },
 
@@ -249,8 +260,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: t.selected,
     alignSelf: "flex-start",
-    paddingHorizontal: 9,
-    paddingVertical: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 10,
     gap: 5,
     marginBottom: 8,
@@ -258,7 +269,7 @@ const styles = StyleSheet.create({
 
   pillBadgeText: {
     fontSize: 11,
-    fontWeight: "600",
+    fontWeight: "700",
     color: t.accent,
   },
   greetingTitle: {
@@ -283,13 +294,21 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    paddingVertical: 13,
-    paddingHorizontal: 14,
+    gap: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     borderRadius: 20,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: t.line,
     backgroundColor: t.surface,
+  },
+  statIconBadge: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "#FDF2E9",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   statVal: {
@@ -302,53 +321,18 @@ const styles = StyleSheet.create({
     color: t.muted,
     marginTop: 1,
   },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 0.8,
-    color: t.muted,
-  },
-  seeAllLink: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: t.accent,
-  },
   heroCourseCard: {
     backgroundColor: t.surface,
-    borderRadius: 28,
-    paddingBottom: 18,
+    borderRadius: 26,
+    paddingBottom: 20,
     overflow: "hidden",
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: t.line,
     shadowColor: t.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.04,
     shadowRadius: 12,
     elevation: 1,
-  },
-
-  heroCourseTop: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  categoryTag: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: t.accent,
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-  },
-  progressPercent: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: t.muted,
-    marginLeft: "auto",
   },
   heroTitle: {
     fontSize: 23,
@@ -357,7 +341,6 @@ const styles = StyleSheet.create({
     lineHeight: 29,
     letterSpacing: -0.2,
   },
-
   heroSubtitle: {
     fontSize: 13,
     color: t.muted,
@@ -370,7 +353,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginVertical: 14,
   },
-
   progressBarFill: {
     height: "100%",
     backgroundColor: t.accent,
@@ -395,7 +377,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     gap: 7,
   },
-
   continueButtonText: {
     fontSize: 13,
     fontWeight: "600",
@@ -427,11 +408,6 @@ const styles = StyleSheet.create({
     bottom: 12,
     gap: 3,
   },
-
-  suggestionBody: {
-    padding: 12,
-    gap: 4,
-  },
   suggestionCategory: {
     fontSize: 10,
     fontWeight: "600",
@@ -439,23 +415,11 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
-
   suggestionTitle: {
     fontSize: 15,
     fontWeight: "600",
     color: "#FFFFFF",
     lineHeight: 20,
-  },
-
-  suggestionFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 4,
-  },
-  suggestionCount: {
-    fontSize: 11,
-    color: t.muted,
   },
   createCourseCard: {
     width: 168,
