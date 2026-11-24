@@ -78,9 +78,9 @@ export function LessonIllustration({
   }, [id, lesson.title]);
   const sample = lesson.sampleIllustration === "space";
   const tranSamples: Record<string, ReturnType<typeof require>> = {
-    "tran-1": require("../../assets/illustrations/tran-lesson1.jpg"),
-    "tran-2": require("../../assets/illustrations/tran-lesson2.jpg"),
-    "tran-3": require("../../assets/illustrations/tran-lesson3.jpg"),
+    "tran-1": require("../../../assets/illustrations/tran-lesson1.jpg"),
+    "tran-2": require("../../../assets/illustrations/tran-lesson2.jpg"),
+    "tran-3": require("../../../assets/illustrations/tran-lesson3.jpg"),
   };
   const tranSample =
     lesson.sampleIllustration && lesson.sampleIllustration in tranSamples
@@ -88,7 +88,7 @@ export function LessonIllustration({
       : undefined;
   const ready = status?.status === "ready" && id && url;
   const source = sample
-    ? require("../../assets/illustrations/space.png")
+    ? require("../../../assets/illustrations/space.png")
     : tranSample
       ? tranSample
       : ready
