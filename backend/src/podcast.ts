@@ -252,7 +252,7 @@ export class EdgePodcastProvider implements PodcastProvider {
       let job = this.pending.get(id);
       if (!job) {
         job = (async () => {
-          const tts = new EdgeTTS({ voice: this.voice });
+          const tts = new EdgeTTS({ voice: this.voice, timeout: 60000 });
           const targetPath = path.join(this.cacheDir, id + ".mp3");
           const tempPath = targetPath + "." + randomUUID() + ".tmp";
           try {
@@ -260,6 +260,7 @@ export class EdgePodcastProvider implements PodcastProvider {
             await rename(tempPath, targetPath);
             return `/media/podcasts/${id}`;
           } catch (err) {
+            console.error("Edge TTS error:", err);
             try {
               await rm(tempPath, { force: true });
             } catch {}
