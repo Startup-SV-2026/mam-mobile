@@ -11,7 +11,7 @@ export function addLessonDepth(courses: Course[]) {
     "body" | "example" | "selfCheck" | "commonMistake"
   >[] = [
     {
-      body: "Trí tuệ nhân tạo là lĩnh vực xây dựng hệ thống để thực hiện những nhiệm vụ như nhận diện hình ảnh, dự đoán hoặc xử lý ngôn ngữ. Học máy là một cách xây dựng AI: thay vì liệt kê mọi quy tắc, người phát triển dùng dữ liệu để mô hình học các mẫu hình. Không phải mọi hệ thống tự động đều dùng học máy.\n\nĐiểm cần phân biệt là cách hệ thống đưa ra kết quả: làm theo điều kiện được viết sẵn, hay áp dụng mẫu hình học được từ các ví dụ.",
+      body: "Điều gì phân biệt một phần mềm tự động thông thường với một hệ thống trí tuệ nhân tạo thực thụ?\n\n**Trí tuệ nhân tạo (AI)** là lĩnh vực xây dựng hệ thống giải quyết các bài toán phức tạp như nhận diện hình ảnh hay xử lý ngôn ngữ. Nhưng chìa khóa nằm ở **Học máy (Machine Learning)**: thay vì lập trình viên phải tự tay viết từng dòng _quy tắc cứng_, hệ thống sẽ tự tìm ra quy luật ẩn từ hàng ngàn ví dụ thực tế.\n\nNói cách khác: phần mềm truyền thống nghe theo mệnh lệnh, còn AI học cách **nhận diện mẫu hình**.",
       example: {
         scenario:
           "Một bộ lọc đánh dấu thư là rác nếu tiêu đề chứa đúng từ “trúng thưởng”. Bộ lọc khác được huấn luyện bằng nhiều thư đã gắn nhãn rác hoặc không rác.",
@@ -29,7 +29,7 @@ export function addLessonDepth(courses: Course[]) {
         "Không đồng nhất “tự động” với “học máy”. Một điều kiện nếu–thì hoặc lịch hẹn cũng có thể tự động chạy mà không học từ dữ liệu.",
     },
     {
-      body: "Trong học máy có giám sát, dữ liệu huấn luyện gồm các ví dụ và nhãn hoặc kết quả mong muốn. Mô hình điều chỉnh các tham số để giảm sai lệch trên những ví dụ đó. Sau huấn luyện, mô hình nhận đầu vào mới và đưa ra dự đoán.\n\nKết quả tốt trên dữ liệu đã thấy chưa đủ: cần đánh giá bằng các ví dụ chưa dùng để huấn luyện. Nếu dữ liệu quá hẹp hoặc chứa dấu hiệu gây nhầm lẫn, mô hình có thể học một quan hệ không đáng tin cậy.",
+      body: "Nếu một học sinh đạt điểm 10 khi thi lại đề cũ, liệu bạn có chắc học sinh đó sẽ giải được đề mới?\n\nTrong **học máy có giám sát**, mô hình được huấn luyện bằng các ví dụ đi kèm nhãn kết quả mẫu. Nó tự điều chỉnh các tham số nội bộ để giảm thiểu sai số. Nhưng điểm cao trên tập dữ liệu cũ chưa chứng minh được năng lực thực tế.\n\nĐể biết mô hình có thực sự hiểu bài hay không, ta bắt buộc phải đánh giá nó trên **tập kiểm thử độc lập** — những dữ liệu hoàn toàn mới mà nó chưa từng thấy qua.",
       example: {
         scenario:
           "Bạn huấn luyện bộ phân loại mèo và chó. Trong ảnh huấn luyện, tất cả mèo nằm trên ghế, còn tất cả chó đứng ngoài sân.",
@@ -47,7 +47,7 @@ export function addLessonDepth(courses: Course[]) {
         "“Dự đoán đúng nhiều ví dụ” không có nghĩa mô hình hiểu như con người hoặc sẽ đúng trong mọi hoàn cảnh. Phạm vi dữ liệu và điều kiện sử dụng đều ảnh hưởng kết quả.",
     },
     {
-      body: "Để hiểu một ứng dụng AI, hãy xác định ba phần: dữ liệu đầu vào, nhiệm vụ mô hình cần làm và cách kiểm tra đầu ra. Công cụ dịch nhận văn bản rồi tạo bản dịch; hệ thống gợi ý nhận các tín hiệu tương tác rồi xếp hạng nội dung. Hai nhiệm vụ này có cách đánh giá khác nhau.\n\nMột kết quả có vẻ hợp lý vẫn có thể sai. Mức kiểm tra nên phù hợp hậu quả: gợi ý bài hát có thể thử trực tiếp, nhưng bản dịch hướng dẫn quan trọng cần đối chiếu kỹ hơn.",
+      body: "Tại sao một câu trả lời AI nghe rất mượt mà vẫn có thể chứa sai lệch chết người?\n\nĐể đánh giá đúng một hệ thống AI trong thực tế, hãy luôn bóc tách 3 thành phần cốt lõi: **dữ liệu đầu vào**, **nhiệm vụ mô hình xử lý**, và **cơ chế kiểm chứng đầu ra**.\n\nĐộ tin cậy của AI không phải con số tuyệt đối. Với ứng dụng giải trí nhẹ nhàng, sai sót có thể bỏ qua; nhưng với các văn bản y tế hay hợp đồng pháp lý, việc **kiểm tra chéo từ chuyên gia** là ranh giới an toàn không thể thiếu.",
       example: {
         scenario:
           "Bạn dùng công cụ dịch để chuyển một hướng dẫn sử dụng máy sang tiếng Việt. Bản dịch trôi chảy nhưng câu về việc ngắt nguồn trước khi vệ sinh bị đảo nghĩa.",

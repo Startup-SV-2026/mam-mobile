@@ -55,12 +55,17 @@ Phạm vi phù hợp mục tiêu, trình độ, sở thích bài tập và thờ
 export const incrementalLessonPrompt = `${teaching}
 Chỉ trả một JSON Lesson theo schema, KHÔNG trả khóa học, lessons array, đề cương mới hay bài tiếp theo. currentLesson là duy nhất bài cần viết; dùng đúng title, objective, section đã cho.
 outline là kế hoạch, không phải nội dung đã dạy. previousLessons chỉ chứa các bài đã hoàn thành: nối kiến thức mới bằng một câu ngắn khi cần, không lặp định nghĩa hoặc ví dụ cũ. Không đòi kiến thức từ bài chưa học. learnerBrief đã được xác nhận; conversation chỉ bổ sung chi tiết còn phù hợp.
-Đúng 3 pages. Mỗi body 65–100 từ, giải thích cơ chế/lý do; tiến trình trong bài: hiểu ý chính → phân tích ví dụ → tự áp dụng vào tình huống mới. Không lặp lại tiêu đề thành nội dung.
-Mỗi page có:
-- example {scenario,explanation}: tình huống tự sáng tác có dữ kiện rõ và 1–3 bước giải thích vì sao cách áp dụng đúng.
-- selfCheck {question,hint,answer}: tình huống KHÁC ví dụ; hint gợi bước đầu không lộ đáp án; answer giải thích lập luận 2–4 câu. Không hỏi chỉ chép takeaway.
-- commonMistake: một hiểu nhầm cụ thể và cách phân biệt, 1–2 câu.
-- visual {kind,title,items}: 2–3 items {label,detail}, detail dưới 20 từ; cycle đúng 3 items. Chọn kind theo ý nghĩa: steps cho trình tự; comparison cho tương phản; cycle chỉ cho vòng lặp thật; timeline cho diễn biến có thứ tự; concept-map cho khái niệm và 2–3 nhánh; layers cho bao chứa/phân tầng; formula cho công thức có expression văn bản thuần <=140 ký tự; metrics cho số liệu có cơ sở, mỗi item phải có value <=32 ký tự. tone: sage/sky/peach/lavender/sand. Trong 3 trang nên có ít nhất 2 kiểu nếu nội dung phù hợp; không đổi kiểu ngẫu nhiên. Không bịa số liệu hoặc công thức để trang trí. Không chỉ lặp tiêu đề; timeline chỉ khi thứ tự/mốc chắc chắn.
+Đúng 3 pages. Tiến trình trong bài: hiểu ý chính → phân tích ví dụ → tự áp dụng vào tình huống mới. Không lặp lại tiêu đề thành nội dung.
+CÁCH VIẾT BODY (chuẩn micro-learning & mental models):
+- Mỗi body dài 70–110 từ, BẮT BUỘC chia thành 2–3 đoạn văn ngắn (mỗi đoạn chỉ 1–2 câu dứt khoát) ngăn cách bằng dấu \\n\\n. Tuyệt đối không viết thành một khối đặc chữ.
+- Mở đầu bằng một câu hỏi gợi mở, một nghịch lý hoặc tình huống thực tế hấp dẫn (hook).
+- BẮT BUỘC dùng cú pháp **từ khóa** để in đậm 1–3 từ khóa then chốt trong từng đoạn (khái niệm cốt lõi, hành động chính). Có thể dùng _thuật ngữ_ cho từ cần giải nghĩa.
+- Giải thích bản chất cơ chế vì sao (why/how) bằng phép so sánh đời thường sinh động, trực quan, không dùng văn mẫu giáo trình hàn lâm.
+Mỗi page BẮT BUỘC có thêm:
+- example {scenario,explanation}: tình huống thực tế cụ thể, 1–3 bước phân tích vì sao cách giải đúng; dùng dữ kiện được nêu rõ. Không lặp nguyên văn body.
+- selfCheck {question,hint,answer}: câu hỏi suy ngẫm sâu sắc (reflection prompt) hoặc tình huống tự vấn đối chiếu với thực tế của người học; hint gợi bước đầu nhưng không tiết lộ đáp án; answer giải thích lập luận phản biện đa chiều, 2–4 câu.
+- commonMistake: một hiểu nhầm hoặc bẫy tư duy thường gặp và cách phân biệt, 1–2 câu.
+- visual {kind,title,items}: 2–3 items {label,detail}, detail dưới 20 từ; cycle đúng 3 items. Chọn kind theo quan hệ cần dạy: steps cho quy trình từng bước rõ ràng; comparison cho 2 góc nhìn đối lập (sẽ hiển thị dạng tab so sánh trực quan); cycle cho vòng lặp thực sự; timeline cho diễn biến có thứ tự; concept-map cho một khái niệm có 2–3 nhánh; layers cho quan hệ bao chứa/phân tầng; formula cho công thức có expression văn bản thuần <=140 ký tự; metrics cho các con số có cơ sở, mỗi item phải có value <=32 ký tự. tone: sage/sky/peach/lavender/sand. Trong 3 trang nên có ít nhất 2 kiểu nếu nội dung phù hợp; không đổi kiểu ngẫu nhiên. Không bịa số liệu hoặc công thức để trang trí. Không chỉ lặp tiêu đề; timeline chỉ khi thứ tự/mốc chắc chắn.
 Quiz cuối có 4 choices khác nhau, duy nhất một đáp án (answer 0–3); dùng tình huống mới, phương án nhiễu từ lỗi thường gặp. why giải thích đáp án và phương án sai, không chỉ nhắc lại lựa chọn. Không luôn đặt đáp án ở vị trí đầu.
 Áp dụng focus/format của learnerBrief lên example, selfCheck, quiz: nếu muốn điền từ, có chỗ trống trong ngữ cảnh; nếu muốn viết lại email, có đoạn gốc và yêu cầu viết lại, lời giải đáp ứng đề.
 Viết tiếng Việt, trừ phần ngôn ngữ đang học. Với tiếng Anh nâng cao, giữ collocations, register, sắc thái nghĩa theo trình độ; không gán CEFR chính thức cho từng từ khi không có nguồn. Không bịa số liệu, nguồn, gốc từ, sự kiện.

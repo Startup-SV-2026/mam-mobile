@@ -7,6 +7,7 @@ import { FlashcardView } from "./FlashcardView";
 import { LessonIllustration } from "./LessonIllustration";
 import { LessonFigure } from "./LessonFigure";
 import { LessonDepth } from "./LessonDepth";
+import { FormattedBody } from "./FormattedBody";
 
 interface LessonContentProps {
   pageIndex: number;
@@ -33,34 +34,45 @@ export function LessonContent({
         <View
           style={[
             ui.card,
-            { gap: 8, marginTop: 12, backgroundColor: t.selected },
+            {
+              gap: 8,
+              marginTop: 10,
+              backgroundColor: t.selected,
+              borderRadius: 18,
+              borderWidth: 1,
+              borderColor: "rgba(39, 132, 61, 0.15)",
+              padding: 16,
+            },
           ]}
         >
-          <Text style={[ui.label, { color: t.accent }]}>
-            SAU BÀI NÀY, BẠN CÓ THỂ
+          <Text style={[ui.label, { color: t.accent, fontSize: 11, letterSpacing: 1.2 }]}>
+            MỤC TIÊU BÀI HỌC
           </Text>
-          <Text style={{ fontSize: 15, lineHeight: 24, color: t.ink }}>
+          <Text style={{ fontSize: 15, lineHeight: 23, color: t.ink, fontWeight: "500" }}>
             {activeLesson.objective}
           </Text>
         </View>
       )}
-      <Text style={[ui.label, { marginTop: 12 }]}>
-        {activeLesson.title.toLocaleUpperCase("vi")}
-      </Text>
-      <Text style={[ui.title, { fontSize: 30, lineHeight: 38, marginTop: 18 }]}>
-        {page.title}
-      </Text>
-      <Text
-        selectable
-        style={{
-          fontSize: 18,
-          lineHeight: 30,
-          color: t.ink,
-          marginTop: 20,
-        }}
-      >
-        {page.body}
-      </Text>
+
+      <View style={{ marginTop: 14 }}>
+        <Text style={{ fontSize: 12, fontWeight: "600", color: t.muted, letterSpacing: 0.8, textTransform: "uppercase" }}>
+          {page.kicker || activeLesson.title}
+        </Text>
+        <Text
+          style={{
+            fontSize: 26,
+            fontWeight: "700",
+            lineHeight: 34,
+            color: t.ink,
+            letterSpacing: -0.3,
+            marginTop: 8,
+          }}
+        >
+          {page.title}
+        </Text>
+      </View>
+
+      <FormattedBody body={page.body} />
       {page.vocab ? <FlashcardView {...page.vocab} /> : null}
       {pageIndex === 0 && (
         <LessonIllustration
