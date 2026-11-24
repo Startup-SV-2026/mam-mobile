@@ -1,7 +1,8 @@
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
+import { mkdir, readFile, writeFile, rename, rm } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
+import { EdgeTTS } from "node-edge-tts";
 export interface PodcastInput {
   episodeId: string;
   title: string;
@@ -198,6 +199,90 @@ export class FptPodcastProvider implements PodcastProvider {
     return { audioUrls };
   }
 }
-export function createPodcastProvider() {
+
+export class EdgePodcastProvider implements PodcastProvider {
+  readonly voice: string;
+  private cacheDir: string;
+  private pending = new Map<string, Promise<string>>();
+
+  constructor(options: { voice?: string; cacheDir?: string } = {}) {
+    this.voice =
+      options.voice ??
+      process.env.PODCAST_VOICE ??
+      "vi-VN-HoaiMyNeural"; // Microsoft Edge Vietnamese natural female voice
+    this.cacheDir =
+      options.cacheDir ??
+      process.env.PODCAST_CACHE_DIR ??
+      "backend/.cache/podcasts";
+  }
+
+  private id(text: string) {
+    return createHash("sha256")
+      .update(
+        JSON.stringify({
+          provider: "edge-tts",
+          voice: this.voice,
+          text,
+        }),
+      )
+      .digest("hex");
+  }
+
+  async asset(id: string) {
+    if (!/^[a-f0-9]{64}$/.test(id)) return null;
+    try {
+      return await readFile(path.join(this.cacheDir, id + ".mp3"));
+    } catch {
+      return null;
+    }
+  }
+
+  async synthesize(input: PodcastInput, signal: AbortSignal) {
+    await mkdir(this.cacheDir, { recursive: true });
+    const parts = narrationParts(input);
+    const audioUrls: string[] = [];
+
+    for (const text of parts) {
+      signal.throwIfAborted();
+      const id = this.id(text);
+      if (await this.asset(id)) {
+        audioUrls.push(`/media/podcasts/${id}`);
+        continue;
+      }
+      let job = this.pending.get(id);
+      if (!job) {
+        job = (async () => {
+          const tts = new EdgeTTS({ voice: this.voice });
+          const targetPath = path.join(this.cacheDir, id + ".mp3");
+          const tempPath = targetPath + "." + randomUUID() + ".tmp";
+          try {
+            await tts.ttsPromise(text, tempPath);
+            await rename(tempPath, targetPath);
+            return `/media/podcasts/${id}`;
+          } catch (err) {
+            try {
+              await rm(tempPath, { force: true });
+            } catch {}
+            throw new PodcastError(
+              "Không thể tạo giọng đọc Microsoft Edge TTS. Hãy kiểm tra kết nối mạng.",
+              502,
+            );
+          }
+        })();
+        this.pending.set(id, job);
+        void job.finally(() => this.pending.delete(id)).catch(() => {});
+      }
+      audioUrls.push(await job);
+      signal.throwIfAborted();
+    }
+    return { audioUrls };
+  }
+}
+
+export function createPodcastProvider(): PodcastProvider {
+  const provider = (process.env.PODCAST_PROVIDER || "").toLowerCase().trim();
+  if (provider === "edge") {
+    return new EdgePodcastProvider();
+  }
   return new FptPodcastProvider();
 }
