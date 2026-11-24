@@ -1,12 +1,17 @@
 import { spawn } from "node:child_process";
+import path from "node:path";
+
 // One command for local development. Only stop children started by this script.
+const expoCli = path.join("node_modules", "expo", "bin", "cli");
+const backendEntry = path.join("backend", "src", "index.ts");
+
 const children = [
   spawn(
     process.execPath,
-    ["--watch", "--env-file=backend/.env", "--import", "tsx", "backend/src/index.ts"],
+    ["--watch", "--env-file=backend/.env", "--import", "tsx", backendEntry],
     { stdio: "inherit" },
   ),
-  spawn(process.execPath, ["node_modules/expo/bin/cli", "start", "--web"], {
+  spawn(process.execPath, [expoCli, "start", "--web"], {
     stdio: "inherit",
   }),
 ];
