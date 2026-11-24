@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 const children = [
   spawn(
     process.execPath,
-    ["--watch", "--env-file=server/.env", "--import", "tsx", "server/index.ts"],
+    ["--watch", "--env-file=backend/.env", "--import", "tsx", "backend/src/index.ts"],
     { stdio: "inherit" },
   ),
   spawn(process.execPath, ["node_modules/expo/bin/cli", "start", "--web"], {

@@ -12,3 +12,8 @@ server/.env.*
 !server/.env.example
 server/.cache/
 server/data/
+backend/.env
+backend/.env.*
+!backend/.env.example
+backend/.cache/
+backend/data/
