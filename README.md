@@ -1,6 +1,6 @@
 # 🌱 Mầm — Học một điều mới mỗi ngày
 
-App học bằng tiếng Việt viết bằng **TypeScript strict**, React Native và Expo SDK 54. Chạy cùng code trên iOS, Android và web. Mầm giúp khám phá kiến thức bằng bài học ngắn, lộ trình cá nhân hóa và minh họa trực quan.
+Mầm giúp khám phá kiến thức bằng bài học ngắn, lộ trình cá nhân hóa và minh họa trực quan.
 
 ## Chạy app
 
