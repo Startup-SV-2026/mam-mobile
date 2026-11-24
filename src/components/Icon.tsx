@@ -32,7 +32,9 @@ export type IconName =
   | "settings"
   | "trend"
   | "download"
-  | "more";
+  | "more"
+  | "books"
+  | "shield";
 
 // Bộ Icon độc bản của Mầm: Phong cách Botanical Minimalist hiện đại, thanh thoát
 export function Icon({
@@ -413,22 +415,22 @@ export function Icon({
       );
 
     case "sidebar":
+      // Wondering iconic sidebar toggle: double vertical column rectangle ◫
       return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
           <Rect
-            x="3"
-            y="4"
-            width="18"
-            height="16"
+            x="4"
+            y="4.5"
+            width="16"
+            height="15"
             rx="3"
             stroke={color}
-            strokeWidth={strokeW}
+            strokeWidth={1.5}
           />
           <Path
-            d="M9 4V20"
+            d="M10 4.5V19.5"
             stroke={color}
-            strokeWidth={strokeW}
-            strokeLinecap="round"
+            strokeWidth={1.5}
           />
         </Svg>
       );
@@ -490,6 +492,40 @@ export function Icon({
             strokeWidth={strokeW}
             strokeLinecap="round"
             strokeLinejoin="round"
+          />
+        </Svg>
+      );
+
+    case "books":
+      // Wondering iconic slanted bookshelf icon |||\
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Path
+            d="M5 5V19M9.5 5V19M14 5V19M18.5 5.5L20.5 19"
+            stroke={color}
+            strokeWidth={1.8}
+            strokeLinecap="round"
+          />
+        </Svg>
+      );
+
+    case "shield":
+      // Wondering streak shield icon 🛡
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Path
+            d="M12 3L4 6V11.5C4 16.5 7.4 20.2 12 21.5C16.6 20.2 20 16.5 20 11.5V6L12 3Z"
+            stroke={color}
+            strokeWidth={strokeW}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill={filled ? color : "none"}
+          />
+          <Path
+            d="M12 7V13M12 16.5V17"
+            stroke={color}
+            strokeWidth={strokeW}
+            strokeLinecap="round"
           />
         </Svg>
       );

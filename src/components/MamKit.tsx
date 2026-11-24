@@ -29,7 +29,7 @@ export function Scrim({ height = "60%" }: { height?: number | `${number}%` }) {
   );
 }
 
-/** Outlined monospace uppercase button, e.g. "XEM TẤT CẢ". */
+/** 3D tactile monospace button, e.g. "LỘ TRÌNH", "XEM TẤT CẢ" (matching Wondering EDIT/SHARE buttons). */
 export function MonoButton({
   label,
   onPress,
@@ -41,9 +41,16 @@ export function MonoButton({
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [styles.mono, pressed && { opacity: 0.7 }]}
+      style={styles.monoWrap}
     >
-      <Text style={styles.monoText}>{label.toLocaleUpperCase("vi")}</Text>
+      {({ pressed }) => (
+        <>
+          <View style={styles.monoRim} />
+          <View style={[styles.monoFace, { top: pressed ? 3 : 0 }]}>
+            <Text style={styles.monoText}>{label.toLocaleUpperCase("vi")}</Text>
+          </View>
+        </>
+      )}
     </Pressable>
   );
 }
@@ -95,18 +102,34 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-  mono: {
-    borderWidth: 1,
-    borderColor: "#C9CFBC",
+  monoWrap: {
+    position: "relative",
+    height: 35,
+  },
+  monoRim: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 3,
+    height: 32,
+    backgroundColor: "#C8BEAF",
     borderRadius: 10,
+  },
+  monoFace: {
     paddingVertical: 7,
-    paddingHorizontal: 12,
-    backgroundColor: "transparent",
+    paddingHorizontal: 13,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#DDD5C6",
+    alignItems: "center",
+    justifyContent: "center",
   },
   monoText: {
     fontFamily: monoFont,
     fontSize: 11,
-    letterSpacing: 1.2,
+    letterSpacing: 1.4,
+    fontWeight: "700",
     color: t.ink,
   },
   header: {

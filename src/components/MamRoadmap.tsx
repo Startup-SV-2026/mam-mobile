@@ -108,10 +108,10 @@ export function MamRoadmap({
         <Pressable
           accessibilityRole="button"
           onPress={onTutor}
-          accessibilityLabel="Hỏi Mầm về khóa học"
+          accessibilityLabel="Tùy chọn khóa học"
           style={styles.moreButton}
         >
-          <Icon name="sparkle" size={22} color={t.primary} />
+          <Icon name="more" size={20} color={t.muted} />
         </Pressable>
       </View>
 
@@ -187,7 +187,7 @@ export function MamRoadmap({
                         {preparing ? (
                           <MamMascot size={36} mood="thinking" />
                         ) : state === "done" ? (
-                          <Icon name="check" size={22} color={t.nodeDoneIcon} />
+                          <Icon name="check" size={24} color={t.nodeDoneCheck} />
                         ) : state === "locked" ? (
                           <Icon name="lock" size={18} color={t.muted} />
                         ) : (
@@ -237,16 +237,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 18,
-    borderRadius: 30,
-    borderWidth: 1,
+    borderRadius: 28,
+    borderWidth: 1.5,
     borderColor: t.line,
     backgroundColor: t.surface,
     gap: 16,
     shadowColor: t.shadow,
-    shadowOpacity: 0.04,
-    shadowRadius: 12,
+    shadowOpacity: 0.05,
+    shadowRadius: 14,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 1,
+    elevation: 2,
   },
   artBox: {
     width: 72,
@@ -291,11 +291,16 @@ const styles = StyleSheet.create({
   sectionCard: {
     flexDirection: "row",
     alignItems: "stretch",
-    borderRadius: 22,
-    borderWidth: 1,
+    borderRadius: 24,
+    borderWidth: 1.5,
     borderColor: t.line,
     backgroundColor: t.surface,
     overflow: "hidden",
+    shadowColor: t.shadow,
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 1,
   },
   sectionNumberTitle: {
     fontSize: 16,

@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Pressable, StyleSheet } from "react-native";
+import Svg, { Circle, Path } from "react-native-svg";
 import { Icon, type IconName } from "./Icon";
 import { theme as t } from "./ui";
-import { MamMascot } from "./MamMascot";
 import type { Screen } from "../types/course";
 
 export interface MamTabItem {
@@ -11,11 +11,12 @@ export interface MamTabItem {
   label: string;
 }
 
+// Wondering exact 5 tabs: Home, Sparkle, Brain, Books (slanted library), Profile
 export const MAM_TABS: MamTabItem[] = [
   { screen: "home", icon: "home", label: "Trang chủ" },
   { screen: "create", icon: "sparkle", label: "Tạo khóa" },
   { screen: "goals", icon: "brain", label: "Mục tiêu" },
-  { screen: "explore", icon: "library", label: "Thư viện" },
+  { screen: "explore", icon: "books", label: "Thư viện" },
   { screen: "profile", icon: "profile", label: "Cá nhân" },
 ];
 
@@ -23,6 +24,47 @@ interface MamNavBarProps {
   activeScreen: Screen;
   onTabPress: (screen: Screen) => void;
   onTutorPress: () => void;
+}
+
+/** Biểu tượng Mầm đặc trưng: Hai lá mầm mềm mại vươn lên từ chồi sống */
+function MamSproutIcon({ size = 36 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 36 36" fill="none">
+      {/* Thân mầm uốn lượn nhẹ tự nhiên */}
+      <Path
+        d="M18 31C18 23 18 17 18 15"
+        stroke="#216E33"
+        strokeWidth={2.8}
+        strokeLinecap="round"
+      />
+      {/* Hạt giống / gốc mầm */}
+      <Circle cx={18} cy={30.5} r={2.5} fill="#216E33" />
+      {/* Lá mầm bên trái (xanh Mầm đậm) */}
+      <Path
+        d="M17.5 17.5C17 10 9.5 5 4 7C3.5 14.5 9.5 19.5 17.5 17.5Z"
+        fill="#27843D"
+      />
+      {/* Gân lá trái */}
+      <Path
+        d="M17 17C12 15 8 11.5 6 8.5"
+        stroke="#1E6530"
+        strokeWidth={1.2}
+        strokeLinecap="round"
+      />
+      {/* Lá mầm bên phải (xanh chồi non tươi sáng) */}
+      <Path
+        d="M18 15C18.5 7.5 25 3.5 31.5 5C32.5 12.5 26.5 17.5 18 15Z"
+        fill="#48B363"
+      />
+      {/* Gân lá phải */}
+      <Path
+        d="M18.5 14.5C23.5 12.5 27.5 9 29.5 6.5"
+        stroke="#38944E"
+        strokeWidth={1.2}
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
 }
 
 export function MamNavBar({
@@ -55,8 +97,8 @@ export function MamNavBar({
             >
               <Icon
                 name={item.icon}
-                size={23}
-                color={isActive ? t.primary : t.muted}
+                size={22}
+                color={isActive ? "#FFFFFF" : t.ink}
                 filled={isActive}
               />
             </Pressable>
@@ -64,14 +106,17 @@ export function MamNavBar({
         })}
       </View>
 
-      {/* Floating Mascot / AI Tutor Action Button */}
+      {/* Nút biểu tượng Mầm / Gia sư Mầm */}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Hỏi gia sư Mầm"
         onPress={onTutorPress}
-        style={styles.mascotFab}
+        style={({ pressed }) => [
+          styles.mamSproutButton,
+          pressed && { transform: [{ scale: 0.92 }] },
+        ]}
       >
-        <MamMascot size={46} mood="happy" />
+        <MamSproutIcon size={36} />
       </Pressable>
     </View>
   );
@@ -80,9 +125,9 @@ export function MamNavBar({
 const styles = StyleSheet.create({
   floatingContainer: {
     position: "absolute",
-    bottom: 16,
-    left: 14,
-    right: 14,
+    bottom: 20,
+    left: 16,
+    right: 16,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -90,45 +135,49 @@ const styles = StyleSheet.create({
   },
   pillBar: {
     flex: 1,
-    height: 62,
-    borderRadius: 31,
-    backgroundColor: "rgba(255, 255, 255, 0.94)",
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "rgba(255, 255, 255, 0.88)",
     borderWidth: 1,
-    borderColor: t.line,
+    borderColor: "rgba(237, 231, 220, 0.85)",
     paddingHorizontal: 8,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
-    shadowColor: t.ink,
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 4 },
+    justifyContent: "space-between",
+    shadowColor: t.shadow,
+    shadowOpacity: 0.04,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 6 },
     elevation: 3,
   },
   tabButton: {
-    flex: 1,
-    minWidth: 0,
-    height: 44,
-    borderRadius: 22,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
   },
   tabButtonActive: {
-    backgroundColor: t.selected,
+    backgroundColor: t.deep,
+    shadowColor: t.deep,
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
   },
-  mascotFab: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: t.surface,
-    borderWidth: 1,
+  mamSproutButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    borderWidth: 1.5,
     borderColor: t.line,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: t.ink,
-    shadowOpacity: 0.1,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: t.shadow,
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
     elevation: 4,
   },
 });

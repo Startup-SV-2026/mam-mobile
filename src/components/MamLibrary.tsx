@@ -106,17 +106,27 @@ export function MamLibrary({
         )}
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 8, paddingVertical: 3 }}>
-        {categories.map((item) => (
-          <Pressable key={item} accessibilityRole="button"
-            accessibilityState={{ selected: category === item }}
-            onPress={() => setCategory(item)}
-            style={[styles.categoryChip, category === item && styles.categoryChipActive]}>
-            <Text style={{ fontSize: 13, fontWeight: "600", color: category === item ? t.onPrimary : t.muted }}>{item}</Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+      {/* 3. Wondering Dropdown Pill Filter Buttons */}
+      <View style={styles.filterRow}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => {
+            const nextIdx = (categories.indexOf(category) + 1) % categories.length;
+            setCategory(categories[nextIdx]);
+          }}
+          style={styles.filterPill}
+        >
+          <Text numberOfLines={1} style={styles.filterPillText}>
+            {category === "Tất cả" ? "Tất cả danh mục" : category}
+          </Text>
+          <Text style={styles.dropdownChevron}>⌄</Text>
+        </Pressable>
+
+        <View style={styles.filterPill}>
+          <Text style={styles.filterPillText}>Tất cả ngôn ngữ</Text>
+          <Text style={styles.dropdownChevron}>⌄</Text>
+        </View>
+      </View>
       {filtered.length === 0 && (
         <View style={styles.emptyState}>
           <Icon name="library" size={28} color={t.primary} />
@@ -231,39 +241,39 @@ const styles = StyleSheet.create({
     backgroundColor: t.surface,
     borderWidth: 1,
     borderColor: t.line,
-    borderRadius: 24,
+    borderRadius: 18,
     padding: 4,
-    width: "80%",
-    maxWidth: 290,
+    width: "75%",
+    maxWidth: 280,
   },
   toggleBtn: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 11,
     alignItems: "center",
-    borderRadius: 20,
+    borderRadius: 14,
   },
   toggleBtnActive: {
     backgroundColor: t.deep,
   },
   toggleText: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: "500",
     color: t.muted,
   },
   toggleTextActive: {
     color: "#FFFFFF",
-    fontWeight: "700",
+    fontWeight: "600",
   },
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
     backgroundColor: t.surface,
     borderWidth: 1,
     borderColor: t.line,
     borderRadius: 18,
     paddingHorizontal: 16,
-    height: 50,
+    height: 52,
   },
   searchInput: {
     flex: 1,
@@ -279,22 +289,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: t.soft,
-    borderRadius: 14,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
+    backgroundColor: t.surface,
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: t.line,
   },
   filterPillText: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: "500",
     color: t.ink,
+    flexShrink: 1,
   },
   dropdownChevron: {
-    fontSize: 14,
+    fontSize: 13,
     color: t.muted,
-    fontWeight: "700",
+    marginLeft: 6,
   },
   horizontalCardsScroll: {
     gap: 14,

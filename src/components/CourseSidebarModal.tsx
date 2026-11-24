@@ -11,6 +11,7 @@ import {
 import type { Course } from "../types/course";
 import { theme as t, ui } from "./ui";
 import { Icon } from "./Icon";
+import { TactileButton } from "./TactileButton";
 
 interface CourseSidebarModalProps {
   visible: boolean;
@@ -78,16 +79,17 @@ export function CourseSidebarModal({
           </ScrollView>
 
           <View style={styles.drawerFooter}>
-            <Pressable
-              accessibilityRole="button"
+            <TactileButton
+              variant="secondary"
+              size="md"
               onPress={() => {
                 onClose();
                 onCreateCourse();
               }}
-              style={styles.newCourseButton}
+              style={{ width: 175 }}
             >
-              <Text style={styles.newCourseText}>+ Tạo khóa mới</Text>
-            </Pressable>
+              + Tạo khóa mới
+            </TactileButton>
           </View>
         </SafeAreaView>
       </View>
@@ -125,25 +127,24 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.18)",
   },
   drawer: {
-    width: "78%",
+    width: "82%",
     height: "100%",
     backgroundColor: t.bg,
-    borderRightWidth: 1,
-    borderColor: t.line,
-    paddingHorizontal: 18,
-    paddingTop: 8,
-    paddingBottom: 20,
-    shadowColor: t.ink,
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 24,
+    shadowColor: t.shadow,
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
     elevation: 8,
   },
   drawerHeader: {
     paddingVertical: 14,
+    paddingHorizontal: 4,
   },
   headerLabel: {
-    fontSize: 15,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "500",
     color: t.muted,
   },
   listContent: {
@@ -154,16 +155,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderRadius: 16,
   },
   courseItemActive: {
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    backgroundColor: t.soft,
   },
   courseTitle: {
-    fontSize: 15,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "500",
     color: t.ink,
     flex: 1,
     marginRight: 8,
@@ -173,20 +174,21 @@ const styles = StyleSheet.create({
     color: t.ink,
   },
   drawerFooter: {
-    paddingTop: 14,
+    paddingTop: 16,
+    paddingBottom: 8,
   },
   newCourseButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 12,
-    paddingHorizontal: 18,
-    borderRadius: 22,
+    paddingHorizontal: 22,
+    borderRadius: 24,
     backgroundColor: t.surface,
     borderWidth: 1,
     borderColor: t.line,
     alignSelf: "flex-start",
-    shadowColor: t.ink,
+    shadowColor: t.shadow,
     shadowOpacity: 0.04,
     shadowRadius: 8,
     elevation: 2,
