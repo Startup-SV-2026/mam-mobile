@@ -38,7 +38,7 @@ export function Tutor({
   async function ask(value = question) {
     const clean = value.trim();
     if (!clean || busy) return;
-    const url = (process.env.EXPO_PUBLIC_API_URL || "http://localhost:3001").replace(/\/$/, "");
+    const url = (process.env.EXPO_PUBLIC_API_URL || "http://localhost:8787").replace(/\/$/, "");
     if (!url) {
       setError(
         "Gia sư AI cần kết nối máy chủ. Bật máy chủ AI theo hướng dẫn trong README để bắt đầu.",

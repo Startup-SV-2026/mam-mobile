@@ -641,7 +641,7 @@ export function createApp({
 }
 
 // Only listen when launched as the entry script; imports can test the app independently.
-if (process.argv[1] && /(?:^|\/)(?:backend\/src|server)\/index\.ts$/.test(process.argv[1])) {
+if (process.argv[1] && /(?:^|[/\\])(?:backend[/\\]src|server)[/\\]index\.ts$/.test(process.argv[1])) {
   const { server, images } = createApp();
   images
     .initialize()

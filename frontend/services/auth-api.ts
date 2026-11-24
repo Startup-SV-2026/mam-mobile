@@ -20,7 +20,7 @@ export interface AuthResponse {
 }
 
 const getBaseUrl = () =>
-  (process.env.EXPO_PUBLIC_API_URL || "http://localhost:3001").replace(/\/$/, "");
+  (process.env.EXPO_PUBLIC_API_URL || "http://localhost:8787").replace(/\/$/, "");
 
 async function handleAuthResponse(response: Response): Promise<any> {
   let data: any;
