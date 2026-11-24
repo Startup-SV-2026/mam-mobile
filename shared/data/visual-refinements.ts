@@ -90,7 +90,41 @@ export function refineSampleVisuals(courses: Course[]) {
     };
   }
   const ai = courses.find((c) => c.id === "ai");
-  if (ai)
+  if (ai) {
+    ai.lessons[0].pages[0].visual = {
+      kind: "comparison",
+      tone: "peach",
+      title: "Hai cách giải quyết bài toán",
+      items: [
+        {
+          label: "Quy tắc lập trình",
+          detail: "Con người tự viết điều kiện nếu–thì; Chỉ xử lý trường hợp biết trước; Khó mở rộng với dữ liệu lớn.",
+        },
+        {
+          label: "Học từ ví dụ (ML)",
+          detail: "Hệ thống tự học mẫu hình từ dữ liệu; Tự tổng quát hóa quy luật ẩn; Thích ứng tốt với dữ liệu mới.",
+        },
+      ],
+    };
+    ai.lessons[0].pages[1].visual = {
+      kind: "steps",
+      tone: "sky",
+      title: "Quy trình xây dựng mô hình AI",
+      items: [
+        {
+          label: "Thu thập & gắn nhãn",
+          detail: "Chuẩn bị tập dữ liệu ví dụ thực tế được kiểm chứng kỹ.",
+        },
+        {
+          label: "Huấn luyện mô hình",
+          detail: "Hệ thống tự điều chỉnh tham số để giảm thiểu sai số.",
+        },
+        {
+          label: "Đánh giá & triển khai",
+          detail: "Đo lường độ chính xác trên dữ liệu kiểm thử độc lập.",
+        },
+      ],
+    };
     ai.lessons[0].pages[2].visual = {
       kind: "concept-map",
       tone: "lavender",
@@ -110,6 +144,7 @@ export function refineSampleVisuals(courses: Course[]) {
         },
       ],
     };
+  }
   const english = courses.find((c) => c.id === "english");
   if (english)
     english.lessons[1].pages[1].visual = {

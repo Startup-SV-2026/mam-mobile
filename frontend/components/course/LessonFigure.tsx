@@ -9,6 +9,8 @@ import {
 } from "../../lib/visual-design";
 import { theme as t, ui } from "../ui/ui";
 import { Icon } from "../ui/Icon";
+import { MamMascot } from "../mascot/MamMascot";
+
 const detail = { fontSize: 14, lineHeight: 22, color: t.muted };
 const label = {
   fontSize: 16,
@@ -16,12 +18,225 @@ const label = {
   fontWeight: "600" as const,
   color: t.ink,
 };
+
+function ComparisonTabs({
+  items,
+  visualTitle,
+}: {
+  items: { label: string; detail: string }[];
+  visualTitle: string;
+}) {
+  const [activeTab, setActiveTab] = useState(0);
+  const activeItem = items[activeTab] || items[0];
+
+  const bullets = activeItem.detail
+    .split(/[;\n•]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  return (
+    <View style={{ gap: 12 }}>
+      {visualTitle ? (
+        <Text style={{ fontSize: 14, color: t.muted, fontWeight: "600" }}>
+          {visualTitle}
+        </Text>
+      ) : null}
+
+      {/* Segmented Pill Tabs */}
+      <View
+        style={{
+          flexDirection: "row",
+          backgroundColor: "#EBE5D8",
+          borderRadius: 16,
+          padding: 4,
+          gap: 4,
+        }}
+      >
+        {items.map((item, idx) => {
+          const isSelected = activeTab === idx;
+          return (
+            <Pressable
+              key={idx}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: isSelected }}
+              onPress={() => setActiveTab(idx)}
+              style={{
+                flex: 1,
+                paddingVertical: 10,
+                paddingHorizontal: 8,
+                borderRadius: 12,
+                backgroundColor: isSelected ? "#FFFFFF" : "transparent",
+                alignItems: "center",
+                justifyContent: "center",
+                shadowColor: isSelected ? "#000" : "transparent",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: isSelected ? 0.08 : 0,
+                shadowRadius: 3,
+                elevation: isSelected ? 1 : 0,
+              }}
+            >
+              <Text
+                numberOfLines={1}
+                style={{
+                  fontSize: 13.5,
+                  fontWeight: isSelected ? "700" : "500",
+                  color: isSelected ? t.ink : t.muted,
+                }}
+              >
+                {item.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {/* Card showing the selected view */}
+      <View
+        style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: "rgba(35, 27, 21, 0.09)",
+          padding: 18,
+          minHeight: 120,
+          position: "relative",
+          gap: 12,
+        }}
+      >
+        <Text style={{ fontSize: 16, fontWeight: "700", color: t.ink }}>
+          {activeItem.label}
+        </Text>
+
+        <View style={{ gap: 8, paddingRight: 40 }}>
+          {bullets.map((bullet, bIdx) => (
+            <View key={bIdx} style={{ flexDirection: "row", gap: 10, alignItems: "flex-start" }}>
+              <Text style={{ color: t.accent, fontSize: 15, lineHeight: 21, fontWeight: "700" }}>•</Text>
+              <Text style={{ flex: 1, fontSize: 14.5, lineHeight: 22, color: t.ink }}>
+                {bullet}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Mascot watermark peek */}
+        <View style={{ position: "absolute", right: 12, bottom: 8, opacity: 0.9 }}>
+          <MamMascot size={36} mood="thinking" />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function StepperList({
+  items,
+  visualTitle,
+}: {
+  items: { label: string; detail: string }[];
+  visualTitle: string;
+}) {
+  return (
+    <View
+      style={{
+        backgroundColor: "#FFFFFF",
+        borderRadius: 22,
+        borderWidth: 1,
+        borderColor: "rgba(35, 27, 21, 0.09)",
+        padding: 20,
+        position: "relative",
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: 16,
+        }}
+      >
+        <View style={{ gap: 4 }}>
+          <Text style={{ fontSize: 16, fontWeight: "700", color: t.ink }}>
+            {visualTitle}
+          </Text>
+          <Text style={{ fontSize: 12, fontWeight: "600", color: t.muted }}>
+            {items.length} bước
+          </Text>
+        </View>
+        <Icon name="bookmark" size={18} color="rgba(35, 27, 21, 0.35)" />
+      </View>
+
+      <View style={{ gap: 0 }}>
+        {items.map((item, i) => (
+          <View key={i} style={{ flexDirection: "row", gap: 14 }}>
+            {/* Stepper number + connecting line */}
+            <View style={{ alignItems: "center", width: 28 }}>
+              <View
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  backgroundColor: "#5CB9F2", // sky blue step pill
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontSize: 12, fontWeight: "700", color: "#FFFFFF" }}>
+                  {i + 1}
+                </Text>
+              </View>
+              {i < items.length - 1 && (
+                <View
+                  style={{
+                    width: 2,
+                    flex: 1,
+                    backgroundColor: "#E2D9CC",
+                    marginVertical: 4,
+                  }}
+                />
+              )}
+            </View>
+
+            {/* Content column */}
+            <View
+              style={{
+                flex: 1,
+                paddingBottom: i === items.length - 1 ? 6 : 18,
+                gap: 4,
+              }}
+            >
+              <Text style={{ fontSize: 15, fontWeight: "700", color: t.ink }}>
+                {item.label.replace(/^\d+\s*[·.\-]\s*/, "")}
+              </Text>
+              <Text style={{ fontSize: 13.5, lineHeight: 21, color: "#5C564E" }}>
+                {item.detail}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </View>
+
+      {/* Mascot watermark peek */}
+      <View style={{ position: "absolute", right: 12, bottom: 8, opacity: 0.9 }}>
+        <MamMascot size={36} mood="idle" />
+      </View>
+    </View>
+  );
+}
+
 function VisualContent({ visual }: { visual: LessonVisual }) {
   const [selected, setSelected] = useState(0),
     [width, setWidth] = useState(300);
   const p = visualPalette(visual),
     items = visual.items;
   const swatches = [p, visualPalettes.sand, visualPalettes.lavender];
+
+  if (visual.kind === "comparison") {
+    return <ComparisonTabs items={items} visualTitle={visual.title} />;
+  }
+
+  if (visual.kind === "steps") {
+    return <StepperList items={items} visualTitle={visual.title} />;
+  }
+
   const badge = (n: number) => (
     <View
       style={{
@@ -38,45 +253,10 @@ function VisualContent({ visual }: { visual: LessonVisual }) {
       </Text>
     </View>
   );
+
   return (
     <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
-      {visual.kind === "comparison" ? (
-        <View
-          style={{
-            flexDirection:
-              items.length === 2 && width >= 285 ? "row" : "column",
-            gap: 10,
-          }}
-        >
-          {items.map((item, i) => (
-            <View
-              key={i}
-              style={{
-                flex: 1,
-                gap: 12,
-                padding: 16,
-                borderRadius: 18,
-                backgroundColor: swatches[i].paper,
-                borderTopWidth: 3,
-                borderTopColor: swatches[i].strong,
-              }}
-            >
-              <Text
-                style={{
-                  color: swatches[i].strong,
-                  fontSize: 11,
-                  fontWeight: "700",
-                  letterSpacing: 1,
-                }}
-              >
-                {String.fromCharCode(65 + i)}
-              </Text>
-              <Text style={label}>{item.label}</Text>
-              <Text style={detail}>{item.detail}</Text>
-            </View>
-          ))}
-        </View>
-      ) : visual.kind === "cycle" ? (
+      {visual.kind === "cycle" ? (
         <>
           <View style={{ height: 230, marginHorizontal: -5 }}>
             <Svg
@@ -457,71 +637,92 @@ export function LessonFigure({
     return (
       <View
         style={{
-          marginVertical: 23,
-          backgroundColor: "#F0F5E9",
-          padding: 20,
+          marginVertical: 20,
+          backgroundColor: "#FAF7EE",
+          padding: 18,
           borderRadius: 20,
-          gap: 10,
-          borderLeftWidth: 3,
+          borderWidth: 1,
+          borderColor: "rgba(35, 27, 21, 0.08)",
+          gap: 8,
+          borderLeftWidth: 4,
           borderLeftColor: t.primary,
         }}
       >
         <View style={ui.row}>
-          <Icon name="sprout" size={19} color={t.accent} />
-          <Text style={[ui.label, { fontSize: 10, color: t.accent }]}>
-            MỘT ĐIỀU ĐỂ NHỚ
+          <Icon name="sprout" size={18} color={t.accent} />
+          <Text style={[ui.label, { fontSize: 11, color: t.accent, letterSpacing: 1 }]}>
+            ĐIỂM THEN CHỐT
           </Text>
         </View>
-        <Text style={{ fontSize: 16, lineHeight: 26, color: t.ink }}>
+        <Text style={{ fontSize: 15, lineHeight: 24, color: t.ink, fontWeight: "500" }}>
           {page.takeaway}
         </Text>
       </View>
     );
+
+  if (visual.kind === "steps" || visual.kind === "comparison") {
+    return (
+      <View style={{ marginVertical: 20 }}>
+        <VisualContent key={JSON.stringify(visual)} visual={visual} />
+      </View>
+    );
+  }
+
   const p = visualPalette(visual);
   return (
     <View
       style={{
-        marginVertical: 25,
+        marginVertical: 22,
         borderWidth: 1,
-        borderColor: t.line,
-        borderRadius: 25,
-        backgroundColor: t.surface,
-        overflow: "hidden",
+        borderColor: "rgba(35, 27, 21, 0.09)",
+        borderRadius: 22,
+        backgroundColor: "#FFFFFF",
+        padding: 18,
+        gap: 16,
+        position: "relative",
       }}
     >
-      <View style={{ height: 4, backgroundColor: p.light }} />
-      <View style={{ padding: 19, gap: 19 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Text
           style={{
-            fontSize: 10,
-            fontWeight: "600",
-            letterSpacing: 1.6,
+            fontSize: 11,
+            fontWeight: "700",
+            letterSpacing: 1.4,
             color: p.strong,
+            textTransform: "uppercase",
           }}
         >
-          {visualNames[visual.kind].toLocaleUpperCase("vi")}
+          {visualNames[visual.kind]}
         </Text>
-        {visual.kind !== "concept-map" && (
-          <Text
-            style={{
-              fontSize: 20,
-              lineHeight: 28,
-              fontWeight: "600",
-              letterSpacing: -0.3,
-              color: t.ink,
-            }}
-          >
-            {visual.title}
-          </Text>
-        )}
-        <VisualContent key={JSON.stringify(visual)} visual={visual} />
-        <View
-          style={{ paddingTop: 15, borderTopWidth: 1, borderTopColor: t.line }}
+        <Icon name="bookmark" size={18} color="rgba(35, 27, 21, 0.35)" />
+      </View>
+
+      {visual.kind !== "concept-map" && (
+        <Text
+          style={{
+            fontSize: 18,
+            lineHeight: 25,
+            fontWeight: "700",
+            color: t.ink,
+          }}
         >
-          <Text style={{ fontSize: 13, lineHeight: 21, color: t.muted }}>
+          {visual.title}
+        </Text>
+      )}
+
+      <VisualContent key={JSON.stringify(visual)} visual={visual} />
+
+      {page.takeaway ? (
+        <View style={{ paddingTop: 14, borderTopWidth: 1, borderTopColor: "rgba(35, 27, 21, 0.08)" }}>
+          <Text style={{ fontSize: 13.5, lineHeight: 21, color: t.muted }}>
             {page.takeaway}
           </Text>
         </View>
+      ) : null}
+
+      {/* Mascot watermark peek */}
+      <View style={{ position: "absolute", right: 14, bottom: 10, opacity: 0.85 }}>
+        <MamMascot size={32} mood="idle" />
       </View>
     </View>
   );
