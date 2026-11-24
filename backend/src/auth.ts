@@ -67,11 +67,11 @@ export class AuthStore {
   private db: DatabaseSync;
 
   constructor(dbPath?: string) {
-    if (dbPath && dbPath !== ":memory:") {
-      const dir = path.dirname(dbPath);
+    const resolvedPath = dbPath ?? path.resolve(process.cwd(), "backend/data/mam.db");
+    if (resolvedPath !== ":memory:") {
+      const dir = path.dirname(resolvedPath);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     }
-    const resolvedPath = dbPath ?? path.resolve(process.cwd(), "backend/data/mam.db");
     this.db = new DatabaseSync(resolvedPath);
 
     this.initSchema();
