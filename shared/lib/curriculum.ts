@@ -29,7 +29,7 @@ export function isCoursePlan(v: unknown): v is CoursePlan {
     text(p.subtitle, 300) &&
     Array.isArray(p.chapters) &&
     p.chapters.length >= 2 &&
-    p.chapters.length <= 4 &&
+    p.chapters.length <= 6 &&
     p.chapters.every(
       (c) =>
         c &&
@@ -94,6 +94,7 @@ export interface PreviousLesson {
   objective: string;
   takeaways: string[];
   completed: true;
+  section?: string;
 }
 export function lessonContext(lessons: Lesson[]): PreviousLesson[] {
   return lessons.map((l) => ({
@@ -101,6 +102,7 @@ export function lessonContext(lessons: Lesson[]): PreviousLesson[] {
     objective: l.objective || l.subtitle,
     takeaways: l.pages.map((p) => p.takeaway),
     completed: true,
+    section: l.section,
   }));
 }
 export function isPreviousLessons(

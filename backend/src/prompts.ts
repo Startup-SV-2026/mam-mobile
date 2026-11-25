@@ -9,17 +9,17 @@ export const coursePrompt = `${teaching}
 ĐẦU RA: một JSON object theo schema khóa học; không markdown hoặc văn bản bên ngoài JSON.
 THIẾT KẾ:
 - learnerBrief là bản người học đã xem/sửa, ưu tiên hơn câu trả lời cũ nếu khác nhau. Giữ mục tiêu, kiến thức đã có, ngữ cảnh, sở thích bài tập và thời lượng trong thiết kế. conversation chỉ bổ sung chi tiết còn phù hợp; không bỏ các giới hạn hoặc tự hạ trình độ đã nêu. Áp dụng format vào example, selfCheck và quiz: nếu muốn điền từ thì có chỗ trống trong ngữ cảnh; nếu muốn viết lại email thì có đoạn gốc và yêu cầu viết lại, lời giải tham khảo đúng mục tiêu. Không thay bài tập người học muốn bằng định nghĩa chung.
-1. Xác định một kết quả quan sát được phù hợp mục tiêu và trình độ trước khi soạn. Ba bài có ba nhiệm vụ khác nhau: hiểu cơ chế/khái niệm → áp dụng vào ví dụ → phân biệt và vận dụng độc lập. Không trình bày lại cùng một định nghĩa ở mọi bài.
+1. Xác định một kết quả quan sát được phù hợp mục tiêu và trình độ trước khi soạn. Ba bài có ba nhiệm vụ khác nhau: hiểu cơ chế/khái niệm → áp dụng vào ví dụ → phân biệt và vận dụng độc lập. Tuyệt đối không trình bày lại cùng một định nghĩa, ví dụ hay câu hỏi ở các bài khác nhau.
 2. Đúng 3 lessons, mỗi lesson minutes 5–15 (ước tính cả đọc và tự luyện), có objective là một kết quả kiểm tra được và đúng 3 pages.
-CÁCH VIẾT BODY (chuẩn micro-learning & mental models):
-- Mỗi body dài 70–110 từ, BẮT BUỘC chia thành 2–3 đoạn văn ngắn (mỗi đoạn chỉ 1–2 câu dứt khoát) ngăn cách bằng dấu \\n\\n. Tuyệt đối không viết thành một khối đặc chữ.
+CÁCH VIẾT BODY (chuẩn micro-learning & mental models sâu sắc):
+- Mỗi body dài 100–150 từ, BẮT BUỘC chia thành 2–3 đoạn văn ngắn (mỗi đoạn 2–3 câu dứt khoát, mạch lạc) ngăn cách bằng dấu \\n\\n. Tuyệt đối không viết thành một khối đặc chữ.
 - Mở đầu bằng một câu hỏi gợi mở, một nghịch lý hoặc tình huống thực tế hấp dẫn (hook).
-- BẮT BUỘC dùng cú pháp **từ khóa** để in đậm 1–3 từ khóa then chốt trong từng đoạn (khái niệm cốt lõi, hành động chính). Có thể dùng _thuật ngữ_ cho từ cần giải nghĩa.
-- Giải thích bản chất cơ chế vì sao (why/how) bằng phép so sánh đời thường sinh động, trực quan, không dùng văn mẫu giáo trình hàn lâm.
+- BẮT BUỘC dùng cú pháp **từ khóa** để in đậm 2–4 từ khóa then chốt trong từng đoạn (khái niệm cốt lõi, hành động chính). Có thể dùng _thuật ngữ_ cho từ cần giải nghĩa.
+- Giải thích sâu sắc bản chất cơ chế vì sao (why/how) bằng phép so sánh đời thường sinh động, trực quan, đào sâu nguyên lý vận hành, không dùng văn mẫu giáo trình hàn lâm.
 Mỗi page BẮT BUỘC có thêm:
 - example {scenario,explanation}: tình huống thực tế cụ thể, 1–3 bước phân tích vì sao cách giải đúng; dùng dữ kiện được nêu rõ. Không lặp nguyên văn body.
-- selfCheck {question,hint,answer}: câu hỏi suy ngẫm sâu sắc (reflection prompt) hoặc tình huống tự vấn đối chiếu với thực tế của người học; hint gợi bước đầu nhưng không tiết lộ đáp án; answer giải thích lập luận phản biện đa chiều, 2–4 câu.
-- commonMistake: một hiểu nhầm hoặc bẫy tư duy thường gặp và cách phân biệt, 1–2 câu.
+- selfCheck {question,hint,answer}: câu hỏi suy ngẫm sâu sắc (reflection prompt) hoặc tình huống tự vấn đối chiếu với thực tế của người học; hint gợi mở góc nhìn nhưng không tiết lộ đáp án; answer giải thích lập luận phản biện đa chiều 2–4 câu.
+- commonMistake: một hiểu nhầm hoặc bẫy tư duy thường gặp và cách phân biệt thực tế, 1–2 câu.
 Các phần này phải nhất quán với body và không đòi kiến thức chưa dạy. Bài quiz cuối kiểm tra chuyển giao sang tình huống mới, không lặp selfCheck.
 3. Title khóa tối đa 45 ký tự, nêu nội dung thực tế. Subtitle nêu điều người học làm được. Kicker ngắn, không khẩu hiệu. Không tự hạ nội dung nâng cao về mức nhập môn khi người học đã chọn trình độ cao.
 4. Mỗi quiz có 4 choices khác nhau, đúng duy nhất một đáp án. answer là chỉ số 0–3. Dùng phương án nhiễu từ lỗi hiểu thường gặp, tương đương độ dài; không dùng “tất cả đều đúng”. why giải thích bằng nội dung đã học, không chỉ nhắc lại đáp án. Phân bố vị trí đáp án đúng giữa các bài.

@@ -6,14 +6,46 @@ import type { IllustrationStatus, Lesson } from "../../types/course";
 import { theme as t, ui } from "../ui/ui";
 import { requireIllustrationBackend } from "../../services/illustration-api";
 import { Icon } from "../ui/Icon";
+import { courseArtKey } from "../../lib/visual-design";
+
+const artworks = {
+  space: require("../../../assets/artwork/space-v2.jpg"),
+  mind: require("../../../assets/artwork/mind-v2.jpg"),
+  money: require("../../../assets/artwork/money-v2.jpg"),
+  ai: require("../../../assets/artwork/ai-v2.jpg"),
+  language: require("../../../assets/artwork/language-v2.jpg"),
+  history: require("../../../assets/artwork/history-v2.jpg"),
+  lexicon: require("../../../assets/artwork/lexicon-v2.jpg"),
+  science: require("../../../assets/artwork/science-v2.jpg"),
+  exam: require("../../../assets/artwork/exam-v2.jpg"),
+  literature: require("../../../assets/artwork/literature-v2.jpg"),
+  design: require("../../../assets/artwork/design-v2.jpg"),
+  health: require("../../../assets/artwork/health-v2.jpg"),
+  logic: require("../../../assets/artwork/logic-v2.jpg"),
+  earth: require("../../../assets/artwork/earth-v2.jpg"),
+  culture: require("../../../assets/artwork/culture-v2.jpg"),
+};
+
+const artworksV3: Record<string, ReturnType<typeof require>> = {
+  mind: require("../../../assets/artwork/mind-v3.jpg"),
+  space: require("../../../assets/artwork/space-v3.jpg"),
+  ai: require("../../../assets/artwork/ai-v3.jpg"),
+  language: require("../../../assets/artwork/language-v3.jpg"),
+  history: require("../../../assets/artwork/history-v3.jpg"),
+  money: require("../../../assets/artwork/money-v3.jpg"),
+  lexicon: require("../../../assets/artwork/lexicon-v3.jpg"),
+};
+
 const url = (process.env.EXPO_PUBLIC_API_URL || "").replace(/\/$/, "");
 export function LessonIllustration({
   lesson,
   courseTitle,
+  pageIndex = 0,
   onStatus,
 }: {
   lesson: Lesson;
   courseTitle: string;
+  pageIndex?: number;
   onStatus?: () => void;
 }) {
   const [status, setStatus] = useState<IllustrationStatus | null>(null);
@@ -87,25 +119,31 @@ export function LessonIllustration({
       ? tranSamples[lesson.sampleIllustration]
       : undefined;
   const ready = status?.status === "ready" && id && url;
+  const artKey = courseArtKey(lesson.illustration?.id || "", lesson.title, courseTitle);
+  const fallbackArtwork =
+    pageIndex === 1 && artworksV3[artKey]
+      ? artworksV3[artKey]
+      : artworks[artKey as keyof typeof artworks] || artworks.mind;
+
   const source = sample
     ? require("../../../assets/illustrations/space.png")
     : tranSample
       ? tranSample
       : ready
         ? { uri: `${url}/media/illustrations/${id}` }
-        : undefined;
+        : fallbackArtwork;
   const caption =
     lesson.illustrationPlan?.caption ||
     (sample
       ? "Minh họa nghệ thuật về Trái Đất, Mặt Trời và Ngân Hà; các quỹ đạo chỉ mang tính tượng trưng, không theo tỉ lệ."
-      : `Minh họa nghệ thuật cho “${lesson.title}”; không phải tư liệu gốc hoặc mô hình theo tỉ lệ.`);
+      : `Minh họa nghệ thuật cho “${lesson.title}”; góc nhìn trực quan về cơ chế cốt lõi.`);
   const pending =
     !error &&
     ((!!id && !status) ||
       status?.status === "queued" ||
       status?.status === "generating");
   return (
-    <View style={{ marginTop: 23, marginBottom: 4 }}>
+    <View style={{ marginTop: 20, marginBottom: 6 }}>
       {source && !imageError ? (
         <>
           <View
@@ -124,9 +162,9 @@ export function LessonIllustration({
                 lesson.illustrationPlan?.alt ||
                 `Minh họa nghệ thuật cho bài ${lesson.title}`
               }
-              resizeMode="contain"
+              resizeMode="cover"
               onError={() => setImageError(true)}
-              style={{ width: "100%", height: imageWidth / 1.5 }}
+              style={{ width: "100%", height: Math.min(240, imageWidth / 1.5) }}
             />
           </View>
           {caption ? (
@@ -135,12 +173,20 @@ export function LessonIllustration({
                 fontSize: 11,
                 lineHeight: 17,
                 color: t.muted,
-                marginTop: 9,
+                marginTop: 8,
               }}
             >
               {caption}
             </Text>
           ) : null}
+          {pending && (
+            <View style={[ui.row, { gap: 6, alignItems: "center", marginTop: 4 }]}>
+              <MamMascot size={20} mood="thinking" />
+              <Text style={{ fontSize: 11, color: t.muted }}>
+                AI đang tạo thêm tranh minh họa riêng cho bài…
+              </Text>
+            </View>
+          )}
         </>
       ) : (
         <View

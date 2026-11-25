@@ -74,11 +74,12 @@ export function LessonContent({
 
       <FormattedBody body={page.body} />
       {page.vocab ? <FlashcardView {...page.vocab} /> : null}
-      {pageIndex === 0 && (
+      {(pageIndex === 0 || pageIndex === 1) && (
         <LessonIllustration
-          key={`${courseId}:${lessonIndex}`}
+          key={`${courseId}:${lessonIndex}:${pageIndex}`}
           lesson={activeLesson}
           courseTitle={courseTitle}
+          pageIndex={pageIndex}
           onStatus={onOpenAIStatus}
         />
       )}
