@@ -37,6 +37,7 @@ import { MamHomeDashboard } from "../screens/HomeScreen";
 import { MamLibrary } from "../screens/LibraryScreen";
 import { CourseSidebarModal } from "../components/layout/CourseSidebarModal";
 import { LessonContent, QuizContent } from "../components/course/LessonReader";
+import { LessonHook } from "../components/course/LessonHook";
 import { LessonDone } from "../screens/LessonDone";
 import { ProfileScreen } from "../screens/ProfileScreen";
 import { AuthScreen } from "../screens/AuthScreen";
@@ -180,8 +181,10 @@ export default function App() {
     screen !== "saved" &&
     screen !== "ai-status" &&
     screen !== "auth";
-  const page = activeLesson.pages[pageIndex] ?? activeLesson.pages[0];
-  const pageKey = `${course.id}:${lessonIndex}:${pageIndex}`;
+  const totalReaderPages = activeLesson.pages.length + 1;
+  const contentPageIndex = Math.max(0, pageIndex - 1);
+  const page = activeLesson.pages[contentPageIndex] ?? activeLesson.pages[0];
+  const pageKey = `${course.id}:${lessonIndex}:${contentPageIndex}`;
   const noteKey = reading ? `${course.id}:${lessonIndex}` : course.id;
 
   if (!currentUser) {
@@ -260,7 +263,7 @@ export default function App() {
             <ReaderHeader
               screen={screen}
               pageIndex={pageIndex}
-              totalPages={activeLesson.pages.length}
+              totalPages={totalReaderPages}
               isSaved={saved.includes(pageKey)}
               onClose={() => go("home")}
               onOpenNotes={() => setNotesOpen(true)}
@@ -376,20 +379,26 @@ export default function App() {
               />
             )}
 
-            {screen === "lesson" && (
-              <LessonContent
-                pageIndex={pageIndex}
-                activeLesson={activeLesson}
-                page={page}
-                courseId={course.id}
-                courseTitle={course.title}
-                lessonIndex={lessonIndex}
-                onOpenAIStatus={() => {
-                  setAIStatusFrom("lesson");
-                  go("ai-status");
-                }}
-              />
-            )}
+            {screen === "lesson" &&
+              (pageIndex === 0 ? (
+                <LessonHook
+                  lesson={activeLesson}
+                  courseTitle={course.title}
+                />
+              ) : (
+                <LessonContent
+                  pageIndex={contentPageIndex}
+                  activeLesson={activeLesson}
+                  page={page}
+                  courseId={course.id}
+                  courseTitle={course.title}
+                  lessonIndex={lessonIndex}
+                  onOpenAIStatus={() => {
+                    setAIStatusFrom("lesson");
+                    go("ai-status");
+                  }}
+                />
+              ))}
 
             {screen === "quiz" && (
               <QuizContent
@@ -535,7 +544,7 @@ export default function App() {
                         size="lg"
                         arrow
                         onPress={() => {
-                          if (pageIndex < activeLesson.pages.length - 1) {
+                          if (pageIndex < totalReaderPages - 1) {
                             setPageIndex((v) => v + 1);
                             scrollRef.current?.scrollTo({
                               y: 0,
@@ -544,7 +553,7 @@ export default function App() {
                           } else go("quiz");
                         }}
                       >
-                        {pageIndex === activeLesson.pages.length - 1
+                        {pageIndex === totalReaderPages - 1
                           ? "TỰ KIỂM TRA"
                           : "TIẾP TỤC"}
                       </TactileButton>

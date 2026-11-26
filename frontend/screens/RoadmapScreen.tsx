@@ -127,7 +127,9 @@ export function MamRoadmap({
             <View style={styles.sectionCard}>
               <View style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 20 }}>
                 <Text style={styles.sectionNumberTitle}>
-                  {`${sIdx + 1}. ${section.title}`}
+                  { /^chương\s+\d+/iu.test(section.title.trim())
+                    ? section.title
+                    : `${sIdx + 1}. ${section.title}` }
                 </Text>
                 <Text style={styles.sectionSubtitle}>
                   {sectionLessonsDone}/{section.items.length} bài hoàn thành

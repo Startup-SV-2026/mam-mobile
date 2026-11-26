@@ -99,6 +99,16 @@ export async function imageResponseError(
       429,
     );
   }
+  if (response.status === 402)
+    return new ImageProviderError(
+      {
+        kind: "quota_exhausted",
+        message:
+          "Số dư trả trước (Prepay) của Gemini API đã hết. Hàng đợi đã tạm dừng.",
+        ...diagnostic,
+      },
+      402,
+    );
   if ([400, 401, 403, 404].includes(response.status))
     return new ImageProviderError({
       kind: "access",

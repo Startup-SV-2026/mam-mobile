@@ -81,7 +81,8 @@ export function createApp({
     c.lessons.length === 3 &&
     c.lessons.every(
       (l) =>
-        l.pages.length === 3 &&
+        l.pages.length >= 3 &&
+        l.pages.length <= 7 &&
         !!l.objective &&
         l.pages.every((p) => !!p.example && !!p.selfCheck && !!p.commonMistake),
     );
@@ -438,7 +439,22 @@ export function createApp({
           const image = await images.ensure(
             planForLesson(curriculum.plan.title, lesson),
           );
-          if (image) lesson = { ...lesson, illustration: { id: image.id } };
+          const pages = await Promise.all(
+            lesson.pages.map(async (p, pIdx) => {
+              if (pIdx === 0 || !p.illustrationPlan) return p;
+              try {
+                const pImg = await images.ensure(p.illustrationPlan);
+                return pImg ? { ...p, illustration: { id: pImg.id } } : p;
+              } catch {
+                return p;
+              }
+            }),
+          );
+          lesson = {
+            ...lesson,
+            pages,
+            ...(image ? { illustration: { id: image.id } } : {}),
+          };
         } catch {}
         return send(res, 200, { lesson });
       }
@@ -612,9 +628,22 @@ export function createApp({
             const image = await images.ensure(
               planForLesson(course.title, lesson),
             );
-            return image
-              ? { ...lesson, illustration: { id: image.id } }
-              : lesson;
+            const pages = await Promise.all(
+              lesson.pages.map(async (p, pIdx) => {
+                if (pIdx === 0 || !p.illustrationPlan) return p;
+                try {
+                  const pImg = await images.ensure(p.illustrationPlan);
+                  return pImg ? { ...p, illustration: { id: pImg.id } } : p;
+                } catch {
+                  return p;
+                }
+              }),
+            );
+            return {
+              ...lesson,
+              pages,
+              ...(image ? { illustration: { id: image.id } } : {}),
+            };
           } catch {
             return lesson;
           }
