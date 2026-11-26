@@ -13,6 +13,13 @@ const visual = {
         "layers",
         "formula",
         "metrics",
+        "cause-effect",
+        "funnel",
+        "spectrum",
+        "bars",
+        "line-chart",
+        "flowchart",
+        "callout",
       ],
     },
     title: text,
@@ -20,17 +27,15 @@ const visual = {
       type: "string",
       enum: ["sage", "sky", "peach", "lavender", "sand"],
     },
-    expression: { type: "string", maxLength: 140 },
+    expression: text,
     items: {
       type: "array",
-      minItems: 2,
-      maxItems: 3,
       items: {
         type: "object",
         properties: {
           label: text,
           detail: text,
-          value: { type: "string", maxLength: 32 },
+          value: text,
         },
         required: ["label", "detail"],
       },
@@ -47,6 +52,15 @@ const page = {
     emoji: text,
     takeaway: text,
     visual,
+    illustrationPlan: {
+      type: "object",
+      properties: {
+        scene: text,
+        caption: text,
+        alt: text,
+      },
+      required: ["scene", "caption", "alt"],
+    },
     example: {
       type: "object",
       properties: { scenario: text, explanation: text },
@@ -78,31 +92,37 @@ export const courseSchema = {
     subtitle: text,
     lessons: {
       type: "array",
-      minItems: 3,
-      maxItems: 3,
       items: {
         type: "object",
         properties: {
           title: text,
           subtitle: text,
           objective: text,
+          openingQuote: {
+            type: "object",
+            properties: {
+              text: text,
+              label: text,
+            },
+            required: ["text", "label"],
+          },
           illustrationPlan: {
             type: "object",
             properties: {
-              scene: { type: "string", maxLength: 1800 },
-              caption: { type: "string", maxLength: 400 },
-              alt: { type: "string", maxLength: 400 },
+              scene: text,
+              caption: text,
+              alt: text,
             },
             required: ["scene", "caption", "alt"],
           },
-          minutes: { type: "integer", minimum: 5, maximum: 15 },
-          pages: { type: "array", minItems: 3, maxItems: 3, items: page },
+          minutes: { type: "integer" },
+          pages: { type: "array", items: page },
           quiz: {
             type: "object",
             properties: {
               question: text,
-              choices: { type: "array", minItems: 4, maxItems: 4, items: text },
-              answer: { type: "integer", minimum: 0, maximum: 3 },
+              choices: { type: "array", items: text },
+              answer: { type: "integer" },
               why: text,
             },
             required: ["question", "choices", "answer", "why"],

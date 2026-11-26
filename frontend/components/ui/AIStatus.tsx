@@ -10,7 +10,7 @@ import type {
 import { Action, theme as t, ui } from "./ui";
 import { Icon } from "./Icon";
 import { requireIllustrationBackend } from "../../services/illustration-api";
-const base = (process.env.EXPO_PUBLIC_API_URL || "").replace(/\/$/, "");
+const base = (process.env.EXPO_PUBLIC_API_URL || "http://localhost:8787").replace(/\/$/, "");
 type Job = IllustrationStatus & { title: string; caption: string };
 export function AIStatus({
   lesson,

@@ -31,8 +31,13 @@ export function LessonDone({
   onNextLesson,
   onHome,
 }: LessonDoneProps) {
+  const currentPlanned = plannedLessons(course)[lessonIndex];
   const nextLessonAvailable = !!course.lessons[lessonIndex + 1];
   const nextLessonInfo = plannedLessons(course)[lessonIndex + 1];
+  const isChapterComplete =
+    !!currentPlanned &&
+    !!nextLessonInfo &&
+    currentPlanned.section !== nextLessonInfo.section;
 
   return (
     <View style={styles.container}>
@@ -40,7 +45,11 @@ export function LessonDone({
       <View style={styles.mascotArea}>
         {generation.busy ? (
           <MascotLoading
-            label={`Đang soạn bài ${nextLessonInfo?.number || "tiếp theo"}…`}
+            label={
+              isChapterComplete
+                ? `Đang mở khóa ${nextLessonInfo?.section || "chương mới"}…`
+                : `Đang soạn bài ${nextLessonInfo?.number || "tiếp theo"}…`
+            }
             size={120}
           />
         ) : (
@@ -50,9 +59,15 @@ export function LessonDone({
 
       {/* Title & Subtitle */}
       <View style={styles.titleArea}>
-        <Text style={styles.headingTitle}>Đã hoàn thành bài học</Text>
+        <Text style={styles.headingTitle}>
+          {isChapterComplete
+            ? "Hoàn thành một chương học!"
+            : "Đã hoàn thành bài học"}
+        </Text>
         <Text style={styles.subTitle}>
-          Một chút luyện tập ngắn sẽ giúp kiến thức vừa học in sâu và nhớ lâu hơn.
+          {isChapterComplete
+            ? `Xuất sắc! Bạn đã làm chủ ${currentPlanned?.section || "chương này"}. Chuẩn bị bước sang ${nextLessonInfo?.section || "chương tiếp theo"} với các kiến thức mới.`
+            : "Một chút luyện tập ngắn sẽ giúp kiến thức vừa học in sâu và nhớ lâu hơn."}
         </Text>
       </View>
 

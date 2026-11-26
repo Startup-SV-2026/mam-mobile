@@ -6,7 +6,6 @@ import { Icon } from "../ui/Icon";
 import { FlashcardView } from "./FlashcardView";
 import { LessonIllustration } from "./LessonIllustration";
 import { LessonFigure } from "./LessonFigure";
-import { LessonDepth } from "./LessonDepth";
 import { FormattedBody } from "./FormattedBody";
 
 interface LessonContentProps {
@@ -28,36 +27,28 @@ export function LessonContent({
   lessonIndex,
   onOpenAIStatus,
 }: LessonContentProps) {
+  const showIllustration = pageIndex === 0 || !!page.illustration?.id;
+  const followUpProse = page.example
+    ? `${page.example.scenario.trim()}\n\n${page.example.explanation.trim()}`
+    : "";
+
   return (
     <>
-      {pageIndex === 0 && activeLesson.objective && (
-        <View
-          style={[
-            ui.card,
-            {
-              gap: 8,
-              marginTop: 10,
-              backgroundColor: t.selected,
-              borderRadius: 18,
-              borderWidth: 1,
-              borderColor: "rgba(39, 132, 61, 0.15)",
-              padding: 16,
-            },
-          ]}
-        >
-          <Text style={[ui.label, { color: t.accent, fontSize: 11, letterSpacing: 1.2 }]}>
-            MỤC TIÊU BÀI HỌC
-          </Text>
-          <Text style={{ fontSize: 15, lineHeight: 23, color: t.ink, fontWeight: "500" }}>
-            {activeLesson.objective}
+      <View style={{ marginTop: 10, marginBottom: 8 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
+          {page.emoji ? <Text style={{ fontSize: 15 }}>{page.emoji}</Text> : null}
+          <Text
+            style={{
+              fontSize: 11.5,
+              fontWeight: "700",
+              color: t.accent,
+              letterSpacing: 1,
+              textTransform: "uppercase",
+            }}
+          >
+            {page.kicker || activeLesson.title}
           </Text>
         </View>
-      )}
-
-      <View style={{ marginTop: 14 }}>
-        <Text style={{ fontSize: 12, fontWeight: "600", color: t.muted, letterSpacing: 0.8, textTransform: "uppercase" }}>
-          {page.kicker || activeLesson.title}
-        </Text>
         <Text
           style={{
             fontSize: 26,
@@ -65,7 +56,7 @@ export function LessonContent({
             lineHeight: 34,
             color: t.ink,
             letterSpacing: -0.3,
-            marginTop: 8,
+            marginTop: 4,
           }}
         >
           {page.title}
@@ -74,19 +65,35 @@ export function LessonContent({
 
       <FormattedBody body={page.body} />
       {page.vocab ? <FlashcardView {...page.vocab} /> : null}
-      {pageIndex === 0 && (
-        <LessonIllustration
-          key={`${courseId}:${lessonIndex}`}
-          lesson={activeLesson}
-          courseTitle={courseTitle}
-          onStatus={onOpenAIStatus}
-        />
+
+      {showIllustration ? (
+        <>
+          <LessonIllustration
+            key={`${courseId}:${lessonIndex}:${pageIndex}`}
+            lesson={activeLesson}
+            courseTitle={courseTitle}
+            pageIndex={pageIndex}
+            onStatus={onOpenAIStatus}
+          />
+          {followUpProse ? (
+            <View style={{ marginTop: 14 }}>
+              <FormattedBody body={followUpProse} />
+            </View>
+          ) : null}
+          {page.visual ? (
+            <LessonFigure page={page} lesson={activeLesson} index={pageIndex} />
+          ) : null}
+        </>
+      ) : (
+        <>
+          <LessonFigure page={page} lesson={activeLesson} index={pageIndex} />
+          {followUpProse ? (
+            <View style={{ marginTop: 6, marginBottom: 8 }}>
+              <FormattedBody body={followUpProse} />
+            </View>
+          ) : null}
+        </>
       )}
-      <LessonFigure page={page} lesson={activeLesson} index={pageIndex} />
-      <LessonDepth
-        key={`${courseId}:${lessonIndex}:${pageIndex}`}
-        page={page}
-      />
     </>
   );
 }

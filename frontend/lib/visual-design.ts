@@ -8,6 +8,13 @@ export const visualKinds = [
   "layers",
   "formula",
   "metrics",
+  "cause-effect",
+  "funnel",
+  "spectrum",
+  "bars",
+  "line-chart",
+  "flowchart",
+  "callout",
 ] as const;
 export const visualTones = [
   "sage",
@@ -57,6 +64,13 @@ const defaults: Record<LessonVisual["kind"], (typeof visualTones)[number]> = {
   layers: "sky",
   formula: "sand",
   metrics: "sage",
+  "cause-effect": "peach",
+  funnel: "lavender",
+  spectrum: "sky",
+  bars: "sage",
+  "line-chart": "sky",
+  flowchart: "sand",
+  callout: "sand",
 };
 export function visualPalette(visual: LessonVisual) {
   return visualPalettes[visual.tone || defaults[visual.kind]];
@@ -64,12 +78,19 @@ export function visualPalette(visual: LessonVisual) {
 export const visualNames: Record<LessonVisual["kind"], string> = {
   steps: "Từng bước",
   comparison: "So sánh",
-  cycle: "Chu trình",
+  cycle: "Vòng lặp",
   timeline: "Dòng thời gian",
-  "concept-map": "Bản đồ ý tưởng",
+  "concept-map": "Sơ đồ nhánh",
   layers: "Các lớp",
   formula: "Công thức",
-  metrics: "Các con số",
+  metrics: "Con số đáng nhớ",
+  "cause-effect": "Nguyên nhân & Kết quả",
+  funnel: "Các bước chọn lọc",
+  spectrum: "Thang mức độ",
+  bars: "Biểu đồ so sánh",
+  "line-chart": "Đồ thị xu hướng",
+  flowchart: "Lưu đồ quyết định",
+  callout: "Tình huống suy ngẫm",
 };
 export const courseArtKeys = [
   "space",
@@ -113,6 +134,13 @@ export function courseArtKey(id: string, title = "", category = ""): CourseArtKe
   if (/mind|tam ly|thoi quen|nao bo|suy nghi|cam xuc/.test(value)) return "mind";
   if (/money|tien bac|tai chinh|tiet kiem|kinh te|dau tu/.test(value)) return "money";
   if (
+    /tran-mong|lich su|dai viet|nha tran|bach dang|le trung hung|trieu dai|thoi ky|chien tranh|the chien|khang chien|su viet|trieu dinh|hoang de|phap thuoc|thuoc dia|can vuong|dan chu|cach mang/.test(
+      value,
+    ) || (/\bvua\b/.test(value) && !/co vua/.test(value))
+  )
+    return "history";
+
+  if (
     /van hoa|di san|dong son|dan toc|phong tuc|truyen thong|khao co|dan gian/.test(
       value,
     )
@@ -120,15 +148,8 @@ export function courseArtKey(id: string, title = "", category = ""): CourseArtKe
     return "culture";
 
   // Math, Logic & Strategy:
-  if (/toan hoc|toan\b|logic|co vua|xac suat|thong ke|so hoc|hinh hoc|dai so|tinh toan|giai do/.test(value))
+  if (/toan hoc|toan\b|logic|co vua|xac suat|thong ke|so hoc|hinh hoc|dai so|tinh toan|\bgiai do\b/.test(value))
     return "logic";
-
-  if (
-    /tran-mong|lich su|dai viet|nha tran|bach dang|le trung hung|trieu dai|thoi ky|chien tranh|the chien|khang chien|su viet|trieu dinh|hoang de/.test(
-      value,
-    ) || (/\bvua\b/.test(value) && !/co vua/.test(value))
-  )
-    return "history";
 
   if (
     /(^|\s)ai($|\s|-)|python|csv|du lieu|lap trinh|cong nghe|phan mem|machine learning|thuat toan/.test(
@@ -142,7 +163,7 @@ export function courseArtKey(id: string, title = "", category = ""): CourseArtKe
     return "design";
 
   // Health, Biology & Wellness:
-  if (/suc khoe|sinh hoc|y hoc|dinh duong|the thao|thao moc|thuoc|co the|benh|y te|duoc lieu/.test(value))
+  if (/suc khoe|sinh hoc|y hoc|dinh duong|the thao|thao moc|thuoc|co the|benh|y te|duoc lieu|gen|di truyen|dna|te bao|tien hoa|dot bien/.test(value))
     return "health";
 
   // Natural sciences & Discovery:

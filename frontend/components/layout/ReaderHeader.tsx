@@ -76,22 +76,29 @@ export function ReaderHeader({
   onOpenNotes,
   onToggleSave,
 }: ReaderHeaderProps) {
+  const totalSteps = Math.max(1, totalPages + 1);
+  const currentStep =
+    screen === "quiz" ? totalSteps - 1 : Math.min(pageIndex, totalSteps - 2);
+
   return (
     <View style={styles.readerHeader}>
       <IconButton name="close" label="Đóng bài học" onPress={onClose} />
-      <View style={styles.track}>
-        <View
-          style={[
-            styles.fill,
-            {
-              width: `${screen === "quiz" ? 100 : ((pageIndex + 1) / totalPages) * 100}%`,
-            },
-          ]}
-        />
+      <View style={styles.dotsContainer}>
+        {Array.from({ length: totalSteps }).map((_, i) => {
+          const isActive = i === currentStep;
+          const isPassed = i < currentStep;
+          return (
+            <View
+              key={i}
+              style={[
+                styles.dot,
+                isActive && styles.activeDot,
+                isPassed && styles.passedDot,
+              ]}
+            />
+          );
+        })}
       </View>
-      <Text style={{ color: t.ink, fontSize: 13 }}>
-        {screen === "quiz" ? "?" : `${pageIndex + 1}/${totalPages}`}
-      </Text>
       <IconButton name="notes" label="Ghi chú bài học" onPress={onOpenNotes} />
       <IconButton
         name="bookmark"
@@ -119,21 +126,31 @@ const styles = StyleSheet.create({
   readerHeader: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 9,
-    gap: 3,
-    paddingVertical: 7,
+    paddingHorizontal: 12,
+    gap: 8,
+    paddingVertical: 10,
   },
-  track: {
-    height: 9,
-    borderRadius: 7,
-    backgroundColor: t.line,
+  dotsContainer: {
     flex: 1,
-    overflow: "hidden",
-    marginRight: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingHorizontal: 6,
   },
-  fill: {
-    height: "100%",
-    backgroundColor: t.accent,
-    borderRadius: 7,
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "rgba(35, 27, 21, 0.16)",
+  },
+  activeDot: {
+    width: 22,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#5CB9F2",
+  },
+  passedDot: {
+    backgroundColor: "rgba(92, 185, 242, 0.4)",
   },
 });

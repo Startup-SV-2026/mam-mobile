@@ -16,6 +16,7 @@ export interface PodcastEpisode {
 function cleanSpeechText(text: string): string {
   if (!text) return "";
   return text
+    .replace(/<[^>]+>/g, " ")
     .replace(/[*_~#]/g, "")
     .replace(/\.\s*\n+/g, ". ")
     .replace(/\s*\n+\s*/g, ". ")

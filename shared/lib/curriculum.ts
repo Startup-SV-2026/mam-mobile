@@ -29,14 +29,14 @@ export function isCoursePlan(v: unknown): v is CoursePlan {
     text(p.subtitle, 300) &&
     Array.isArray(p.chapters) &&
     p.chapters.length >= 2 &&
-    p.chapters.length <= 4 &&
+    p.chapters.length <= 6 &&
     p.chapters.every(
       (c) =>
         c &&
         text(c.title, 100) &&
         Array.isArray(c.lessons) &&
         c.lessons.length >= 2 &&
-        c.lessons.length <= 4 &&
+        c.lessons.length <= 5 &&
         c.lessons.every(
           (l) => l && text(l.title, 150) && text(l.objective, 400),
         ),
@@ -93,14 +93,20 @@ export interface PreviousLesson {
   title: string;
   objective: string;
   takeaways: string[];
+  visualKinds?: string[];
   completed: true;
+  section?: string;
 }
 export function lessonContext(lessons: Lesson[]): PreviousLesson[] {
   return lessons.map((l) => ({
     title: l.title,
     objective: l.objective || l.subtitle,
     takeaways: l.pages.map((p) => p.takeaway),
+    visualKinds: l.pages
+      .map((p) => p.visual?.kind)
+      .filter((k): k is NonNullable<typeof k> => !!k),
     completed: true,
+    section: l.section,
   }));
 }
 export function isPreviousLessons(
@@ -122,8 +128,13 @@ export function isPreviousLessons(
         l.title === entries[i].title &&
         text(l.objective, 400) &&
         Array.isArray(l.takeaways) &&
-        l.takeaways.length === 3 &&
-        l.takeaways.every((s: unknown) => text(s, 1500)),
+        l.takeaways.length >= 3 &&
+        l.takeaways.length <= 7 &&
+        l.takeaways.every((s: unknown) => text(s, 1500)) &&
+        (l.visualKinds === undefined ||
+          (Array.isArray(l.visualKinds) &&
+            l.visualKinds.length <= 8 &&
+            l.visualKinds.every((k: unknown) => text(k, 40)))),
     )
   );
 }

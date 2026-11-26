@@ -54,7 +54,14 @@ export interface LessonVisual {
     | "concept-map"
     | "layers"
     | "formula"
-    | "metrics";
+    | "metrics"
+    | "cause-effect"
+    | "funnel"
+    | "spectrum"
+    | "bars"
+    | "line-chart"
+    | "flowchart"
+    | "callout";
   tone?: "sage" | "sky" | "peach" | "lavender" | "sand";
   expression?: string;
   title: string;
@@ -74,6 +81,8 @@ export interface LessonPage {
   selfCheck?: { question: string; hint: string; answer: string };
   commonMistake?: string;
   visual?: LessonVisual;
+  illustrationPlan?: IllustrationPlan;
+  illustration?: { id: string };
   vocab?: VocabData;
   kicker: string;
   title: string;
@@ -90,6 +99,7 @@ export interface Quiz {
 export interface Lesson {
   objective?: string;
   section?: string;
+  openingQuote?: { text: string; label: string };
   illustrationPlan?: IllustrationPlan;
   illustration?: { id: string };
   sampleIllustration?: "space" | "tran-1" | "tran-2" | "tran-3";
@@ -161,6 +171,13 @@ export function isLessonVisual(v: unknown): v is LessonVisual {
       "layers",
       "formula",
       "metrics",
+      "cause-effect",
+      "funnel",
+      "spectrum",
+      "bars",
+      "line-chart",
+      "flowchart",
+      "callout",
     ].includes(String(v.kind)) &&
     typeof v.title === "string" &&
     v.title.trim().length > 0 &&
@@ -175,7 +192,7 @@ export function isLessonVisual(v: unknown): v is LessonVisual {
       (typeof v.expression === "string" && v.expression.trim().length > 0)) &&
     Array.isArray(v.items) &&
     v.items.length >= 2 &&
-    v.items.length <= 3 &&
+    v.items.length <= 5 &&
     (v.kind !== "cycle" || v.items.length === 3) &&
     v.items.every(
       (i) =>
@@ -220,6 +237,8 @@ export function isCourseContent(v: unknown): v is CourseContent {
     v.lessons.every(
       (l) =>
         record(l) &&
+        (l.openingQuote === undefined ||
+          textBlock(l.openingQuote, ["text", "label"], 400)) &&
         (l.illustrationPlan === undefined ||
           isIllustrationPlan(l.illustrationPlan)) &&
         (l.illustration === undefined ||
@@ -242,6 +261,12 @@ export function isCourseContent(v: unknown): v is CourseContent {
               text(p[k]),
             ) &&
             (p.visual === undefined || isLessonVisual(p.visual)) &&
+            (p.illustrationPlan === undefined ||
+              isIllustrationPlan(p.illustrationPlan)) &&
+            (p.illustration === undefined ||
+              (record(p.illustration) &&
+                typeof p.illustration.id === "string" &&
+                /^[a-f0-9]{64}$/.test(p.illustration.id))) &&
             (p.example === undefined ||
               textBlock(p.example, ["scenario", "explanation"], 3000)) &&
             (p.selfCheck === undefined ||

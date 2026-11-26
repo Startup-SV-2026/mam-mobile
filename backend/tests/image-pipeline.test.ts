@@ -186,7 +186,7 @@ test("saved art is reused for the identical scene across different captions, but
     assert.equal(calls, 2);
   } finally {
     store.close();
-    await rm(directory, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true, maxRetries: 5 });
   }
 });
 
@@ -225,6 +225,6 @@ test("manual resume probes again only after explicit action, then releases queue
     assert.equal(store.pipeline().state, "active");
   } finally {
     store.close();
-    await rm(directory, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true, maxRetries: 5 });
   }
 });
