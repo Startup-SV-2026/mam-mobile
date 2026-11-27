@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { theme as t } from "../ui/ui";
+import { cleanParagraphBreaks } from "../../lib/visual-design";
 
 interface FormattedBodyProps {
   body: string;
@@ -15,8 +16,10 @@ export function FormattedParagraph({
 }) {
   if (!text) return null;
 
-  // Strip any accidental inline HTML tags like <span> or <div>
-  const clean = text.replace(/<[^>]+>/g, "");
+  // Strip any accidental inline HTML tags like <span> or <div>, and sanitize token glitches like 10 11
+  const clean = text
+    .replace(/(?:(?<=[.!?…]["'”]?)\s*10\s+(?:10|11)\s*|(?<=\S)\s+10\s+(?:10|11)\s+(?=[A-ZÀ-ỸĐ]))/gu, " ")
+    .replace(/<[^>]+>/g, "");
 
   // Split tokens by **bold** or _underline_
   const tokens = clean.split(/(\*\*[^*]+\*\*|_[^_]+_)/g);
@@ -47,12 +50,8 @@ export function FormattedParagraph({
 export function FormattedBody({ body }: FormattedBodyProps) {
   if (!body) return null;
 
-  // Convert HTML linebreaks/divs to real newlines and strip remaining tags
-  const normalized = body
-    .replace(/<div[^>]*>\s*<\/div>/gi, "\n\n")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/?(div|p)[^>]*>/gi, "\n\n")
-    .replace(/<[^>]+>/g, "");
+  // Convert HTML linebreaks/divs to real newlines, clean token glitches (like ASCII 10 11), and strip remaining tags
+  const normalized = cleanParagraphBreaks(body);
 
   // Split text by multiple newlines into paragraphs/blocks
   const blocks = normalized

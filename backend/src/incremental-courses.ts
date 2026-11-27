@@ -101,7 +101,7 @@ CÁCH ĐẶT TIÊU ĐỀ TRANG (PAGE TITLE) & KICKER:
 
 CẤU TRÚC 2 NHỊP KỂ CHUYỆN DÀY DẶN TRÊN MỖI SLIDE (BODY + VISUAL + EXAMPLE NỐI TIẾP):
 Trên giao diện đọc, mỗi trang hiển thị theo dòng chảy tạp chí: [Đoạn mở đầu body] → [Tranh minh họa / Sơ đồ] → [Đoạn kể chuyện nối tiếp từ example]. Vì vậy:
-- body (Nhịp 1 — 140–190 từ): Chia thành 2–3 đoạn ngắn thoáng mắt ngăn cách bằng \n\n. TUYỆT ĐỐI CẤM dùng bất kỳ thẻ HTML nào (như <div>, </div>, <br>, <p>); chỉ dùng văn bản thuần ngăn cách bằng hai dấu xuống dòng \n\n. Mở ra bối cảnh, câu chuyện hoặc giải thích bản chất vấn đề trực quan kèm **2–4 từ khóa in đậm**.
+- body (Nhịp 1 — 140–190 từ): Chia thành 2–3 đoạn ngắn thoáng mắt ngăn cách bằng hai dấu xuống dòng (\\n\\n). TUYỆT ĐỐI CẤM dùng bất kỳ thẻ HTML nào (như <div>, </div>, <br>, <p>) và TUYỆT ĐỐI CẤM in ra các mã số byte như "10 11", "10", "11" thay cho dấu xuống dòng; chỉ dùng ký tự escape \\n\\n hoặc xuống dòng thực tế. Mở ra bối cảnh, câu chuyện hoặc giải thích bản chất vấn đề trực quan kèm **2–4 từ khóa in đậm**.
 - example {scenario,explanation} (Nhịp 2 — Đoạn văn kể chuyện nối tiếp ngay bên dưới hình/sơ đồ, tổng 70–110 từ):
   * Viết thành 2 đoạn văn xuôi kể chuyện mượt mà nối tiếp mạch của body (có thể dùng **từ khóa in đậm**), đưa một phát hiện thực tế, câu chuyện nhân vật cụ thể hoặc góc nhìn lật ngược lầm tưởng.
   * TUYỆT ĐỐI CẤM viết khô khan kiểu giải bài tập ("Đây là bằng chứng cho thấy...", "Bước 1, Bước 2...") và CẤM lặp lại y nguyên câu chữ đã viết trong body!
@@ -276,6 +276,7 @@ export class IncrementalCourses {
         const cleanHtml = (s?: string) =>
           typeof s === "string"
             ? s
+                .replace(/(?:(?<=[.!?…]["'”]?)\s*10\s+(?:10|11)\s*|(?<=\S)\s+10\s+(?:10|11)\s+(?=[A-ZÀ-ỸĐ]))/gu, "\n\n")
                 .replace(/<div[^>]*>\s*<\/div>/gi, "\n\n")
                 .replace(/<br\s*\/?>/gi, "\n")
                 .replace(/<\/?(div|p)[^>]*>/gi, "\n\n")

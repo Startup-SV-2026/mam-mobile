@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { isLessonVisual, readProgress } from "../types/course";
 import { STARTER_COURSES } from "../data/courses";
 import {
+  cleanParagraphBreaks,
   courseArtKey,
   getNestedLayerRenderOrder,
   localizeLabel,
@@ -128,4 +129,28 @@ test("getNestedLayerRenderOrder places core at innermost center and outer shell 
   ];
   assert.deepEqual(getNestedLayerRenderOrder(defaultItems), [1, 0]);
 });
+
+test("cleanParagraphBreaks turns tokenizer glitch ASCII 10 11 into clean newlines and preserves normal numbers", () => {
+  const glitch =
+    "Khi bạn không cần phải 'quyết định' xem hôm nay có đọc hay không, đó là lúc thói quen đã định hình. 10 11  Hãy bắt đầu quan sát xem vào lúc nào trong ngày bạn thường bỏ cuộc nhất.";
+  const cleaned = cleanParagraphBreaks(glitch);
+  assert.ok(!cleaned.includes("10 11"));
+  assert.ok(
+    cleaned.includes(
+      "định hình.\n\nHãy bắt đầu",
+    ),
+  );
+
+  // Normal date numbers remain untouched
+  const normal = "Hội thảo diễn ra vào ngày 10 11 tháng 12 tới đây.";
+  assert.equal(cleanParagraphBreaks(normal), normal);
+
+  // HTML linebreaks and paragraphs convert to clean newlines
+  const htmlSample = "Đoạn 1.<br><p>Đoạn 2.</p><div>Đoạn 3.</div>";
+  assert.equal(
+    cleanParagraphBreaks(htmlSample),
+    "Đoạn 1.\n\nĐoạn 2.\n\nĐoạn 3.",
+  );
+});
+
 
