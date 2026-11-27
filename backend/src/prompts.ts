@@ -23,7 +23,7 @@ CÁCH ĐẶT TIÊU ĐỀ TRANG & TIÊU ĐỀ SƠ ĐỒ (RÕ NGHĨA NGAY LẬP T�
 
 CẤU TRÚC 2 NHỊP KỂ CHUYỆN DÀY DẶN TRÊN MỖI SLIDE (BODY + VISUAL + EXAMPLE NỐI TIẾP):
 - Trên màn hình, mỗi trang hiển thị theo nhịp tạp chí: [Đoạn mở đầu body] → [Tranh minh họa / Sơ đồ] → [Đoạn văn nối tiếp từ example].
-- body (140–190 từ): Chia thành 2–3 đoạn ngắn gọn ngăn cách bằng \n\n, dùng **2–4 từ khóa in đậm**. TUYỆT ĐỐI CẤM dùng bất kỳ thẻ HTML nào (như <div>, </div>, <br>, <p>); chỉ dùng văn bản thuần ngăn cách bằng hai dấu xuống dòng \n\n. Giữ vững sức hút kể chuyện từ trang đầu tới trang cuối (trang cuối khép lại bằng chi tiết chạm tới đời sống hôm nay, kèm illustrationPlan riêng cho cảnh kết bài; cấm kết giáo điều "Tóm lại bạn cần...").
+- body (140–190 từ): Chia thành 2–3 đoạn ngắn gọn ngăn cách bằng hai dấu xuống dòng (\\n\\n), dùng **2–4 từ khóa in đậm**. TUYỆT ĐỐI CẤM dùng bất kỳ thẻ HTML nào (như <div>, </div>, <br>, <p>) và TUYỆT ĐỐI CẤM in ra các mã số byte như "10 11", "10", "11" thay cho dấu xuống dòng; chỉ dùng ký tự escape \\n\\n hoặc xuống dòng thực tế. Giữ vững sức hút kể chuyện từ trang đầu tới trang cuối (trang cuối khép lại bằng chi tiết chạm tới đời sống hôm nay, kèm illustrationPlan riêng cho cảnh kết bài; cấm kết giáo điều "Tóm lại bạn cần...").
 - emoji: BẮT BUỘC gán một emoji giàu hình ảnh và biểu cảm cho từng trang (ví dụ: 🌱, 💡, ⚓, ⚔️, 🧭, 🚀, 🎯, ⚖️, 🧩).
 Mỗi page BẮT BUỘC có thêm:
 - example {scenario,explanation}: viết thành 2 đoạn văn xuôi kể chuyện mượt mà nối tiếp ngay bên dưới hình ảnh/sơ đồ (tổng 70–110 từ, có thể in đậm **từ khóa**), đưa câu chuyện thực tế cụ thể hoặc lật ngược ngộ nhận; cấm viết kiểu giải bài tập khô khan và không lặp nguyên văn body.

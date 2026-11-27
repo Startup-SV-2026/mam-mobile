@@ -272,3 +272,21 @@ export function getNestedLayerRenderOrder(items: Array<{ label: string }>): numb
     : items.map((_, i) => i);
 }
 
+/**
+ * Normalizes lesson body text: converts HTML tags and breaks, and cleans up
+ * LLM tokenizer glitches (e.g. byte fallbacks 10 11 for ASCII LF/VT between sentences)
+ * into clean paragraph breaks (\n\n).
+ */
+export function cleanParagraphBreaks(text?: string): string {
+  if (!text || typeof text !== "string") return "";
+  return text
+    .replace(/(?:(?<=[.!?…]["'”]?)\s*10\s+(?:10|11)\s*|(?<=\S)\s+10\s+(?:10|11)\s+(?=[A-ZÀ-ỸĐ]))/gu, "\n\n")
+    .replace(/<div[^>]*>\s*<\/div>/gi, "\n\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?(div|p)[^>]*>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+
