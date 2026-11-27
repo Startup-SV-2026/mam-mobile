@@ -8,7 +8,7 @@ import Svg, {
   Text as SvgText,
 } from "react-native-svg";
 import type { Lesson, LessonPage, LessonVisual } from "../../types/course";
-import { visualPalette, visualPalettes } from "../../lib/visual-design";
+import { visualPalette, visualPalettes, localizeVisual } from "../../lib/visual-design";
 import { theme as t, ui } from "../ui/ui";
 import { Icon } from "../ui/Icon";
 
@@ -1736,7 +1736,7 @@ export function LessonFigure({
   lesson: Lesson;
   index: number;
 }) {
-  const visual = page.visual;
+  const visual = page.visual ? localizeVisual(page.visual) : undefined;
   if (!visual) return null;
 
   // Các loại tự có bố cục khung tối giản riêng (Ảnh 5, 7, 8, 10)

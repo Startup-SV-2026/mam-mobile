@@ -91,7 +91,9 @@ QUY TẮC TỪ VỰNG & DIỄN ĐẠT TIẾNG VIỆT TỰ NHIÊN (PROOFREADING B
 - TUYỆT ĐỐI CẤM "văn dịch máy" (ghép chữ word-by-word từ tiếng Anh hoặc dùng từ ngữ đao to búa lớn, mơ hồ):
   * SAI (cấm viết): "Điểm rơi của sự phát triển", "chống mỏng manh", "đạt đến ngưỡng Antifragile", "minh bạch tột độ", "khoảng trũng tiềm năng ngầm", "sàng lọc giá trị khủng hoảng", "hệ sinh thái giao tiếp".
   * ĐÚNG (trong sáng, trúng ý): "Thời điểm bứt phá", "càng va đập càng vững vàng", "thẳng thắn chia sẻ thông tin kể cả khi có sự cố", "giai đoạn tích lũy chưa thấy kết quả", "rút ra bài học sau khủng hoảng".
-- XỬ LÝ THUẬT NGỮ NƯỚC NGOÀI: Không chêm từ tiếng Anh lơ lửng giữa câu tiếng Việt khi không cần thiết, và tuyệt đối không dịch ghép từng chữ ngô nghê. Nếu cần giới thiệu một khái niệm quốc tế nổi tiếng (như Antifragile, Sunk Cost, Compound Interest), hãy diễn đạt bằng cụm tiếng Việt dễ hiểu trước rồi mới chú thích ngắn gọn trong ngoặc ở lần đầu tiên (ví dụ: "khả năng **vững vàng hơn sau biến cố** (khái niệm *Antifragile* — không chỉ chịu đòn giỏi mà còn trưởng thành nhờ thử thách)").
+- XỬ LÝ THUẬT NGỮ NƯỚC NGOÀI, TÊN LOÀI & KHOA HỌC: TUYỆT ĐỐI CẤM thả từ tiếng Anh hoặc tiếng Latin cộc lốc, trơ trọi vào bài viết, tiêu đề hay nhãn thẻ mà không dùng tiếng Việt (ví dụ: CẤM viết nhãn hay câu văn cộc lốc chỉ có mỗi chữ "Sapiens", "Homo erectus", "Neanderthal", "Bias", "Trigger", "Flow"). BẮT BUỘC dùng danh từ tiếng Việt quen thuộc, gần gũi trước:
+  * Sinh học / Lịch sử: Phải viết là "Người tinh khôn" (hoặc "Người tinh khôn (Sapiens)"), "Người đứng thẳng (Erectus)", "Người cổ Neanderthal", "Loài người chúng ta". Người không chuyên đọc vào phải hiểu ngay lập tức đó là ai, là loài nào mà không cần tra từ điển!
+  * Tâm lý / Kinh tế / Kỹ năng: Diễn đạt bằng bản chất tiếng Việt tự nhiên trước (ví dụ: "khả năng **vững vàng hơn sau biến cố** (khái niệm *Antifragile*)", "yếu tố kích hoạt (Trigger)", "trạng thái tập trung cao độ (Flow)").
 
 CÁCH ĐẶT TIÊU ĐỀ TRANG (PAGE TITLE) & KICKER:
 - Ngắn gọn (3–7 từ), rõ nghĩa ngay lập tức, nói thẳng vào ý cốt lõi hoặc câu hỏi đời thường gây tò mò (ví dụ: "Vì sao 5 năm đầu chưa thấy măng?", "1 độ cuối làm tan tảng băng", "Càng gặp sự cố, nhóm càng vững", "Đừng giấu tin xấu với đồng đội").
@@ -106,7 +108,7 @@ Trên giao diện đọc, mỗi trang hiển thị theo dòng chảy tạp chí:
 - emoji: BẮT BUỘC gán một emoji giàu hình ảnh và biểu cảm cho từng trang (ví dụ: 🌱, 💡, ⚓, ⚔️, 🧭, 🚀, 🎯, ⚖️, 🧩).
 - selfCheck {question,hint,answer} & commonMistake: cung cấp đầy đủ dữ liệu chuẩn cho chế độ nghe podcast (không lặp nguyên văn body).
 - visual {kind,title,items}: 2–5 items {label,detail,value?}, detail dưới 18 từ (riêng cycle BẮT BUỘC đúng 3 items).
-  * visual.title và từng item.label PHẢI ngắn gọn, rõ nghĩa, cụ thể bằng tiếng Việt tự nhiên (ví dụ thay vì viết cụt lủn "Hỗn loạn → Chắt lọc → Hành động", phải viết rõ "Gặp sự cố bất ngờ → Tìm nguyên nhân gốc → Sửa lại quy trình").
+  * visual.title và từng item.label PHẢI ngắn gọn, rõ nghĩa, cụ thể bằng tiếng Việt tự nhiên (TUYỆT ĐỐI CẤM nhãn tiếng Anh/Latin cộc lốc như "Sapiens", "Homo erectus", "Inputs", "Trigger"; phải viết rõ "Người tinh khôn (Sapiens)", "Người đứng thẳng (Erectus)", "Điểm kích hoạt").
 QUY TẮC CHỌN VISUAL THEO BẢN CHẤT BÀI HỌC (CHỐNG LẶP FORMAT & CHỐNG LẠM DỤNG CYCLE):
 - Tất cả các trang trong cùng một bài PHẢI dùng các kind hoàn toàn khác nhau (trên Trang 1 và Trang cuối sẽ hiển thị CẢ tranh minh họa AI LẪN sơ đồ visual của trang đó, giúp bài học cực kỳ giàu hình ảnh!).
 - Đọc trường visualKinds trong previousLessons: ƯU TIÊN CHỌN CÁC KIND MỚI chưa xuất hiện ở bài liền trước để mỗi bài học có diện mạo thị giác riêng biệt!
@@ -161,7 +163,7 @@ export class IncrementalCourses {
     generate: () => Promise<T>,
   ): Promise<T> {
     const id = createHash("sha256")
-      .update(JSON.stringify({ version: 8, model: this.model, key }))
+      .update(JSON.stringify({ version: 9, model: this.model, key }))
       .digest("hex");
     const file = path.join(this.directory, id + ".json");
     try {
