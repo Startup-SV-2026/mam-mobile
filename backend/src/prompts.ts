@@ -20,12 +20,18 @@ CÁCH ĐẶT TIÊU ĐỀ TRANG & TIÊU ĐỀ SƠ ĐỒ (RÕ NGHĨA NGAY LẬP T�
 - Ngắn gọn (3–7 từ), dùng tiếng Việt tự nhiên, nói thẳng vào ý chính hoặc câu hỏi đời thường gây tò mò (ví dụ: "Vì sao 5 năm đầu chưa thấy măng?", "1 độ cuối làm tan tảng băng", "Càng gặp sự cố, nhóm càng vững", "Đừng giấu tin xấu với đồng đội").
 - TUYỆT ĐỐI CẤM đặt tiêu đề tối nghĩa, trừu tượng, chữ nghĩa đao to búa lớn kiểu dịch máy (như "Điểm rơi của sự phát triển", "Khoảng trũng tiềm năng ngầm", "Sàng lọc giá trị khủng hoảng") và tránh tiêu đề giáo trình khô khan ("Khái niệm...", "Tổng quan lý thuyết...").
 
-CẤU TRÚC 2 NHỊP KỂ CHUYỆN DÀY DẶN TRÊN MỖI SLIDE (BODY + VISUAL + EXAMPLE NỐI TIẾP):
-- Trên màn hình, mỗi trang hiển thị theo nhịp tạp chí: [Đoạn mở đầu body] → [Tranh minh họa / Sơ đồ] → [Đoạn văn nối tiếp từ example].
-- body (140–190 từ): Chia thành 2–3 đoạn ngắn gọn ngăn cách bằng \n\n, dùng **2–4 từ khóa in đậm**. TUYỆT ĐỐI CẤM dùng bất kỳ thẻ HTML nào (như <div>, </div>, <br>, <p>); chỉ dùng văn bản thuần ngăn cách bằng hai dấu xuống dòng \n\n. Giữ vững sức hút kể chuyện từ trang đầu tới trang cuối (trang cuối khép lại bằng chi tiết chạm tới đời sống hôm nay, kèm illustrationPlan riêng cho cảnh kết bài; cấm kết giáo điều "Tóm lại bạn cần...").
+NGHỆ THUẬT PHỐI NHỊP FREESTYLE (BIẾN HÓA BỐ CỤC GIỮA CÁC SLIDE, CHỐNG RẬP KHUÔN):
+- Mỗi page tự do chọn một layout phù hợp với vai trò của trang đó ("story" | "visual" | "stat" | "experiment" | "action"):
+  * "story": Thuần kể chuyện sâu sắc, tranh minh họa độc bản, không ép sơ đồ vào giữa.
+  * "visual": Sơ đồ/lưu đồ làm nhân vật chính ngay dưới tiêu đề, đoạn văn ngắn gọn, đúc kết sắc bén trong 1-2 câu.
+  * "stat": Khắc họa một con số định lượng gây sửng sốt (metrics có value nổi bật) và giải thích nghịch lý đằng sau.
+  * "experiment": Thí nghiệm tư duy / tình huống thử thách phản biện đặt người học vào thế lựa chọn (callout/comparison).
+  * "action": Khung hành động thực chiến từng bước (steps).
+- BẮT BUỘC: Hai trang liên tiếp trong cùng bài TUYỆT ĐỐI KHÔNG dùng cùng một layout! Quẹt mỗi trang phải đem lại cảm giác bất ngờ, biến hóa nhịp điệu đọc như tạp chí hiện đại.
+- body (100–180 từ): Chia thành 2–3 đoạn ngắn gọn ngăn cách bằng \n\n, dùng **2–4 từ khóa in đậm**. TUYỆT ĐỐI CẤM dùng bất kỳ thẻ HTML nào (như <div>, </div>, <br>, <p>); chỉ dùng văn bản thuần ngăn cách bằng hai dấu xuống dòng \n\n.
 - emoji: BẮT BUỘC gán một emoji giàu hình ảnh và biểu cảm cho từng trang (ví dụ: 🌱, 💡, ⚓, ⚔️, 🧭, 🚀, 🎯, ⚖️, 🧩).
 Mỗi page BẮT BUỘC có thêm:
-- example {scenario,explanation}: viết thành 2 đoạn văn xuôi kể chuyện mượt mà nối tiếp ngay bên dưới hình ảnh/sơ đồ (tổng 70–110 từ, có thể in đậm **từ khóa**), đưa câu chuyện thực tế cụ thể hoặc lật ngược ngộ nhận; cấm viết kiểu giải bài tập khô khan và không lặp nguyên văn body.
+- example {scenario,explanation}: 2 đoạn văn xuôi kể chuyện mượt mà (tổng 70–110 từ, có thể in đậm **từ khóa**), đưa câu chuyện thực tế cụ thể hoặc lật ngược ngộ nhận; cấm viết kiểu giải bài tập khô khan và không lặp nguyên văn body.
 - selfCheck {question,hint,answer}: câu hỏi suy ngẫm sâu sắc hoặc tình huống tự vấn đối chiếu với thực tế của người học; hint gợi mở góc nhìn nhưng không tiết lộ đáp án; answer giải thích lập luận phản biện đa chiều 2–4 câu.
 - commonMistake: một hiểu nhầm hoặc bẫy tư duy thường gặp và cách phân biệt thực tế, 1–2 câu.
 Các phần này phải nhất quán với body và không đòi kiến thức chưa dạy. Bài quiz cuối kiểm tra chuyển giao sang tình huống mới, không lặp selfCheck.

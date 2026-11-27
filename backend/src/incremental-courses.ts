@@ -97,9 +97,15 @@ CÁCH ĐẶT TIÊU ĐỀ TRANG (PAGE TITLE) & KICKER:
 - Ngắn gọn (3–7 từ), rõ nghĩa ngay lập tức, nói thẳng vào ý cốt lõi hoặc câu hỏi đời thường gây tò mò (ví dụ: "Vì sao 5 năm đầu chưa thấy măng?", "1 độ cuối làm tan tảng băng", "Càng gặp sự cố, nhóm càng vững", "Đừng giấu tin xấu với đồng đội").
 - TUYỆT ĐỐI CẤM tiêu đề mơ hồ, triết lý rỗng tuếch kiểu "Điểm rơi của sự phát triển" hay khô khan kiểu "Khái niệm cơ bản...".
 
-CẤU TRÚC 2 NHỊP KỂ CHUYỆN DÀY DẶN TRÊN MỖI SLIDE (BODY + VISUAL + EXAMPLE NỐI TIẾP):
-Trên giao diện đọc, mỗi trang hiển thị theo dòng chảy tạp chí: [Đoạn mở đầu body] → [Tranh minh họa / Sơ đồ] → [Đoạn kể chuyện nối tiếp từ example]. Vì vậy:
-- body (Nhịp 1 — 140–190 từ): Chia thành 2–3 đoạn ngắn thoáng mắt ngăn cách bằng \n\n. TUYỆT ĐỐI CẤM dùng bất kỳ thẻ HTML nào (như <div>, </div>, <br>, <p>); chỉ dùng văn bản thuần ngăn cách bằng hai dấu xuống dòng \n\n. Mở ra bối cảnh, câu chuyện hoặc giải thích bản chất vấn đề trực quan kèm **2–4 từ khóa in đậm**.
+NGHỆ THUẬT PHỐI NHỊP FREESTYLE (BIẾN HÓA BỐ CỤC GIỮA CÁC SLIDE, CHỐNG RẬP KHUÔN):
+- Mỗi page tự do chọn một layout phù hợp với vai trò của trang đó ("story" | "visual" | "stat" | "experiment" | "action"):
+  * "story": Thuần kể chuyện sâu sắc, tranh minh họa độc bản, không ép sơ đồ vào giữa.
+  * "visual": Sơ đồ/lưu đồ làm nhân vật chính ngay dưới tiêu đề, đoạn văn ngắn gọn, đúc kết sắc bén trong 1-2 câu.
+  * "stat": Khắc họa một con số định lượng gây sửng sốt (metrics có value nổi bật) và giải thích nghịch lý đằng sau.
+  * "experiment": Thí nghiệm tư duy / tình huống thử thách phản biện đặt người học vào thế lựa chọn (callout/comparison).
+  * "action": Khung hành động thực chiến từng bước (steps).
+- BẮT BUỘC: Hai trang liên tiếp trong cùng bài TUYỆT ĐỐI KHÔNG dùng cùng một layout! Quẹt mỗi trang phải đem lại cảm giác bất ngờ, biến hóa nhịp điệu đọc như tạp chí hiện đại.
+- body (Nhịp 1 — 100–180 từ): Chia thành 2–3 đoạn ngắn thoáng mắt ngăn cách bằng \n\n. TUYỆT ĐỐI CẤM dùng bất kỳ thẻ HTML nào (như <div>, </div>, <br>, <p>); chỉ dùng văn bản thuần ngăn cách bằng hai dấu xuống dòng \n\n. Mở ra bối cảnh, câu chuyện hoặc giải thích bản chất vấn đề trực quan kèm **2–4 từ khóa in đậm**.
 - example {scenario,explanation} (Nhịp 2 — Đoạn văn kể chuyện nối tiếp ngay bên dưới hình/sơ đồ, tổng 70–110 từ):
   * Viết thành 2 đoạn văn xuôi kể chuyện mượt mà nối tiếp mạch của body (có thể dùng **từ khóa in đậm**), đưa một phát hiện thực tế, câu chuyện nhân vật cụ thể hoặc góc nhìn lật ngược lầm tưởng.
   * TUYỆT ĐỐI CẤM viết khô khan kiểu giải bài tập ("Đây là bằng chứng cho thấy...", "Bước 1, Bước 2...") và CẤM lặp lại y nguyên câu chữ đã viết trong body!
@@ -161,7 +167,7 @@ export class IncrementalCourses {
     generate: () => Promise<T>,
   ): Promise<T> {
     const id = createHash("sha256")
-      .update(JSON.stringify({ version: 8, model: this.model, key }))
+      .update(JSON.stringify({ version: 9, model: this.model, key }))
       .digest("hex");
     const file = path.join(this.directory, id + ".json");
     try {

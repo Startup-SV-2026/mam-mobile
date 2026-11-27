@@ -89,6 +89,7 @@ export interface LessonPage {
   body: string;
   emoji: string;
   takeaway: string;
+  layout?: "visual" | "story" | "stat" | "experiment" | "action" | "standard";
 }
 export interface Quiz {
   question: string;
