@@ -8,7 +8,7 @@ import Svg, {
   Text as SvgText,
 } from "react-native-svg";
 import type { Lesson, LessonPage, LessonVisual } from "../../types/course";
-import { visualPalette, visualPalettes, localizeVisual } from "../../lib/visual-design";
+import { visualPalette, visualPalettes, localizeVisual, getNestedLayerRenderOrder } from "../../lib/visual-design";
 import { theme as t, ui } from "../ui/ui";
 import { Icon } from "../ui/Icon";
 
@@ -790,17 +790,23 @@ function NestedLayers({
 }) {
   const [selected, setSelected] = useState<number | null>(null);
   const layerColors = ["#CBE8FB", "#9FD8DC", "#93B496", "#E6EDCF"];
+  const renderIndices = getNestedLayerRenderOrder(items);
 
-  const renderNested = (idx: number): React.ReactNode => {
-    const item = items[idx];
+  const renderNested = (step: number): React.ReactNode => {
+    if (step >= renderIndices.length) return null;
+    const actualIdx = renderIndices[step];
+    const item = items[actualIdx];
     if (!item) return null;
-    const isInnermost = idx === items.length - 1;
-    const bg = layerColors[idx % layerColors.length];
+    const isInnermost = step === renderIndices.length - 1;
+    const bg = layerColors[step % layerColors.length];
 
     return (
       <Pressable
-        key={idx}
-        onPress={() => setSelected(selected === idx ? null : idx)}
+        key={actualIdx}
+        onPress={(e) => {
+          (e as unknown as { stopPropagation?: () => void })?.stopPropagation?.();
+          setSelected(selected === actualIdx ? null : actualIdx);
+        }}
         style={{
           backgroundColor: bg,
           borderWidth: 1.5,
@@ -812,17 +818,47 @@ function NestedLayers({
           gap: 9,
         }}
       >
-        <Text
-          style={{
-            fontSize: 13.5,
-            fontWeight: "700",
-            color: INK,
-            textAlign: "center",
-          }}
-        >
-          {item.label}
-        </Text>
-        {!isInnermost ? renderNested(idx + 1) : null}
+        {isInnermost ? (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 6,
+            }}
+          >
+            <View
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 4,
+                backgroundColor: INK,
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 13.5,
+                fontWeight: "700",
+                color: INK,
+                textAlign: "center",
+              }}
+            >
+              {item.label}
+            </Text>
+          </View>
+        ) : (
+          <Text
+            style={{
+              fontSize: 13.5,
+              fontWeight: "700",
+              color: INK,
+              textAlign: "center",
+            }}
+          >
+            {item.label}
+          </Text>
+        )}
+        {!isInnermost ? renderNested(step + 1) : null}
       </Pressable>
     );
   };

@@ -244,3 +244,31 @@ export function localizeVisual(visual: LessonVisual): LessonVisual {
     })),
   };
 }
+
+/**
+ * Calculates rendering order for nested concentric layers.
+ * Since recursive JSX renders Outer -> Inner, but standard cognitive/mental models
+ * list Core (Lõi/Tâm) first, we ensure that:
+ * - When items are given inside-out (items[0] = Core), outer wrapper renders items[last],
+ *   and deepest center renders items[0].
+ * - When items are explicitly given outside-in (items[0] = Outer shell), outer wrapper renders items[0].
+ * Returns array of indices in original items to render from Outermost to Innermost.
+ */
+export function getNestedLayerRenderOrder(items: Array<{ label: string }>): number[] {
+  if (items.length <= 1) return items.map((_, i) => i);
+  const first = (items[0]?.label || "").toLowerCase();
+  const last = (items[items.length - 1]?.label || "").toLowerCase();
+  const coreKeywords = /(cốt\s*lõi|lõi|nhân|tâm|gốc|core|nucleus|center|trọng tâm|bản chất|hạt nhân)/i;
+  const outerKeywords = /(vỏ|ngoài|bề mặt|outer|crust|periphery|ứng dụng|mở rộng|toàn cầu|tương lai)/i;
+
+  const isInsideOut = (() => {
+    if (coreKeywords.test(first) || outerKeywords.test(last)) return true;
+    if (outerKeywords.test(first) || coreKeywords.test(last)) return false;
+    return true; // Default inside-out (items[0] is center core)
+  })();
+
+  return isInsideOut
+    ? items.map((_, i) => items.length - 1 - i)
+    : items.map((_, i) => i);
+}
+
