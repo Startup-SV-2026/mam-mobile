@@ -188,3 +188,59 @@ export function courseArtKey(id: string, title = "", category = ""): CourseArtKe
 
   return "lexicon";
 }
+
+export function localizeLabel(label: string): string {
+  if (!label) return "";
+  const trimmed = label.trim();
+  const lower = trimmed.toLowerCase();
+
+  // Sinh học & Tiến hóa loài người
+  if (lower === "sapiens" || lower === "homo sapiens") {
+    return "Người tinh khôn (Sapiens)";
+  }
+  if (lower === "neanderthal" || lower === "homo neanderthalensis") {
+    return "Người cổ Neanderthal";
+  }
+  if (lower === "erectus" || lower === "homo erectus") {
+    return "Người đứng thẳng (Erectus)";
+  }
+  if (lower === "habilis" || lower === "homo habilis") {
+    return "Người khéo léo (Habilis)";
+  }
+  if (lower === "australopithecus") {
+    return "Vượn người cổ (Australopithecus)";
+  }
+  if (lower === "denisova" || lower === "denisovan") {
+    return "Người cổ Denisova";
+  }
+
+  // Thuật ngữ kỹ năng & kinh tế hay bị để nguyên tiếng Anh
+  if (lower === "trigger" || lower === "triggers") {
+    return "Điểm kích hoạt (Trigger)";
+  }
+  if (lower === "input" || lower === "inputs") {
+    return "Đầu vào";
+  }
+  if (lower === "output" || lower === "outputs") {
+    return "Đầu ra";
+  }
+  if (lower === "flow" || lower === "flow state") {
+    return "Dòng chảy tập trung (Flow)";
+  }
+  if (lower === "bias" || lower === "biases") {
+    return "Thiên kiến tư duy";
+  }
+
+  return trimmed;
+}
+
+export function localizeVisual(visual: LessonVisual): LessonVisual {
+  return {
+    ...visual,
+    title: visual.title ? visual.title.trim() : "",
+    items: (visual.items || []).map((it) => ({
+      ...it,
+      label: localizeLabel(it.label),
+    })),
+  };
+}

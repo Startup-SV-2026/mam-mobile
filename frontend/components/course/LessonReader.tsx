@@ -7,6 +7,7 @@ import { FlashcardView } from "./FlashcardView";
 import { LessonIllustration } from "./LessonIllustration";
 import { LessonFigure } from "./LessonFigure";
 import { FormattedBody } from "./FormattedBody";
+import { localizeLabel } from "../../lib/visual-design";
 
 interface LessonContentProps {
   pageIndex: number;
@@ -228,7 +229,7 @@ export function LessonContent({
               marginBottom: 6,
             }}
           >
-            {heroItem.label}
+            {localizeLabel(heroItem.label)}
           </Text>
           <Text
             style={{
@@ -276,7 +277,7 @@ export function LessonContent({
                       marginTop: 2,
                     }}
                   >
-                    {it.label}
+                    {localizeLabel(it.label)}
                   </Text>
                 </View>
               ))}
