@@ -32,16 +32,16 @@ Mỗi page BẮT BUỘC có thêm:
 Các phần này phải nhất quán với body và không đòi kiến thức chưa dạy. Bài quiz cuối kiểm tra chuyển giao sang tình huống mới, không lặp selfCheck.
 3. Title khóa tối đa 45 ký tự, nêu nội dung thực tế bằng tiếng Việt rõ nghĩa. Subtitle nêu điều người học làm được. Kicker ngắn gọn, tự nhiên, không khẩu hiệu. Không tự hạ nội dung nâng cao về mức nhập môn khi người học đã chọn trình độ cao.
 4. Mỗi quiz có 4 choices khác nhau, đúng duy nhất một đáp án. answer là chỉ số 0–3. Dùng phương án nhiễu từ lỗi hiểu thường gặp, tương đương độ dài; không dùng “tất cả đều đúng”. why giải thích bằng nội dung đã học, không chỉ nhắc lại đáp án. Phân bố vị trí đáp án đúng giữa các bài.
-5. Mỗi page có visual {kind,title,items}: 2–5 items {label,detail,value?}, detail dưới 18 từ; riêng cycle đúng 3 items; label và title phải ngắn gọn, rõ nghĩa cụ thể bằng tiếng Việt tự nhiên (TUYỆT ĐỐI CẤM nhãn tiếng Anh/Latin trơ trọi như "Sapiens", "Trigger", "Inputs"; phải viết rõ "Người tinh khôn", "Điểm kích hoạt", "Đầu vào"). Các trang trong cùng bài và giữa 3 bài PHẢI đa dạng hóa từ kho 15 định dạng theo đúng bản chất kiến thức:
+5. Mỗi page có visual {kind,title,items}: 2–5 items {label,detail,value?}, detail dưới 18 từ; riêng cycle đúng 3 items; label và title phải ngắn gọn, rõ nghĩa cụ thể bằng tiếng Việt tự nhiên (TUYỆT ĐỐI CẤM nhãn tiếng Anh/Latin trơ trọi như "Sapiens", "Trigger", "Inputs"; phải viết rõ "Người tinh khôn", "Điểm kích hoạt", "Đầu vào"). TUYỆT ĐỐI CẤM NHÃN SÁO RỖNG, LƯỜI BIẾNG như "Cốt lõi", "Mở rộng", "Tương lai", "Giai đoạn 1", "Khái niệm", "Thành phần 1"; từng label BẮT BUỘC chứa nội dung kiến thức thực chất, cụ thể. Các trang trong cùng bài và giữa 3 bài PHẢI đa dạng hóa từ kho 15 định dạng theo đúng bản chất kiến thức:
    - cause-effect (chuỗi nhân quả một chiều Nguyên nhân → Diễn biến → Kết quả)
    - funnel (các bước chọn lọc thu hẹp)
    - spectrum (thang mức độ liên tục từ cực trái sang cực phải)
    - bars (biểu đồ thanh ngang so sánh mức độ/quy mô)
    - timeline (diễn biến theo mốc thời gian hoặc giai đoạn tuần tự)
-   - layers (phân lớp cấu trúc đồng tâm từ lõi ra ngoài)
+   - layers (cấu trúc phân lớp đồng tâm từ lõi ra ngoài như địa tầng Trái Đất, kiến trúc Clean Architecture, Golden Circle Why-How-What; items[0] là Lõi trung tâm. TUYỆT ĐỐI CẤM dùng layers cho tiến trình thời gian, lịch sử, hoặc sự mở rộng quy mô hợp tác/dân số/kinh tế — mở rộng quy mô PHẢI dùng steps, timeline, funnel hoặc metrics!)
    - concept-map (khái niệm tỏa nhánh ngang hàng)
    - comparison (so sánh 2–3 góc nhìn đối lập)
-   - steps (quy trình thao tác từng bước)
+   - steps (quy trình thao tác từng bước hoặc các nấc thang quy mô tăng dần)
    - formula (công thức có expression <=140 ký tự)
    - metrics (số liệu có cơ sở, mỗi item có value <=32 ký tự)
    - line-chart (đồ thị xu hướng biến thiên, 3–5 items với value thể hiện đà tăng/giảm hoặc điểm bứt phá)

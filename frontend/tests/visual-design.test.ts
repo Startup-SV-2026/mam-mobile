@@ -4,6 +4,9 @@ import { isLessonVisual, readProgress } from "../types/course";
 import { STARTER_COURSES } from "../data/courses";
 import {
   courseArtKey,
+  getNestedLayerRenderOrder,
+  localizeLabel,
+  localizeVisual,
   visualKinds,
   visualPalette,
   visualPalettes,
@@ -88,3 +91,41 @@ test("visual accents retain readable contrast for white labels", () => {
   for (const p of Object.values(visualPalettes))
     assert.ok(1.05 / (lum(p.strong) + 0.05) >= 4.5, p.strong);
 });
+
+test("localizeLabel translates bare Latin and English terms to friendly Vietnamese", () => {
+  assert.equal(localizeLabel("Sapiens"), "Người tinh khôn (Sapiens)");
+  assert.equal(localizeLabel("Homo sapiens"), "Người tinh khôn (Sapiens)");
+  assert.equal(localizeLabel("Neanderthal"), "Người cổ Neanderthal");
+  assert.equal(localizeLabel("Erectus"), "Người đứng thẳng (Erectus)");
+  assert.equal(localizeLabel("Trigger"), "Điểm kích hoạt (Trigger)");
+  assert.equal(localizeLabel("Inputs"), "Đầu vào");
+  assert.equal(localizeLabel("Outputs"), "Đầu ra");
+});
+
+test("getNestedLayerRenderOrder places core at innermost center and outer shell at outermost container", () => {
+  // 1. Inside-Out order: item[0] is Core ("Cốt lõi"), item[last] is Outer ("Tương lai")
+  // Outermost container must render index 2 ("Tương lai"), inner center must render index 0 ("Cốt lõi")
+  const insideOutItems = [
+    { label: "Cốt lõi" },
+    { label: "Mở rộng" },
+    { label: "Tương lai" },
+  ];
+  assert.deepEqual(getNestedLayerRenderOrder(insideOutItems), [2, 1, 0]);
+
+  // 2. Outside-In order: item[0] is Outer ("Vỏ Trái Đất"), item[last] is Core ("Lõi Trái Đất")
+  // Outermost container renders index 0 ("Vỏ Trái Đất"), inner center renders index 2 ("Lõi Trái Đất")
+  const outsideInItems = [
+    { label: "Vỏ Trái Đất (Crust)" },
+    { label: "Lớp Manti" },
+    { label: "Lõi Trái Đất (Core)" },
+  ];
+  assert.deepEqual(getNestedLayerRenderOrder(outsideInItems), [0, 1, 2]);
+
+  // 3. Default order when no explicit outer keyword: defaults to Inside-Out (item[0] is center core)
+  const defaultItems = [
+    { label: "Tâm điểm A" },
+    { label: "Lớp B" },
+  ];
+  assert.deepEqual(getNestedLayerRenderOrder(defaultItems), [1, 0]);
+});
+

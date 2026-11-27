@@ -109,6 +109,7 @@ Trên giao diện đọc, mỗi trang hiển thị theo dòng chảy tạp chí:
 - selfCheck {question,hint,answer} & commonMistake: cung cấp đầy đủ dữ liệu chuẩn cho chế độ nghe podcast (không lặp nguyên văn body).
 - visual {kind,title,items}: 2–5 items {label,detail,value?}, detail dưới 18 từ (riêng cycle BẮT BUỘC đúng 3 items).
   * visual.title và từng item.label PHẢI ngắn gọn, rõ nghĩa, cụ thể bằng tiếng Việt tự nhiên (TUYỆT ĐỐI CẤM nhãn tiếng Anh/Latin cộc lốc như "Sapiens", "Homo erectus", "Inputs", "Trigger"; phải viết rõ "Người tinh khôn (Sapiens)", "Người đứng thẳng (Erectus)", "Điểm kích hoạt").
+  * TUYỆT ĐỐI CẤM NHÃN SÁO RỖNG, LƯỜI BIẾNG NHƯ: "Cốt lõi", "Mở rộng", "Tương lai", "Giai đoạn 1", "Giai đoạn 2", "Khái niệm", "Thành phần 1", "Bước 1". Từng item.label BẮT BUỘC chứa nội dung kiến thức thực chất, cụ thể và độc lập (ví dụ thay vì nhãn rỗng "Cốt lõi", phải viết rõ "Nhóm quen biết cá nhân (< 150 người)"; thay vì "Mở rộng", phải viết "Bộ lạc gắn kết bằng huyền thoại"; thay vì "Tương lai", phải viết "Mạng lưới toàn cầu nhờ tiền & luật pháp").
 QUY TẮC CHỌN VISUAL THEO BẢN CHẤT BÀI HỌC (CHỐNG LẶP FORMAT & CHỐNG LẠM DỤNG CYCLE):
 - Tất cả các trang trong cùng một bài PHẢI dùng các kind hoàn toàn khác nhau (trên Trang 1 và Trang cuối sẽ hiển thị CẢ tranh minh họa AI LẪN sơ đồ visual của trang đó, giúp bài học cực kỳ giàu hình ảnh!).
 - Đọc trường visualKinds trong previousLessons: ƯU TIÊN CHỌN CÁC KIND MỚI chưa xuất hiện ở bài liền trước để mỗi bài học có diện mạo thị giác riêng biệt!
@@ -118,10 +119,12 @@ QUY TẮC CHỌN VISUAL THEO BẢN CHẤT BÀI HỌC (CHỐNG LẶP FORMAT & CH�
   * spectrum: Thang mức độ liên tục từ cực trái sang cực phải (sắc thái ngôn ngữ thân mật → trang trọng, thang rủi ro/nhiệt độ, phổ quan điểm).
   * bars: Biểu đồ thanh ngang so sánh quy mô, tốc độ, mức độ tác động (nên kèm value khi có số liệu).
   * timeline: Các mốc thời gian, giai đoạn lịch sử hoặc tiến trình tuần tự có thứ tự rõ ràng.
-  * layers: Cấu trúc phân lớp đồng tâm từ lõi ra ngoài (địa tầng, kiến trúc hệ thống, tầng tâm lý, cấu trúc câu).
+  * layers: Cấu trúc phân lớp đồng tâm từ lõi ra ngoài (CHỈ DÙNG cho cấu trúc có tính bao bọc/hạt nhân thực tế như địa tầng Trái Đất, kiến trúc phần mềm Clean Architecture, mô hình Golden Circle Why-How-What, tầng ý thức tâm lý).
+    - Quy ước thứ tự: items[0] là LÕI TRUNG TÂM (Innermost Core), các item tiếp theo lồng dần ra ngoài, và item cuối cùng là LỚP VỎ NGOÀI CÙNG (Outer Shell).
+    - TUYỆT ĐỐI CẤM dùng "layers" cho sự mở rộng quy mô (hợp tác, dân số, kinh tế), tiến trình thời gian/lịch sử, hoặc tiến hóa! Khi nói về mở rộng quy mô hay nấc thang phát triển, BẮT BUỘC dùng "steps" (bậc thang quy mô), "timeline", "funnel" hoặc "metrics".
   * concept-map: Một khái niệm trung tâm tỏa ra 2–4 thành phần/nhánh song song ngang hàng.
   * comparison: Đặt 2–3 góc nhìn, phương pháp hoặc sai lầm vs đúng đắn cạnh nhau để phân biệt.
-  * steps: Quy trình thao tác từng bước để người học thực thi một kỹ năng cụ thể.
+  * steps: Quy trình thao tác từng bước hoặc các nấc thang quy mô/phát triển tăng dần.
   * formula: Công thức toán/khoa học/tài chính hoặc cấu trúc ngữ pháp/cú pháp lệnh (BẮT BUỘC có expression văn bản thuần <=140 ký tự).
   * metrics: Các con số định lượng có cơ sở xác thực hoặc cặp phần trăm (BẮT BUỘC mỗi item có value <=32 ký tự; không bịa số liệu).
   * line-chart: Đồ thị xu hướng thể hiện tiến trình biến thiên, điểm bứt phá (3–5 items {label: mốc/trạng thái, value: số liệu hoặc tỷ lệ %}).
@@ -163,7 +166,7 @@ export class IncrementalCourses {
     generate: () => Promise<T>,
   ): Promise<T> {
     const id = createHash("sha256")
-      .update(JSON.stringify({ version: 9, model: this.model, key }))
+      .update(JSON.stringify({ version: 10, model: this.model, key }))
       .digest("hex");
     const file = path.join(this.directory, id + ".json");
     try {
