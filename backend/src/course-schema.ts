@@ -51,6 +51,10 @@ const page = {
     body: text,
     emoji: text,
     takeaway: text,
+    layout: {
+      type: "string",
+      enum: ["visual", "story", "stat", "experiment", "action", "standard"],
+    },
     visual,
     illustrationPlan: {
       type: "object",
