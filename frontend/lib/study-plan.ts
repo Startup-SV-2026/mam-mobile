@@ -76,7 +76,7 @@ export function makeStudyPlan(
         "Vận dụng từ vựng trong bài viết",
       ]
     : [
-        "Nền tảng và khái niệm cốt lõi",
+        "Nền tảng và nguyên lý quan trọng",
         "Vận dụng qua ví dụ",
         "Giải quyết tình huống",
         "Tổng hợp và tự đánh giá",

@@ -98,7 +98,7 @@ export function buildEpisode(course: Course, index: number): PodcastEpisode {
     if (page.takeaway) {
       add(
         "Tóm tắt",
-        `Điểm cốt lõi đọng lại qua phần này là: ${cleanSpeechText(page.takeaway)}.`,
+        `Điều đọng lại lớn nhất qua phần này là: ${cleanSpeechText(page.takeaway)}.`,
       );
     }
   }

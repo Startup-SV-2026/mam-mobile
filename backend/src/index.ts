@@ -114,7 +114,7 @@ export function createApp({
           content: JSON.stringify({
             topic,
             level,
-            goal: goal || "Hiểu khái niệm cốt lõi",
+            goal: goal || "Nắm vững bản chất gốc rễ",
             learnerBrief: brief,
             conversation,
           }),
