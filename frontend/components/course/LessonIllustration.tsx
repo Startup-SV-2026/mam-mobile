@@ -217,7 +217,7 @@ export function LessonIllustration({
           >
             {pending
               ? "🎨 ĐANG VẼ TRANH MINH HỌA"
-              : "🌱 GÓC NHÌN MINH HỌA"}
+              : "🌱 PHÁC THẢO Ý TƯỞNG"}
           </Text>
         </View>
 
@@ -247,7 +247,7 @@ export function LessonIllustration({
     activePlan?.caption ||
     (sample
       ? "Minh họa nghệ thuật về Trái Đất, Mặt Trời và Ngân Hà; các quỹ đạo chỉ mang tính tượng trưng, không theo tỉ lệ."
-      : `Minh họa nghệ thuật cho “${lesson.title}”; góc nhìn trực quan về câu chuyện cốt lõi.`);
+      : `Minh họa nghệ thuật cho “${lesson.title}”; hình ảnh trực quan khắc họa nội dung bài học.`);
 
   return (
     <View style={{ marginTop: 18, marginBottom: 8 }}>

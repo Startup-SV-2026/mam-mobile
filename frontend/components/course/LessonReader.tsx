@@ -126,7 +126,7 @@ function TakeawayPill({ text }: { text: string }) {
             marginBottom: 3,
           }}
         >
-          ĐIỂM CHẠM CỐT LÕI
+          ĐIỀU ĐỌNG LẠI
         </Text>
         <Text
           style={{
@@ -329,7 +329,7 @@ export function LessonContent({
                 textTransform: "uppercase",
               }}
             >
-              THÍ NGHIỆM TƯ DUY
+              THỬ THÁCH TƯ DUY
             </Text>
           </View>
           <FormattedBody body={page.body} />

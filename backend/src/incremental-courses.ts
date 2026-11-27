@@ -53,10 +53,10 @@ export const planPrompt = `Bạn thiết kế đề cương khóa học Mầm b�
 Chỉ tạo JSON đề cương, KHÔNG viết nội dung bài, quiz hay page. title <=100 ký tự, subtitle <=300.
 CHUẨN NGÔN NGỮ ĐỀ CƯƠNG:
 - Đặt tên khóa học, tên chương và tên bài bằng tiếng Việt rõ nghĩa ngay từ cái nhìn đầu tiên, nói thẳng vào nội dung thực tế hoặc tình huống gần gũi.
-- TUYỆT ĐỐI CẤM dùng từ ngữ dịch máy tối nghĩa, trừu tượng sáo rỗng (như "Điểm rơi của sự phát triển", "Chống mỏng manh", "Khoảng trũng tiềm năng", "Tối ưu hóa hệ sinh thái") và không lạm dụng tiếng Anh lơ lửng khi đã có từ tiếng Việt tự nhiên.
+- TUYỆT ĐỐI CẤM dùng từ ngữ dịch máy tối nghĩa, trừu tượng sáo rỗng (như "Điểm chạm cốt lõi", "Điểm rơi của sự phát triển", "Chống mỏng manh", "Khoảng trũng tiềm năng", "Tối ưu hóa hệ sinh thái") và không lạm dụng tiếng Anh lơ lửng khi đã có từ tiếng Việt tự nhiên.
 
 BẮT BUỘC tạo 3–5 chương chuyên sâu (tuyệt đối không chỉ tạo 2 chương) để khóa học có chiều sâu tri thức và lộ trình hoàn chỉnh:
-- Chương 1: Nền tảng & Bản chất cốt lõi (Hiểu cơ chế gốc rễ một cách trực quan, dễ hình dung).
+- Chương 1: Khởi nguồn & Bản chất gốc rễ (Hiểu cơ chế gốc rễ một cách trực quan, dễ hình dung).
 - Chương 2: Phương pháp & Kỹ thuật thực hành (Áp dụng cụ thể vào đời sống/công việc hằng ngày).
 - Chương 3: Xử lý tình huống khó & Góc nhìn đa chiều (Phân biệt các bẫy thường gặp, xử lý ca phức tạp).
 - Chương 4 & 5 (nếu phù hợp): Mở rộng nâng cao & Vận dụng độc lập.
@@ -65,7 +65,7 @@ QUY TẮC BẮT BUỘC VỀ SỐ LƯỢNG BÀI HỌC CON TRONG MỖI CHƯƠNG:
 - Số lượng bài học con trong từng chương PHẢI ĐƯỢC PHÂN BỔ LINH HOẠT dựa vào độ khó, độ rộng và mức độ phức tạp thực tế của chương đó.
 - TUYỆT ĐỐI CẤM cào bằng chương nào cũng chỉ có đúng 2 bài học con!
 - Cụ thể:
-  * Chương nền tảng / nhập môn (độ phức tạp cơ bản): có 2 bài học súc tích để nắm vững khái niệm cốt lõi.
+  * Chương nền tảng / nhập môn (độ phức tạp cơ bản): có 2 bài học súc tích để nắm vững kiến thức căn bản nhất.
   * Chương trọng tâm kỹ thuật / thực hành chuyên sâu (nhiều công cụ, kỹ năng thực chiến, thao tác phức tạp): BẮT BUỘC có từ 3 đến 4 (hoặc 5) bài học bóc tách chi tiết từng khía cạnh.
   * Chương nâng cao / giải quyết vấn đề thực tế: có 2 đến 4 bài học phù hợp với độ khó của nội dung.
 - BẮT BUỘC giữa các chương phải có sự chênh lệch tự nhiên về số bài (ví dụ: Chương 1 có 2 bài, Chương 2 có 4 bài, Chương 3 có 3 bài, Chương 4 có 2 bài).
@@ -82,19 +82,19 @@ QUY TẮC CHỐNG LẶP NỘI DUNG TUYỆT ĐỐI (ANTI-REPETITION):
 
 BẮT BUỘC mỗi lesson có openingQuote {text,label}:
 - text: Một câu hỏi ngắn gợi suy ngẫm sâu sắc (thought-provoking) HOẶC một câu danh ngôn / nhận định thực tế đắt giá mở màn bài học (15–30 từ tiếng Việt; không bịa nguồn trích dẫn).
-- label: Nhãn định vị ngắn gọn (2–5 từ, ví dụ tên tác giả, tác phẩm, hoặc góc nhìn tư duy như "GÓC NHÌN TƯ DUY", "SENECA", "TẬP TRUNG SÂU").
+- label: Nhãn định vị ngắn gọn (2–4 từ, ví dụ tên tác giả, tác phẩm hoặc chủ đề như "TƯ DUY ĐÀM PHÁN", "SENECA", "TẬP TRUNG SÂU", "LỜI KHUYÊN").
 
 Mặc định tạo 4–5 pages dày dặn cho mỗi bài học (chỉ dùng 3 pages khi chủ đề cực kỳ ngắn gọn). Tiến trình mạch lạc như một bài tạp chí / thuyết trình kể chuyện cuốn hút, không lặp lại tiêu đề thành nội dung.
 
 QUY TẮC TỪ VỰNG & DIỄN ĐẠT TIẾNG VIỆT TỰ NHIÊN (PROOFREADING BẮT BUỘC):
 - Viết bằng tiếng Việt đời thường, gần gũi, gãy gọn — người không chuyên đọc lướt một lần phải hiểu ngay 100%.
 - TUYỆT ĐỐI CẤM "văn dịch máy" (ghép chữ word-by-word từ tiếng Anh hoặc dùng từ ngữ đao to búa lớn, mơ hồ):
-  * SAI (cấm viết): "Điểm rơi của sự phát triển", "chống mỏng manh", "đạt đến ngưỡng Antifragile", "minh bạch tột độ", "khoảng trũng tiềm năng ngầm", "sàng lọc giá trị khủng hoảng", "hệ sinh thái giao tiếp".
-  * ĐÚNG (trong sáng, trúng ý): "Thời điểm bứt phá", "càng va đập càng vững vàng", "thẳng thắn chia sẻ thông tin kể cả khi có sự cố", "giai đoạn tích lũy chưa thấy kết quả", "rút ra bài học sau khủng hoảng".
+  * SAI (cấm viết): "Điểm chạm cốt lõi", "điểm chạm tư duy", "bản chất cốt lõi", "góc nhìn minh họa", "Điểm rơi của sự phát triển", "chống mỏng manh", "đạt đến ngưỡng Antifragile", "minh bạch tột độ", "khoảng trũng tiềm năng ngầm", "sàng lọc giá trị khủng hoảng", "hệ sinh thái giao tiếp".
+  * ĐÚNG (trong sáng, trúng ý): "Điều đọng lại", "Thời điểm bứt phá", "càng va đập càng vững vàng", "thẳng thắn chia sẻ thông tin kể cả khi có sự cố", "giai đoạn tích lũy chưa thấy kết quả", "rút ra bài học sau khủng hoảng".
 - XỬ LÝ THUẬT NGỮ NƯỚC NGOÀI: Không chêm từ tiếng Anh lơ lửng giữa câu tiếng Việt khi không cần thiết, và tuyệt đối không dịch ghép từng chữ ngô nghê. Nếu cần giới thiệu một khái niệm quốc tế nổi tiếng (như Antifragile, Sunk Cost, Compound Interest), hãy diễn đạt bằng cụm tiếng Việt dễ hiểu trước rồi mới chú thích ngắn gọn trong ngoặc ở lần đầu tiên (ví dụ: "khả năng **vững vàng hơn sau biến cố** (khái niệm *Antifragile* — không chỉ chịu đòn giỏi mà còn trưởng thành nhờ thử thách)").
 
 CÁCH ĐẶT TIÊU ĐỀ TRANG (PAGE TITLE) & KICKER:
-- Ngắn gọn (3–7 từ), rõ nghĩa ngay lập tức, nói thẳng vào ý cốt lõi hoặc câu hỏi đời thường gây tò mò (ví dụ: "Vì sao 5 năm đầu chưa thấy măng?", "1 độ cuối làm tan tảng băng", "Càng gặp sự cố, nhóm càng vững", "Đừng giấu tin xấu với đồng đội").
+- Ngắn gọn (3–7 từ), rõ nghĩa ngay lập tức, nói thẳng vào ý chính trọng tâm hoặc câu hỏi đời thường gây tò mò (ví dụ: "Vì sao 5 năm đầu chưa thấy măng?", "1 độ cuối làm tan tảng băng", "Càng gặp sự cố, nhóm càng vững", "Đừng giấu tin xấu với đồng đội").
 - TUYỆT ĐỐI CẤM tiêu đề mơ hồ, triết lý rỗng tuếch kiểu "Điểm rơi của sự phát triển" hay khô khan kiểu "Khái niệm cơ bản...".
 
 NGHỆ THUẬT PHỐI NHỊP FREESTYLE (BIẾN HÓA BỐ CỤC GIỮA CÁC SLIDE, CHỐNG RẬP KHUÔN):
@@ -102,9 +102,10 @@ NGHỆ THUẬT PHỐI NHỊP FREESTYLE (BIẾN HÓA BỐ CỤC GIỮA CÁC SLIDE
   * "story": Thuần kể chuyện sâu sắc, tranh minh họa độc bản, không ép sơ đồ vào giữa.
   * "visual": Sơ đồ/lưu đồ làm nhân vật chính ngay dưới tiêu đề, đoạn văn ngắn gọn, đúc kết sắc bén trong 1-2 câu.
   * "stat": Khắc họa một con số định lượng gây sửng sốt (metrics có value nổi bật) và giải thích nghịch lý đằng sau.
-  * "experiment": Thí nghiệm tư duy / tình huống thử thách phản biện đặt người học vào thế lựa chọn (callout/comparison).
+  * "experiment": Thử thách tư duy / tình huống phản biện đặt người học vào thế lựa chọn hoặc tự soi chiếu (callout/comparison).
   * "action": Khung hành động thực chiến từng bước (steps).
 - BẮT BUỘC: Hai trang liên tiếp trong cùng bài TUYỆT ĐỐI KHÔNG dùng cùng một layout! Quẹt mỗi trang phải đem lại cảm giác bất ngờ, biến hóa nhịp điệu đọc như tạp chí hiện đại.
+- takeaway: Đúc kết 1 câu ngắn gọn, tinh tế, gãy gọn đọng lại sau trang học (cấm dùng sáo ngữ "điểm chạm", "cốt lõi").
 - body (Nhịp 1 — 100–180 từ): Chia thành 2–3 đoạn ngắn thoáng mắt ngăn cách bằng \n\n. TUYỆT ĐỐI CẤM dùng bất kỳ thẻ HTML nào (như <div>, </div>, <br>, <p>); chỉ dùng văn bản thuần ngăn cách bằng hai dấu xuống dòng \n\n. Mở ra bối cảnh, câu chuyện hoặc giải thích bản chất vấn đề trực quan kèm **2–4 từ khóa in đậm**.
 - example {scenario,explanation} (Nhịp 2 — Đoạn văn kể chuyện nối tiếp ngay bên dưới hình/sơ đồ, tổng 70–110 từ):
   * Viết thành 2 đoạn văn xuôi kể chuyện mượt mà nối tiếp mạch của body (có thể dùng **từ khóa in đậm**), đưa một phát hiện thực tế, câu chuyện nhân vật cụ thể hoặc góc nhìn lật ngược lầm tưởng.
@@ -130,7 +131,7 @@ QUY TẮC CHỌN VISUAL THEO BẢN CHẤT BÀI HỌC (CHỐNG LẶP FORMAT & CH�
   * metrics: Các con số định lượng có cơ sở xác thực hoặc cặp phần trăm (BẮT BUỘC mỗi item có value <=32 ký tự; không bịa số liệu).
   * line-chart: Đồ thị xu hướng thể hiện tiến trình biến thiên, điểm bứt phá (3–5 items {label: mốc/trạng thái, value: số liệu hoặc tỷ lệ %}).
   * flowchart: Lưu đồ quyết định logic phân nhánh (3–5 items, thể hiện điểm bắt đầu, câu hỏi điều kiện, nhánh Có/Không và hành động tiếp theo).
-  * callout: Hộp tình huống suy ngẫm sâu / thí nghiệm tư duy (thought experiment) với câu hỏi trọng tâm ở visual.title và 2–3 items {label, detail} phân tích các góc nhìn đối trọng.
+  * callout: Hộp tình huống suy ngẫm sâu / thử thách tư duy (thought challenge) với câu hỏi trọng tâm ở visual.title và 2–3 items {label, detail} so sánh các góc nhìn thực tế.
   * cycle: CHỈ ĐƯỢC DÙNG HIẾM HOI khi hiện tượng THỰC SỰ khép kín quay ngược từ bước 3 về lại bước 1 thành vòng lặp vô tận (như vòng tuần hoàn nước, vòng phản hồi sinh học). TUYỆT ĐỐI CẤM ép diễn biến một chiều (như di cư, phát triển lịch sử, quy trình tuyến tính) vào cycle! Nếu bài liền trước trong previousLessons đã dùng "cycle", bài này CẤM dùng "cycle"!
 - tone: sage/sky/peach/lavender/sand (phối đa dạng giữa các trang).
 
@@ -167,7 +168,7 @@ export class IncrementalCourses {
     generate: () => Promise<T>,
   ): Promise<T> {
     const id = createHash("sha256")
-      .update(JSON.stringify({ version: 9, model: this.model, key }))
+      .update(JSON.stringify({ version: 10, model: this.model, key }))
       .digest("hex");
     const file = path.join(this.directory, id + ".json");
     try {
