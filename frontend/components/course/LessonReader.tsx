@@ -7,6 +7,8 @@ import { FlashcardView } from "./FlashcardView";
 import { LessonIllustration } from "./LessonIllustration";
 import { LessonFigure } from "./LessonFigure";
 import { FormattedBody } from "./FormattedBody";
+import { SelfCheckCard } from "./SelfCheckCard";
+import { triggerHaptic, playSound } from "../../lib/feedback";
 
 interface LessonContentProps {
   pageIndex: number;
@@ -16,6 +18,7 @@ interface LessonContentProps {
   courseTitle: string;
   lessonIndex: number;
   onOpenAIStatus?: () => void;
+  onAskTutor?: (question: string) => void;
 }
 
 export function LessonContent({
@@ -26,6 +29,7 @@ export function LessonContent({
   courseTitle,
   lessonIndex,
   onOpenAIStatus,
+  onAskTutor,
 }: LessonContentProps) {
   const showIllustration = pageIndex === 0 || !!page.illustration?.id;
   const followUpProse = page.example
@@ -94,6 +98,59 @@ export function LessonContent({
           ) : null}
         </>
       )}
+
+      {/* Active Reflection Card with 3 distinct UI variations */}
+      <SelfCheckCard
+        selfCheck={page.selfCheck}
+        commonMistake={page.commonMistake}
+        pageIndex={pageIndex}
+      />
+
+      {/* Contextual AI Copilot Button (Dynamic prompt per slide) */}
+      {onAskTutor ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => {
+            triggerHaptic("selection");
+            playSound("tap");
+            const prompt =
+              pageIndex % 3 === 0
+                ? `Giải thích giúp mình trang "${page.title}" bằng một ví dụ đời thường hơn nhé.`
+                : pageIndex % 3 === 1
+                  ? `Trang "${page.title}" có điểm nào người mới học hay hiểu nhầm không bạn?`
+                  : `Làm sao áp dụng nội dung trang "${page.title}" vào thực tế hàng ngày?`;
+            onAskTutor(prompt);
+          }}
+          style={styles.copilotCard}
+        >
+          <View style={styles.copilotLeft}>
+            <View style={styles.copilotIconCircle}>
+              <Text style={styles.copilotEmoji}>
+                {pageIndex % 3 === 0 ? "💡" : pageIndex % 3 === 1 ? "🔍" : "⚡"}
+              </Text>
+            </View>
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text style={styles.copilotTitle}>
+                {pageIndex % 3 === 0
+                  ? "Chưa hiểu rõ trang này?"
+                  : pageIndex % 3 === 1
+                    ? "Cần thêm ví dụ thực tế?"
+                    : "Muốn đào sâu bài học?"}
+              </Text>
+              <Text style={styles.copilotSub}>
+                {pageIndex % 3 === 0
+                  ? "Chạm để hỏi nhanh Gia sư Mầm AI"
+                  : pageIndex % 3 === 1
+                    ? "Nhờ Mầm AI phân tích tình huống"
+                    : "Phản biện đa chiều cùng Mầm AI"}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.copilotAction}>
+            <Text style={styles.copilotActionText}>Hỏi ngay →</Text>
+          </View>
+        </Pressable>
+      ) : null}
     </>
   );
 }
@@ -136,7 +193,11 @@ export function QuizContent({
             accessibilityState={{ selected: answer === i }}
             disabled={checked && isCorrect}
             key={i}
-            onPress={() => onSelectAnswer(i)}
+            onPress={() => {
+              triggerHaptic("selection");
+              playSound("tap");
+              onSelectAnswer(i);
+            }}
             style={[
               styles.option,
               answer === i && {
@@ -198,4 +259,60 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     minHeight: 65,
   },
+  copilotCard: {
+    marginTop: 10,
+    marginBottom: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 15,
+    backgroundColor: "#FDFBF5",
+    borderWidth: 1.2,
+    borderColor: "#E5DEC9",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  copilotLeft: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  copilotIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#FAF2DE",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#EBDDBA",
+  },
+  copilotEmoji: {
+    fontSize: 18,
+  },
+  copilotTitle: {
+    fontSize: 13.5,
+    fontWeight: "700",
+    color: "#231B15",
+  },
+  copilotSub: {
+    fontSize: 12,
+    color: "#7A6C58",
+  },
+  copilotAction: {
+    paddingVertical: 6,
+    paddingHorizontal: 11,
+    borderRadius: 999,
+    backgroundColor: "#EBF5FE",
+    borderWidth: 1,
+    borderColor: "#72C3FA",
+  },
+  copilotActionText: {
+    fontSize: 11.5,
+    fontWeight: "700",
+    color: "#1B6D9B",
+  },
 });
+

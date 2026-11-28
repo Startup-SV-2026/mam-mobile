@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import type { Course, Lesson } from "../types/course";
 import { theme as t } from "../components/ui/ui";
@@ -7,6 +7,7 @@ import { MascotLoading } from "../components/mascot/MascotLoading";
 import { MamMascot } from "../components/mascot/MamMascot";
 import { TactileButton } from "../components/ui/TactileButton";
 import { Icon } from "../components/ui/Icon";
+import { triggerHaptic, playSound } from "../lib/feedback";
 
 interface LessonDoneProps {
   course: Course;
@@ -31,6 +32,11 @@ export function LessonDone({
   onNextLesson,
   onHome,
 }: LessonDoneProps) {
+  useEffect(() => {
+    playSound("success");
+    triggerHaptic("success");
+  }, []);
+
   const currentPlanned = plannedLessons(course)[lessonIndex];
   const nextLessonAvailable = !!course.lessons[lessonIndex + 1];
   const nextLessonInfo = plannedLessons(course)[lessonIndex + 1];

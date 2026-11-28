@@ -1,98 +1,10 @@
 import type { Course } from "../types/course";
-// Authored diagrams for the demo. Generated courses supply their own visual data.
+
+/**
+ * Authored diagrams for demo courses.
+ * Grounded in historical facts and academic vocabulary contexts.
+ */
 export function addSampleVisuals(courses: Course[]) {
-  const space = courses.find((c) => c.id === "space");
-  if (space) {
-    space.lessons[0].sampleIllustration = "space";
-    space.lessons[0].pages[0].visual = {
-      kind: "comparison",
-      title: "Địa chỉ của chúng ta trong vũ trụ",
-      items: [
-        { label: "Trái Đất", detail: "Hành tinh nơi chúng ta đang sống." },
-        {
-          label: "Hệ Mặt Trời",
-          detail: "Mặt Trời và các thiên thể quay quanh nó.",
-        },
-        {
-          label: "Ngân Hà",
-          detail: "Thiên hà chứa Hệ Mặt Trời và hàng trăm tỉ ngôi sao.",
-        },
-      ],
-    };
-    space.lessons[0].pages[1].visual = {
-      kind: "steps",
-      title: "Hành trình của ánh sáng",
-      items: [
-        {
-          label: "1 · Mặt Trời",
-          detail: "Ánh sáng bắt đầu hành trình từ Mặt Trời.",
-        },
-        {
-          label: "2 · Khoảng 8 phút 20 giây",
-          detail: "Thời gian ánh sáng đi đến Trái Đất.",
-        },
-        {
-          label: "3 · Điều bạn nhìn thấy",
-          detail: "Hình ảnh Mặt Trời ở thời điểm hơn 8 phút trước.",
-        },
-      ],
-    };
-    space.lessons[0].pages[2].visual = {
-      kind: "comparison",
-      title: "Cùng phân biệt hai đại lượng",
-      items: [
-        { label: "Một năm", detail: "Đơn vị đo thời gian." },
-        {
-          label: "Một năm ánh sáng",
-          detail:
-            "Đơn vị đo khoảng cách: quãng đường ánh sáng đi trong một năm.",
-        },
-      ],
-    };
-  }
-  const habit = courses.find((c) => c.id === "mind")?.lessons[1];
-  if (habit)
-    habit.pages[0].visual = {
-      kind: "cycle",
-      title: "Một vòng lặp thói quen",
-      items: [
-        {
-          label: "1 · Tín hiệu",
-          detail: "Bối cảnh quen thuộc nhắc bạn bắt đầu.",
-        },
-        {
-          label: "2 · Hành động",
-          detail: "Bạn thực hiện một việc nhỏ, cụ thể.",
-        },
-        {
-          label: "3 · Kết quả",
-          detail: "Kết quả nhận được góp phần củng cố vòng lặp.",
-        },
-      ],
-    };
-  const ai = courses.find((c) => c.id === "ai");
-  if (ai)
-    ai.lessons[0].pages[0].visual = {
-      kind: "steps",
-      title: "Máy học từ ví dụ",
-      items: [
-        {
-          label: "Dữ liệu",
-          detail: "Các ví dụ đầu vào, chẳng hạn hình ảnh hoặc văn bản.",
-        },
-        {
-          label: "Học mẫu hình",
-          detail: "Mô hình điều chỉnh dựa trên các ví dụ khi huấn luyện.",
-        },
-        {
-          label: "Áp dụng",
-          detail:
-            "Dùng điều đã học để nhận diện hoặc dự đoán trên dữ liệu mới.",
-        },
-      ],
-    };
-
-
   // ── Nhà Trần & Ba lần kháng Mông Nguyên ──────────────────────────────
   const tran = courses.find((c) => c.id === "tran-mong");
   if (tran) {
@@ -107,8 +19,14 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "comparison",
       title: "Tương quan lực lượng năm 1258",
       items: [
-        { label: "Đế quốc Mông Cổ", detail: "Đế chế lớn nhất thế giới, bách chiến bách thắng khắp Á-Âu." },
-        { label: "Đại Việt", detail: "Nước nhỏ nhưng địa hình hiểm trở và ý chí quyết không hàng." },
+        {
+          label: "Đế quốc Mông Cổ",
+          detail: "Kỵ binh thảo nguyên bách chiến bách thắng khắp Á-Âu; Tốc độ hành quân thần tốc, bắn cung trên lưng ngựa chuẩn xác; Thiếu kinh nghiệm tác chiến rừng rậm nhiệt đới.",
+        },
+        {
+          label: "Đại Việt thời Trần",
+          detail: "Quân đội tinh nhuệ, gắn bó mật thiết với nhân dân; Am hiểu địa hình đầm lầy sông ngòi hiểm trở; Ý chí 'Sát Thát' quật cường, sẵn sàng hy sinh bảo vệ non sông.",
+        },
       ],
     };
 
@@ -117,9 +35,18 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "steps",
       title: "Kế sách “Vườn không nhà trống”",
       items: [
-        { label: "1 · Rút lui", detail: "Chủ động bỏ thành Thăng Long, di tản toàn bộ nhân dân." },
-        { label: "2 · Tiêu huỷ", detail: "Đốt sạch kho lương, triệt tiêu mọi nguồn tiếp tế của giặc." },
-        { label: "3 · Phản công", detail: "Đợi giặc đói khát suy kiệt, tung đòn quyết định tại Đông Bộ Đầu." },
+        {
+          label: "1 · Rút lui chiến lược",
+          detail: "Chủ động bỏ thành Thăng Long, sơ tán toàn bộ hoàng triều và nhân dân về vùng an toàn.",
+        },
+        {
+          label: "2 · Triệt tiêu hậu cần",
+          detail: "Đốt sạch kho lương, mang đi mọi gia súc; Biến kinh thành thành chiếc bẫy đói khát cho quân giặc.",
+        },
+        {
+          label: "3 · Phản công quyết định",
+          detail: "Đợi giặc suy kiệt vì dịch bệnh và thiếu đói, bất ngờ tung đòn sấm sét tại Đông Bộ Đầu.",
+        },
       ],
     };
 
@@ -128,8 +55,14 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "comparison",
       title: "Quy mô hai đợt xâm lược",
       items: [
-        { label: "Năm 1258 (Lần 1)", detail: "3 vạn kỵ binh Mông Cổ theo đường bộ phía Bắc." },
-        { label: "Năm 1285 (Lần 2)", detail: "50 vạn quân Nguyên thuỷ bộ hiệp đồng, kẹp hai đầu Nam - Bắc." },
+        {
+          label: "Năm 1258 (Lần 1)",
+          detail: "Quân số: 3 vạn kỵ binh Mông Cổ tinh nhuệ của Ngột Lương Hợp Thai; Hướng tiến công: Độc đạo men theo sông Hồng từ Vân Nam xuống.",
+        },
+        {
+          label: "Năm 1285 (Lần 2)",
+          detail: "Quân số: 50 vạn quân Nguyên - Hán hợp đồng thủy bộ khổng lồ; Hướng tiến công: Thoát Hoan đánh từ Bắc xuống, Toa Đô kẹp từ Nam lên.",
+        },
       ],
     };
 
@@ -144,9 +77,18 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "steps",
       title: "Tiến trình Hội nghị Diên Hồng",
       items: [
-        { label: "1 · Triệu tập", detail: "Mời các bậc bô lão uy tín nhất cả nước về hoàng cung." },
-        { label: "2 · Hỏi ý dân", detail: "Nhà vua đặt câu hỏi sinh tử: “Nên hoà hay nên đánh?”" },
-        { label: "3 · Đồng thanh", detail: "Muôn người như một thét vang tiếng “ĐÁNH!” rúng động kinh thành." },
+        {
+          label: "1 · Triệu tập bô lão",
+          detail: "Mời các bậc phụ lão uy tín đại diện cho ý chí nhân dân từ khắp các làng xã về kinh đô.",
+        },
+        {
+          label: "2 · Nhà vua hỏi kế",
+          detail: "Vua Trần Thánh Tông đặt câu hỏi sinh tử trước triều đình: 'Nên hòa hay nên đánh?'.",
+        },
+        {
+          label: "3 · Đồng thanh quyết tử",
+          detail: "Muôn người như một thét vang tiếng 'ĐÁNH!' rúng động hoàng thành, kết tinh thành sức mạnh toàn dân.",
+        },
       ],
     };
 
@@ -155,9 +97,18 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "timeline",
       title: "Chuỗi đại thắng mùa hè 1285",
       items: [
-        { label: "Hàm Tử", detail: "Trần Nhật Duật chỉ huy bẻ gãy đạo thuỷ quân tinh nhuệ Toa Đô." },
-        { label: "Chương Dương", detail: "Trần Quang Khải đốt cháy chiến thuyền giặc, giải phóng bến sông." },
-        { label: "Thăng Long", detail: "Thu hồi hoàn toàn kinh đô, Thoát Hoan chui ống đồng tháo chạy." },
+        {
+          label: "Hàm Tử (Tháng 5)",
+          detail: "Trần Nhật Duật dùng kế ly gián và thủy quân tiêu diệt đạo quân Toa Đô.",
+        },
+        {
+          label: "Chương Dương (Tháng 6)",
+          detail: "Trần Quang Khải đốt cháy chiến thuyền giặc, giải phóng bến sông huyết mạch.",
+        },
+        {
+          label: "Thăng Long (Tháng 6)",
+          detail: "Thu hồi hoàn toàn kinh đô, Thoát Hoan phải chui vào ống đồng trốn chạy về phương Bắc.",
+        },
       ],
     };
 
@@ -172,20 +123,39 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "steps",
       title: "Mưu kế bãi cọc Bạch Đằng",
       items: [
-        { label: "1 · Cắm cọc", detail: "Đóng hàng ngàn cọc gỗ bọc sắt chìm dưới nước lúc triều dâng." },
-        { label: "2 · Nhử địch", detail: "Thuyền nhỏ Đại Việt dụ đoàn thuyền Ô Mã Nhi vượt qua bãi cọc." },
-        { label: "3 · Đón triều rút", detail: "Nước hạ nhanh, cọc nhô lên xé toạc đáy tàu giặc." },
+        {
+          label: "1 · Cắm bãi cọc ngầm",
+          detail: "Đóng hàng ngàn cọc gỗ bọc sắt nhọn bịt kín lòng sông Bạch Đằng, chìm sâu khi triều dâng.",
+        },
+        {
+          label: "2 · Nhử chiến thuyền giặc",
+          detail: "Thuyền nhẹ Đại Việt vờ thua rút chạy, dụ toàn bộ hạm đội Ô Mã Nhi tiến sâu qua bãi cọc.",
+        },
+        {
+          label: "3 · Đón dòng triều rút",
+          detail: "Nước sông rút cực nhanh, cọc nhô lên xé toạc đáy tàu; Quân Trần từ hai bên bờ tổng phản công.",
+        },
       ],
     };
 
     // Bài 7 (Chương 3) — Khoan thư sức dân (2 trang)
     tran.lessons[6].pages[1].visual = {
       kind: "cycle",
-      title: "3 trụ cột thành công vượt thời gian",
+      title: "3 Trụ cột thành công vượt thời gian",
+      expression: "Đoàn kết & Sâu rễ bền gốc",
       items: [
-        { label: "1 · Trí tuệ", detail: "Lấy yếu chống mạnh, dùng thiên nhiên và địa hình làm vũ khí." },
-        { label: "2 · Đoàn kết", detail: "Vua tôi đồng lòng, anh em hoà thuận, cả nước chung sức." },
-        { label: "3 · Bền gốc", detail: "Khoan thư sức dân, tích luỹ nội lực từ nền tảng vững chắc." },
+        {
+          label: "1 · Trí tuệ quân sự",
+          detail: "Lấy đoản binh thắng trường trận, lấy yếu chế mạnh, dùng thiên thời và địa hình hiểm trở làm vũ khí.",
+        },
+        {
+          label: "2 · Đồng lòng nhất trí",
+          detail: "Vua tôi đồng lòng, anh em hòa mục, cả nước góp sức tạo nên khối đại đoàn kết vô địch.",
+        },
+        {
+          label: "3 · Khoan thư sức dân",
+          detail: "Bồi dưỡng sức dân làm kế sâu rễ bền gốc, coi dân là nền tảng của mọi sự thịnh suy lâu dài.",
+        },
       ],
     };
   }
@@ -198,8 +168,14 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "comparison",
       title: "Empirical vs Theoretical",
       items: [
-        { label: "Empirical (Thực nghiệm)", detail: "Dựa trên số liệu đo đạc thực tế, thí nghiệm và bằng chứng quan sát được." },
-        { label: "Theoretical (Lý thuyết)", detail: "Dựa trên mô hình giả định và suy luận trừu tượng chưa qua kiểm chứng." },
+        {
+          label: "Empirical (Thực nghiệm)",
+          detail: "Dựa trên số liệu đo đạc thực tế, thí nghiệm và bằng chứng quan sát được; Ví dụ: 'Empirical research confirms the drug's safety'; Điểm then chốt trong IELTS Reading & Task 2.",
+        },
+        {
+          label: "Theoretical (Lý thuyết)",
+          detail: "Dựa trên mô hình toán học và suy luận trừu tượng chưa qua kiểm chứng thực tế; Ví dụ: 'Theoretical physics predicts phenomena before discovery'; Dùng khi thảo luận giả thuyết khoa học.",
+        },
       ],
     };
 
@@ -207,10 +183,20 @@ export function addSampleVisuals(courses: Course[]) {
     vocabCourse.lessons[1].pages[0].visual = {
       kind: "cycle",
       title: "Vòng lặp Thiên kiến nhận thức",
+      expression: "Lối tắt dẫn tới ngụy biện",
       items: [
-        { label: "1 · Heuristic", detail: "Bộ não dùng đường tắt kinh nghiệm để ra quyết định nhanh." },
-        { label: "2 · Bias", detail: "Bỏ qua các dữ kiện trái chiều để bảo vệ niềm tin cũ." },
-        { label: "3 · Fallacy", detail: "Rơi vào kết luận ngụy biện mà tưởng mình sáng suốt." },
+        {
+          label: "1 · Heuristic (Lối tắt)",
+          detail: "Bộ não dùng đường tắt kinh nghiệm để ra quyết định tức thì mà không phân tích kỹ.",
+        },
+        {
+          label: "2 · Confirmation Bias",
+          detail: "Chỉ tìm kiếm và ghi nhớ bằng chứng ủng hộ niềm tin cũ, phớt lờ số liệu trái chiều.",
+        },
+        {
+          label: "3 · Logical Fallacy",
+          detail: "Rơi vào kết luận ngụy biện mang tính hệ thống mà tưởng mình hoàn toàn khách quan.",
+        },
       ],
     };
 
@@ -219,9 +205,18 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "steps",
       title: "Cách một Paradigm Shift diễn ra",
       items: [
-        { label: "1 · Mô thức cũ", detail: "Lý thuyết truyền thống thống trị nhưng bắt đầu bộc lộ lỗ hổng." },
-        { label: "2 · Khủng hoảng", detail: "Hàng loạt hiện tượng bất thường không thể giải thích bằng quy luật cũ." },
-        { label: "3 · Cách mạng tư duy", detail: "Mô thức mới ra đời (Paradigm shift), tái định hình toàn bộ ngành." },
+        {
+          label: "1 · Khung mẫu cũ (Normal Science)",
+          detail: "Mô hình lý thuyết hiện hành thống trị và được đại đa số giới khoa học công nhận là chân lý.",
+        },
+        {
+          label: "2 · Dị biệt & Khủng hoảng (Anomaly)",
+          detail: "Hàng loạt hiện tượng thực tế mâu thuẫn xuất hiện mà quy luật cũ hoàn toàn không giải thích nổi.",
+        },
+        {
+          label: "3 · Cách mạng mô thức (Shift)",
+          detail: "Một hệ thống tư duy hoàn toàn mới ra đời, phá vỡ lối mòn và tái định hình toàn bộ ngành.",
+        },
       ],
     };
 
@@ -230,8 +225,14 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "comparison",
       title: "Cặp đối lập: Mitigate vs Exacerbate",
       items: [
-        { label: "Mitigate (Làm dịu)", detail: "Hành động giảm bớt tác hại: 'Trees mitigate urban heat islands'." },
-        { label: "Exacerbate (Làm trầm trọng)", detail: "Hành vi làm tệ thêm: 'Deforestation exacerbates flooding'." },
+        {
+          label: "Mitigate (Làm dịu / Giảm nhẹ)",
+          detail: "Hành động chủ động giảm bớt mức độ nghiêm trọng hay thiệt hại; Ví dụ: 'Planting trees mitigates urban heat islands'; Sắc thái tích cực, mang tính khắc phục vấn đề.",
+        },
+        {
+          label: "Exacerbate (Làm trầm trọng)",
+          detail: "Hành vi hoặc yếu tố khiến vấn đề vốn đã xấu trở nên tồi tệ hơn; Ví dụ: 'Deforestation exacerbates severe flash floods'; Sắc thái tiêu cực, cảnh báo nguy cơ lớn.",
+        },
       ],
     };
 
@@ -240,8 +241,14 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "comparison",
       title: "Bẫy SAT: Disinterested vs Uninterested",
       items: [
-        { label: "Disinterested (Công tâm)", detail: "Hoàn toàn vô tư, không vụ lợi cá nhân (phẩm chất của thẩm phán)." },
-        { label: "Uninterested (Thờ ơ)", detail: "Đơn thuần là chán chường, không có hứng thú với chủ đề." },
+        {
+          label: "Disinterested (Công tâm / Vô tư)",
+          detail: "Hoàn toàn công bằng, không bị chi phối bởi tư lợi cá nhân; Phẩm chất bắt buộc của thẩm phán, trọng tài, hội đồng giám khảo; Điểm phân loại học sinh giỏi trong SAT Reading.",
+        },
+        {
+          label: "Uninterested (Thờ ơ / Không màng)",
+          detail: "Đơn thuần là cảm giác chán nản, không có bất kỳ hứng thú hay sự chú ý nào đối với chủ đề; Biểu thị thái độ cảm xúc cá nhân thông thường.",
+        },
       ],
     };
 
@@ -250,8 +257,14 @@ export function addSampleVisuals(courses: Course[]) {
       kind: "comparison",
       title: "Cặp tiền tố vàng: Bene- vs Mal-",
       items: [
-        { label: "Bene- (Tốt / Phúc lành)", detail: "Beneficial (có lợi), Benevolent (nhân từ), Benefactor (ân nhân)." },
-        { label: "Mal- (Xấu / Độc hại)", detail: "Malicious (ác ý), Malfunction (hỏng hóc), Malevolent (hiểm độc)." },
+        {
+          label: "Bene- (Tốt đẹp / Lương thiện)",
+          detail: "Bắt nguồn từ tiếng Latin 'bonus' mang ý nghĩa phúc lành; Từ vựng vàng: Beneficial (có lợi), Benevolent (nhân từ), Benefactor (ân nhân bảo trợ).",
+        },
+        {
+          label: "Mal- (Xấu xa / Độc hại)",
+          detail: "Mang ý nghĩa tiêu cực, hư hỏng hoặc có hại; Từ vựng vàng: Malicious (ác ý), Malfunction (trục trặc kỹ thuật), Malevolent (hiểm ác, độc địa).",
+        },
       ],
     };
   }
