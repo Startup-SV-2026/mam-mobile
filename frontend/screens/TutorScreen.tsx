@@ -21,10 +21,12 @@ export function Tutor({
   lesson,
   courseTitle,
   onClose,
+  initialQuestion,
 }: {
   lesson: Lesson;
   courseTitle: string;
   onClose: () => void;
+  initialQuestion?: string;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [question, setQuestion] = useState("");
@@ -32,8 +34,16 @@ export function Tutor({
   const [error, setError] = useState("");
   const request = useRef<AbortController | null>(null);
   const scroll = useRef<ScrollView>(null);
+  const initialAsked = useRef(false);
 
   useEffect(() => () => request.current?.abort(), []);
+
+  useEffect(() => {
+    if (initialQuestion && initialQuestion.trim() && !initialAsked.current) {
+      initialAsked.current = true;
+      void ask(initialQuestion.trim());
+    }
+  }, [initialQuestion]);
 
   async function ask(value = question) {
     const clean = value.trim();

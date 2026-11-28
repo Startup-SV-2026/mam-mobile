@@ -11,6 +11,7 @@ import type { Lesson, LessonPage, LessonVisual } from "../../types/course";
 import { visualPalette, visualPalettes, localizeVisual, getNestedLayerRenderOrder } from "../../lib/visual-design";
 import { theme as t, ui } from "../ui/ui";
 import { Icon } from "../ui/Icon";
+import { triggerHaptic, playSound } from "../../lib/feedback";
 
 const INK = "#231B15";
 const CARD_BG = "#FDFBF5";
@@ -43,15 +44,20 @@ function ComparisonCards({
   visualTitle: string;
   takeaway?: string;
 }) {
+  const isShortComparison =
+    items.length === 2 &&
+    items.every((it) => it.detail.length < 50 && !it.detail.includes(";"));
+
   return (
     <View style={{ marginVertical: 18, gap: 10 }}>
       {visualTitle ? (
         <Text
           style={{
-            fontSize: 13.5,
-            fontWeight: "600",
-            color: "#7C7367",
+            fontSize: 14,
+            fontWeight: "700",
+            color: "#6D5F4D",
             marginBottom: 2,
+            letterSpacing: 0.3,
           }}
         >
           {visualTitle}
@@ -60,11 +66,12 @@ function ComparisonCards({
 
       <View
         style={{
-          flexDirection: items.length <= 2 ? "row" : "column",
+          flexDirection: isShortComparison ? "row" : "column",
           gap: 12,
         }}
       >
         {items.map((item, idx) => {
+          const accent = POP_FILLS[idx % POP_FILLS.length];
           const bullets = item.detail
             .split(/[;\n•]/)
             .map((s) => s.trim())
@@ -74,57 +81,91 @@ function ComparisonCards({
             <View
               key={idx}
               style={{
-                flex: items.length <= 2 ? 1 : undefined,
+                flex: isShortComparison ? 1 : undefined,
                 backgroundColor: CARD_BG,
-                borderRadius: 15,
-                borderWidth: 1,
+                borderRadius: 16,
+                borderWidth: 1.5,
                 borderColor: CARD_BORDER,
+                borderLeftWidth: 4,
+                borderLeftColor: accent.solid,
                 padding: 16,
                 gap: 10,
               }}
             >
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: "700",
-                  color: INK,
-                }}
-              >
-                {item.label}
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View
+                  style={{
+                    width: 22,
+                    height: 22,
+                    borderRadius: 11,
+                    backgroundColor: accent.soft,
+                    borderWidth: 1,
+                    borderColor: accent.solid,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={{ fontSize: 11, fontWeight: "700", color: INK }}>
+                    {String.fromCharCode(65 + idx)}
+                  </Text>
+                </View>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontWeight: "700",
+                    color: INK,
+                    flex: 1,
+                  }}
+                >
+                  {item.label}
+                </Text>
+              </View>
 
-              <View style={{ gap: 7 }}>
-                {bullets.map((b, bIdx) => (
-                  <View
-                    key={bIdx}
-                    style={{
-                      flexDirection: "row",
-                      gap: 8,
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <Text
+              <View style={{ gap: 8 }}>
+                {bullets.map((b, bIdx) => {
+                  const parts = b.split(/:\s*(.*)/);
+                  const hasPrefix = parts.length > 1 && parts[0].length < 30;
+                  return (
+                    <View
+                      key={bIdx}
                       style={{
-                        color: "#6E655A",
-                        fontSize: 13,
-                        lineHeight: 19,
-                        fontWeight: "700",
+                        flexDirection: "row",
+                        gap: 8,
+                        alignItems: "flex-start",
                       }}
                     >
-                      •
-                    </Text>
-                    <Text
-                      style={{
-                        flex: 1,
-                        fontSize: 13.5,
-                        lineHeight: 19,
-                        color: "#4A433B",
-                      }}
-                    >
-                      {b}
-                    </Text>
-                  </View>
-                ))}
+                      <Text
+                        style={{
+                          color: accent.solid,
+                          fontSize: 14,
+                          lineHeight: 20,
+                          fontWeight: "800",
+                        }}
+                      >
+                        •
+                      </Text>
+                      <Text
+                        style={{
+                          flex: 1,
+                          fontSize: 13.5,
+                          lineHeight: 20,
+                          color: "#3D352E",
+                        }}
+                      >
+                        {hasPrefix ? (
+                          <>
+                            <Text style={{ fontWeight: "700", color: INK }}>
+                              {parts[0]}:{" "}
+                            </Text>
+                            {parts[1]}
+                          </>
+                        ) : (
+                          b
+                        )}
+                      </Text>
+                    </View>
+                  );
+                })}
               </View>
             </View>
           );
@@ -132,16 +173,28 @@ function ComparisonCards({
       </View>
 
       {takeaway ? (
-        <Text
+        <View
           style={{
-            fontSize: 13.5,
-            lineHeight: 20,
-            color: "#574F46",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 6,
             marginTop: 4,
+            paddingHorizontal: 4,
           }}
         >
-          {takeaway}
-        </Text>
+          <Text style={{ fontSize: 13, color: "#8E806D" }}>💡</Text>
+          <Text
+            style={{
+              fontSize: 13,
+              lineHeight: 19,
+              color: "#6D5F4D",
+              fontStyle: "italic",
+              flex: 1,
+            }}
+          >
+            {takeaway}
+          </Text>
+        </View>
       ) : null}
     </View>
   );
@@ -155,6 +208,8 @@ function StepperCard({
   items: LessonVisual["items"];
   visualTitle: string;
 }) {
+  const [activeStep, setActiveStep] = useState<number | null>(null);
+
   return (
     <View
       style={{
@@ -183,51 +238,76 @@ function StepperCard({
       </View>
 
       <View>
-        {items.map((item, i) => (
-          <View key={i} style={{ flexDirection: "row", gap: 14 }}>
-            <View style={{ alignItems: "center", width: 26 }}>
-              <View
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 12,
-                  backgroundColor: "#72C3FA",
-                  borderWidth: 1.2,
-                  borderColor: INK,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ fontSize: 11.5, fontWeight: "700", color: INK }}>
-                  {i + 1}
-                </Text>
-              </View>
-              {i < items.length - 1 && (
-                <View
-                  style={{
-                    width: 1.2,
-                    flex: 1,
-                    backgroundColor: "#DCD4C6",
-                    marginVertical: 4,
-                  }}
-                />
-              )}
-            </View>
-
-            <View
+        {items.map((item, i) => {
+          const isSelected = activeStep === i;
+          return (
+            <Pressable
+              key={i}
+              onPress={() => {
+                triggerHaptic("selection");
+                playSound("tap");
+                setActiveStep(isSelected ? null : i);
+              }}
               style={{
-                flex: 1,
-                paddingBottom: i === items.length - 1 ? 2 : 16,
-                gap: 3,
+                flexDirection: "row",
+                gap: 14,
+                backgroundColor: isSelected ? "rgba(114, 195, 250, 0.12)" : "transparent",
+                borderRadius: 12,
+                padding: isSelected ? 8 : 0,
+                marginHorizontal: isSelected ? -8 : 0,
+                marginBottom: isSelected ? 8 : 0,
               }}
             >
-              <Text style={{ fontSize: 15, fontWeight: "700", color: INK }}>
-                {item.label.replace(/^\d+\s*[·.\-]\s*/, "")}
-              </Text>
-              <Text style={detailStyle}>{item.detail}</Text>
-            </View>
-          </View>
-        ))}
+              <View style={{ alignItems: "center", width: 26, paddingTop: isSelected ? 2 : 0 }}>
+                <View
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    backgroundColor: isSelected ? "#DFB23B" : "#72C3FA",
+                    borderWidth: 1.2,
+                    borderColor: INK,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={{ fontSize: 11.5, fontWeight: "700", color: INK }}>
+                    {i + 1}
+                  </Text>
+                </View>
+                {i < items.length - 1 && (
+                  <View
+                    style={{
+                      width: 1.2,
+                      flex: 1,
+                      backgroundColor: "#DCD4C6",
+                      marginVertical: 4,
+                    }}
+                  />
+                )}
+              </View>
+
+              <View
+                style={{
+                  flex: 1,
+                  paddingBottom: i === items.length - 1 ? 2 : 16,
+                  gap: 3,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontWeight: "700",
+                    color: isSelected ? "#0D5F9A" : INK,
+                  }}
+                >
+                  {item.label.replace(/^\d+\s*[·.\-]\s*/, "")}
+                </Text>
+                <Text style={detailStyle}>{item.detail}</Text>
+              </View>
+            </Pressable>
+          );
+        })}
       </View>
     </View>
   );
@@ -471,6 +551,12 @@ function PillCycle({
   const items = visual.items.slice(0, 3);
   const pillColors = ["#68BFF9", "#839B43", "#F0715E"];
 
+  const handleSelect = (idx: number) => {
+    triggerHaptic("selection");
+    playSound("tap");
+    setSelected(selected === idx ? null : idx);
+  };
+
   return (
     <View style={{ gap: 10 }}>
       <View style={{ height: 224, justifyContent: "center" }}>
@@ -540,7 +626,7 @@ function PillCycle({
         {/* Top Pill */}
         {items[0] && (
           <Pressable
-            onPress={() => setSelected(selected === 0 ? null : 0)}
+            onPress={() => handleSelect(0)}
             style={{
               position: "absolute",
               top: 12,
@@ -571,7 +657,7 @@ function PillCycle({
         {/* Bottom-Right Pill */}
         {items[1] && (
           <Pressable
-            onPress={() => setSelected(selected === 1 ? null : 1)}
+            onPress={() => handleSelect(1)}
             style={{
               position: "absolute",
               bottom: 34,
@@ -602,7 +688,7 @@ function PillCycle({
         {/* Bottom-Left Pill */}
         {items[2] && (
           <Pressable
-            onPress={() => setSelected(selected === 2 ? null : 2)}
+            onPress={() => handleSelect(2)}
             style={{
               position: "absolute",
               bottom: 34,
@@ -805,6 +891,8 @@ function NestedLayers({
         key={actualIdx}
         onPress={(e) => {
           (e as unknown as { stopPropagation?: () => void })?.stopPropagation?.();
+          triggerHaptic("selection");
+          playSound("tap");
           setSelected(selected === actualIdx ? null : actualIdx);
         }}
         style={{
@@ -903,6 +991,12 @@ function DecisionFlowchart({
 }) {
   const [selected, setSelected] = useState<number | null>(null);
 
+  const handleSelect = (idx: number) => {
+    triggerHaptic("selection");
+    playSound("tap");
+    setSelected(idx);
+  };
+
   // Tối thiểu 2 mục (dành cho test cơ bản)
   if (items.length === 2) {
     return (
@@ -957,7 +1051,7 @@ function DecisionFlowchart({
       {startNode ? (
         <>
           <Pressable
-            onPress={() => setSelected(0)}
+            onPress={() => handleSelect(0)}
             style={{
               paddingVertical: 10,
               paddingHorizontal: 22,
@@ -988,7 +1082,7 @@ function DecisionFlowchart({
 
       {/* Hộp câu hỏi màu vàng đất */}
       <Pressable
-        onPress={() => setSelected(hasStartNode ? 1 : 0)}
+        onPress={() => handleSelect(hasStartNode ? 1 : 0)}
         style={{
           paddingVertical: 12,
           paddingHorizontal: 20,
@@ -1056,7 +1150,7 @@ function DecisionFlowchart({
       >
         <View style={{ flex: 1, alignItems: "center" }}>
           <Pressable
-            onPress={() => setSelected(hasStartNode ? 2 : 1)}
+            onPress={() => handleSelect(hasStartNode ? 2 : 1)}
             style={{
               width: "100%",
               paddingVertical: 11,
@@ -1093,7 +1187,7 @@ function DecisionFlowchart({
                 <Polygon points="12,25 7,18 17,18" fill={INK} />
               </Svg>
               <Pressable
-                onPress={() => setSelected(4)}
+                onPress={() => handleSelect(4)}
                 style={{
                   width: "100%",
                   paddingVertical: 11,
@@ -1121,7 +1215,7 @@ function DecisionFlowchart({
 
         <View style={{ flex: 1, alignItems: "center" }}>
           <Pressable
-            onPress={() => setSelected(hasStartNode ? 3 : 2)}
+            onPress={() => handleSelect(hasStartNode ? 3 : 2)}
             style={{
               width: "100%",
               paddingVertical: 11,
@@ -1489,7 +1583,11 @@ function SpectrumScale({
           return (
             <Pressable
               key={i}
-              onPress={() => setSelected(i)}
+              onPress={() => {
+                triggerHaptic("selection");
+                playSound("tap");
+                setSelected(i);
+              }}
               style={{
                 flex: 1,
                 paddingVertical: 11,

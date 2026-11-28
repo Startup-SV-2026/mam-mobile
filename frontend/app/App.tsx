@@ -27,6 +27,7 @@ import { useProgressiveLessons } from "../hooks/useProgressiveLessons";
 import { useCourseBuilder } from "../hooks/useCourseBuilder";
 import { useAppStore } from "../hooks/useAppStore";
 import { scheduleReview } from "../lib/learning";
+import { triggerHaptic, playSound } from "../lib/feedback";
 
 // Refactored components
 import { ReaderHeader } from "../components/layout/ReaderHeader";
@@ -86,6 +87,7 @@ export default function App() {
   const [answer, setAnswer] = useState<number | null>(null);
   const [checked, setChecked] = useState(false);
   const [tutorOpen, setTutorOpen] = useState(false);
+  const [tutorQuestion, setTutorQuestion] = useState<string | undefined>(undefined);
   const [earnedXp, setEarnedXp] = useState(0);
   const [notesOpen, setNotesOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
@@ -114,6 +116,7 @@ export default function App() {
     setNotesOpen(false);
     Keyboard.dismiss();
     setTutorOpen(false);
+    setTutorQuestion(undefined);
     setScreen(next);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
@@ -397,6 +400,10 @@ export default function App() {
                     setAIStatusFrom("lesson");
                     go("ai-status");
                   }}
+                  onAskTutor={(q) => {
+                    setTutorQuestion(q);
+                    setTutorOpen(true);
+                  }}
                 />
               ))}
 
@@ -527,6 +534,8 @@ export default function App() {
                           variant="secondary"
                           size="lg"
                           onPress={() => {
+                            triggerHaptic("light");
+                            playSound("tap");
                             setPageIndex((v) => v - 1);
                             scrollRef.current?.scrollTo({
                               y: 0,
@@ -544,6 +553,8 @@ export default function App() {
                         size="lg"
                         arrow
                         onPress={() => {
+                          triggerHaptic("light");
+                          playSound("tap");
                           if (pageIndex < totalReaderPages - 1) {
                             setPageIndex((v) => v + 1);
                             scrollRef.current?.scrollTo({
@@ -567,11 +578,25 @@ export default function App() {
                   arrow
                   disabled={answer === null}
                   onPress={() => {
-                    if (checked && isCorrect) finish();
-                    else if (checked) {
+                    if (checked && isCorrect) {
+                      triggerHaptic("success");
+                      playSound("success");
+                      finish();
+                    } else if (checked) {
+                      triggerHaptic("light");
+                      playSound("tap");
                       setChecked(false);
                       setAnswer(null);
-                    } else setChecked(true);
+                    } else {
+                      setChecked(true);
+                      if (isCorrect) {
+                        triggerHaptic("success");
+                        playSound("success");
+                      } else {
+                        triggerHaptic("warning");
+                        playSound("tap");
+                      }
+                    }
                   }}
                 >
                   {checked
@@ -651,7 +676,11 @@ export default function App() {
           <Tutor
             lesson={activeLesson}
             courseTitle={course.title}
-            onClose={() => setTutorOpen(false)}
+            initialQuestion={tutorQuestion}
+            onClose={() => {
+              setTutorOpen(false);
+              setTutorQuestion(undefined);
+            }}
           />
         )}
 
